@@ -39,7 +39,34 @@ Japanese prose with natural-japanese.
 - Python 3.9+ if you want to run the lint script (standard library only,
   no extra install needed)
 
-### Install
+### Install from npm
+
+Install the package, then copy `tech-writer` into a skill directory with
+the included CLI:
+
+```bash
+npm install --save-dev kotonoha
+npx kotonoha install
+```
+
+The default destination is `.github/skills/tech-writer` in the current
+project. To install into another supported skill directory, pass its parent
+directory:
+
+```bash
+npx kotonoha install --target .claude/skills
+npx kotonoha install --target ~/.copilot/skills
+```
+
+The command refuses to overwrite an existing `tech-writer` directory. Review
+or back up the existing installation, then pass `--force` only when you
+intend to replace it:
+
+```bash
+npx kotonoha install --force
+```
+
+### Install from a source checkout
 
 Inside this repository, the skill is already placed at
 `.github/skills/tech-writer`, so no extra setup is needed to use it with
