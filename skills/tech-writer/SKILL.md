@@ -206,9 +206,10 @@ step 2 as the primary check for those.
 See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
 user manual). Atomic artifacts (commit message, PR description, issue
-report, code comment/docstring) are already covered by their own doctype
-checklist via step 2 in §4 — these common items don't add extra
-requirements on top of that. Common items to confirm:
+report, code comment/docstring, a single appended release-notes entry) are
+already covered by their own doctype checklist via step 2 in §4 — these
+common items don't add extra requirements on top of that. Common items to
+confirm:
 
 - Do the first three lines convey the purpose and target reader?
 - Does reading only the headings trace the whole document's flow?

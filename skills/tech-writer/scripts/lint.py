@@ -76,6 +76,8 @@ INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
 NON_PARAGRAPH_RE = re.compile(
     r"^(?:[-*+]\s|\d+[.)]\s|>|<!--|\|)|^(?:-{3,}|\*{3,}|_{3,})$"
 )
+# CommonMark indented code block: 4+ leading spaces or a leading tab.
+INDENTED_CODE_RE = re.compile(r"^(?: {4,}|\t)\S")
 
 
 def strip_inline_code(line: str) -> str:
@@ -242,9 +244,11 @@ def check_intro_paragraph(lines: list, fence_mask: list) -> list:
     This is a heuristic proxy for structure constitution rule 1 ("say what
     this is and the outcome up front"). The very first non-blank line after
     the title must be plain prose — a list item, blockquote, HTML comment,
-    table row, thematic break, or another heading does not count, even if
-    real prose follows it further down. A leading YAML frontmatter block
-    (e.g. skill metadata) is skipped before this check begins.
+    table row, thematic break, another heading, a fenced code block, or
+    indented code does not count, even if real prose follows it further
+    down. A leading YAML frontmatter block (e.g. skill metadata) is skipped
+    before this check begins; fenced code is only skipped while still
+    searching for the title itself (a heading can't appear inside one).
     """
     start = 0
     if lines and lines[0].strip() == "---":
@@ -256,11 +260,14 @@ def check_intro_paragraph(lines: list, fence_mask: list) -> list:
     for i, line in enumerate(lines):
         if i < start:
             continue
-        if fence_mask[i]:
+        if state == "before_title" and fence_mask[i]:
             continue
         stripped = line.strip()
         if not stripped:
             continue
+        if state == "after_title" and (fence_mask[i] or INDENTED_CODE_RE.match(line)):
+            # Fenced or indented code right after the title isn't prose.
+            break
         m = HEADING_RE.match(stripped)
         if state == "before_title":
             if m and len(m.group(1)) == 1 and m.group(2).strip():
@@ -278,7 +285,7 @@ def check_intro_paragraph(lines: list, fence_mask: list) -> list:
         Finding(
             line=1,
             category="missing_intro",
-            message="Document must open with a non-empty '#' title heading immediately followed by a plain-prose paragraph (not a list, blockquote, comment, table, or another heading) stating what this is and the reader outcome (structure constitution rule 1).",
+            message="Document must open with a non-empty '#' title heading immediately followed by a plain-prose paragraph (not a list, blockquote, comment, table, code block, or another heading) stating what this is and the reader outcome (structure constitution rule 1).",
         )
     ]
 
