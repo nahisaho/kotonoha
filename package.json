@@ -1,0 +1,26 @@
+{
+  "name": "kotonoha",
+  "version": "0.1.0",
+  "description": "A GitHub Copilot CLI skill for structuring and polishing technical documents.",
+  "license": "MIT",
+  "author": "nahisaho",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nahisaho/kotonoha.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nahisaho/kotonoha/issues"
+  },
+  "homepage": "https://github.com/nahisaho/kotonoha#readme",
+  "keywords": [
+    "copilot",
+    "github-copilot",
+    "skill",
+    "technical-writing",
+    "documentation",
+    "markdown"
+  ],
+  "files": [
+    "skills/"
+  ]
+}
