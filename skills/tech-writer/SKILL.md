@@ -3,15 +3,18 @@ name: tech-writer
 description: >-
   Helps structure and polish technical documents: README, design docs/ADRs,
   API reference, PR descriptions/commit messages/issue reports, release
-  notes/CHANGELOG, user manuals/how-to guides, code comments/docstrings, and
-  Qiita/Zenn articles. Use for requests like "write a README", "draft a
-  design doc", "write this PR description", "clean up my commit message",
-  "make this how-to guide clearer", "write API docs", "summarize the release
-  notes", "write a Zenn article", "write this up for Qiita", as well as
+  notes/CHANGELOG, user manuals/how-to guides, code comments/docstrings,
+  technical proposals, RFI/RFP procurement documents, and Qiita/Zenn
+  articles. Use for requests like "write a README", "draft a design doc",
+  "write a technical proposal", "draft an RFI", "create an RFP", "write this
+  PR description", "clean up my commit message", "make this how-to guide
+  clearer", "write API docs", "summarize the release notes", "write a Zenn
+  article", "write this up for Qiita", as well as
   Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
-  「PRの説明文を書いて」「コミットメッセージを整えて」「手順書を分かりやすくして」
-  「APIドキュメントを整備して」「リリースノートをまとめて」「Zennの記事を書いて」
-  「Qiitaに投稿する記事を書いて」). Especially useful when
+  「技術提案書を書いて」「RFIを作って」「RFPを作って」「PRの説明文を書いて」
+  「コミットメッセージを整えて」「手順書を分かりやすくして」
+  「APIドキュメントを整備して」「リリースノートをまとめて」
+  「Zennの記事を書いて」「Qiitaに投稿する記事を書いて」). Especially useful when
   the request is a bare goal without enough context to start (e.g. "I want
   to write a README" / "○○を書きたい"), since this skill drives a one
   question-at-a-time intake before writing. Supports both Japanese and
@@ -31,7 +34,8 @@ argument-hint: "[write|review|score] [doctype] <target file or request>"
 Structures technical documents so readers reach the information they need
 with the shortest path. Covers README, design docs/ADRs, API reference, PR
 descriptions/commit messages/issue reports, release notes/CHANGELOG, user
-manuals/how-to guides, code comments/docstrings, and Qiita/Zenn articles.
+manuals/how-to guides, code comments/docstrings, technical proposals,
+RFI/RFP procurement documents, and Qiita/Zenn articles.
 
 Default format: Markdown for every doctype in this skill, except a git
 commit message body (plain text by convention — light "-" bullets are
@@ -90,7 +94,13 @@ hand the user a checklist to fill in. Instead:
    past this doctype without knowing which one applies. Similarly, a bare
    "write a tech blog post" request doesn't by itself say Qiita, Zenn, or
    neither — ask which platform (or "no platform, just a plain document")
-   as part of this same first question.
+   as part of this same first question. For a "technical proposal", ask
+   whether it is an internal approval proposal or a supplier response to an
+   RFP; only the internal approval proposal maps to `technical-proposal`.
+   For a supplier response, structure the document against the supplied
+   RFP's requirement IDs, requested proposal contents, pricing format, and
+   contract deviations, then apply the general principles in
+   `references/style-constitution.md`.
 2. Open the matching reference file and note its target reader and any
    "settle before writing" items. Combined with the general musts below,
    this is your information checklist — but never show it to the user as a
@@ -104,7 +114,8 @@ hand the user a checklist to fill in. Instead:
    doctype (and subtype, for `pr-commit`), and (d) any doctype-specific
    musts (e.g. the decision and alternatives for a design doc, the
    prior-knowledge floor for a user manual, breaking-change status for
-   release notes, the related issue for a PR description or bug report).
+   release notes, the related issue for a PR description or bug report,
+   market unknowns for an RFI, or evaluation rules for an RFP).
 5. **A "don't know" / "not applicable" / "no ticket for this" answer
    satisfies a must — it is not a reason to keep asking.** Ask that must
    at most once; if the answer is a non-answer, record it as a stated
@@ -130,6 +141,9 @@ hand the user a checklist to fill in. Instead:
 | Release notes / CHANGELOG | release-notes | `references/doctypes/release-notes.md` |
 | User manual / how-to guide / tutorial | user-manual | `references/doctypes/user-manual.md` |
 | Code comments / docstrings | code-comments | `references/doctypes/code-comments.md` |
+| Internal technical proposal | technical-proposal | `references/doctypes/technical-proposal.md` |
+| Request for information / RFI | rfi | `references/doctypes/rfi.md` |
+| Request for proposal / RFP | rfp | `references/doctypes/rfp.md` |
 | Zenn article | zenn | `references/doctypes/zenn.md` |
 | Qiita article | qiita | `references/doctypes/qiita.md` |
 
@@ -140,9 +154,10 @@ one-question-at-a-time intake for reader and outcome.
 ## 2. Outline first for long documents
 
 For documents likely to run long — design docs/ADRs, user manuals with
-multiple steps, API references covering several endpoints, or anything the
-user calls "long"/"detailed"/"comprehensive" — draft a table of contents
-(heading outline) before writing any body prose.
+multiple steps, API references covering several endpoints, technical
+proposals, RFI/RFP documents, or anything the user calls
+"long"/"detailed"/"comprehensive" — draft a table of contents (heading
+outline) before writing any body prose.
 
 1. Build the heading outline from the reader and outcome gathered in §1 and
    the doctype's recommended skeleton (in its reference file).
@@ -168,7 +183,8 @@ document and needs the outline step below.
 ## 3. Write — under the structure constitution
 
 For living, multi-section documents (README, design doc, API reference,
-release notes, user manual, Zenn/Qiita article), write under the 8 rules
+release notes, user manual, technical proposal, RFI/RFP, Zenn/Qiita
+article), write under the 8 rules
 in `references/style-constitution.md`. Summary: state "what this is" and
 "the outcome for the reader" in the first three lines; make headings
 labels that preview content (not "Overview", but "Overview of what");
@@ -272,7 +288,8 @@ for `write` mode; do not run it for `review` or `score` mode.
 
 See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
-user manual, Zenn/Qiita article). Atomic artifacts (commit message, PR
+user manual, technical proposal, RFI/RFP, Zenn/Qiita article). Atomic
+artifacts (commit message, PR
 description, issue report, code comment/docstring, a single appended
 release-notes entry) are already covered by their own doctype checklist
 via step 2 in §4 — these common items don't add extra requirements on top

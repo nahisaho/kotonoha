@@ -148,4 +148,41 @@ test("the packed npm artifact installs a usable CLI", () => {
   assert.match(installedSkill, /review not performed/);
   assert.match(installedSkill, /review did not converge/);
   assert.match(installedSkill, /## 6\. Doctype checklist summary/);
+  assert.match(
+    installedSkill,
+    /\| Internal technical proposal \| technical-proposal \|/,
+  );
+  assert.match(installedSkill, /\| Request for information \/ RFI \| rfi \|/);
+  assert.match(installedSkill, /\| Request for proposal \/ RFP \| rfp \|/);
+
+  for (const template of ["technical-proposal.md", "rfi.md", "rfp.md"]) {
+    assert.ok(
+      fs.existsSync(
+        path.join(
+          consumerDirectory,
+          ".copilot",
+          "skills",
+          "tech-writer",
+          "assets",
+          "templates",
+          template,
+        ),
+      ),
+      `${template} should be included in the installed skill`,
+    );
+    assert.ok(
+      fs.existsSync(
+        path.join(
+          consumerDirectory,
+          ".copilot",
+          "skills",
+          "tech-writer",
+          "references",
+          "doctypes",
+          template,
+        ),
+      ),
+      `${template} doctype reference should be included in the installed skill`,
+    );
+  }
 });

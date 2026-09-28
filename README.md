@@ -3,8 +3,9 @@
 kotonoha provides `tech-writer`, a GitHub Copilot CLI skill that helps
 structure and polish technical documents. It covers README, design
 docs/ADRs, API reference, PR descriptions/commit messages/issue reports,
-release notes, user manuals/how-to guides, code comments, and Qiita/Zenn
-articles, structured so readers never get lost.
+release notes, user manuals/how-to guides, code comments, technical
+proposals, RFI/RFP procurement documents, and Qiita/Zenn articles,
+structured so readers never get lost.
 
 ## What tech-writer solves
 
@@ -20,7 +21,8 @@ Japanese prose with natural-japanese.
 
 - Create/review README, design docs/ADRs, API reference, PR
   descriptions/commit messages/issue reports, release notes, user manuals,
-  code comments, and Qiita/Zenn articles
+  code comments, technical proposals, RFI/RFP procurement documents, and
+  Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
 - Iterative rubber-duck review after document creation, with fixes and
   re-review until no actionable findings remain; unavailable reviews are
@@ -107,9 +109,9 @@ works too (standard library only).
 skills/tech-writer/          # the skill itself
   SKILL.md                   # skill definition
   references/                # structure constitution + doctype rules/checklists
-  references/doctypes/       # README, design doc, API docs, PR/issue, release notes, manual, comments, Qiita/Zenn
+  references/doctypes/       # README, design/API docs, PR/issue, release notes, manual, comments, proposals, RFI/RFP, Qiita/Zenn
   scripts/lint.py            # structural lint script
-  assets/templates/          # skeleton templates for the main doctypes
+  assets/templates/          # doctype skeletons plus technical proposal, RFI, and RFP templates
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
 ```
 
