@@ -9,8 +9,11 @@ description: >-
   clearer", "write API docs", "summarize the release notes", as well as
   Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
   「PRの説明文を書いて」「コミットメッセージを整えて」「手順書を分かりやすくして」
-  「APIドキュメントを整備して」「リリースノートをまとめて」). Supports both Japanese
-  and English documents, with Japanese as the primary target for polished,
+  「APIドキュメントを整備して」「リリースノートをまとめて」). Especially useful when
+  the request is a bare goal without enough context to start (e.g. "I want
+  to write a README" / "○○を書きたい"), since this skill drives a one
+  question-at-a-time intake before writing. Supports both Japanese and
+  English documents, with Japanese as the primary target for polished,
   natural phrasing (pairing well with https://github.com/coji/natural-japanese
   for sentence-level Japanese refinement). Does NOT handle sentence-level
   naturalness, word choice, or rhythm ("AI smell" removal) — that is the
@@ -49,9 +52,9 @@ first, then hand Japanese prose to natural-japanese for polish.
 Infer the mode from the argument or the request:
 
 - `write` (default): new document, or restructuring a draft. Runs the full
-  §1–§3 workflow.
+  §1–§4 workflow, starting with the intake loop in §1.
 - `review`: structural review of an existing document. Does not rewrite;
-  reports the gap against the doctype checklist (§4).
+  reports the gap against the doctype checklist (§5).
 - `score`: structure-only quick diagnostic. Runs
   `scripts/lint.py --json <file>` and summarizes the findings (no rewrite).
 
@@ -59,19 +62,37 @@ If no mode is given, interpret "write/create" requests as `write`,
 "fix/review" requests as `review`, and "how does this look?/diagnose"
 requests as `score`.
 
-## 1. Identify the reader and the goal
+## 1. Gather context — one question at a time, then act
 
-Before writing, pin down these three points. Ask the user if any is unclear.
+Requests are often bare goals ("I want to write a README", "○○を書きたい")
+without enough context to start. Do not front-load a long questionnaire or
+hand the user a checklist to fill in. Instead:
 
-1. **Reader**: who reads this (a first-time user, a fellow engineer, your
-   future self, a decision-maker)? The reader determines how much prior
-   knowledge you can assume.
-2. **What the reader can do after reading**: can you state the document's
-   goal in one sentence — "can get it running", "can make a decision", "can
-   approve the review"? If not, the document's purpose itself isn't settled
-   yet.
-3. **Document type**: identify the doctype from the table below and read the
-   matching reference file.
+1. **Determine the doctype first**, from the table below. If the request
+   itself doesn't make it clear, that ambiguity is your first question.
+2. Open the matching reference file and note its target reader and any
+   "settle before writing" items. Combined with the general musts below,
+   this is your information checklist — but never show it to the user as a
+   form.
+3. **Ask exactly one question at a time**: pick the single most
+   information-gaining missing item, ask only that, and wait for the
+   answer before asking the next one. Never batch multiple questions into
+   one message.
+4. Stop asking once you have, at minimum: (a) the reader, (b) the
+   one-sentence outcome the reader should reach after reading, (c) the
+   doctype (already known from step 1), and (d) any doctype-specific
+   musts (e.g. the decision and alternatives for a design doc, the
+   prior-knowledge floor for a user manual, breaking-change status for
+   release notes, the related issue for a PR description).
+5. **Once complete, do not ask the user to compose anything.** Synthesize
+   the gathered answers into the best possible generation approach yourself
+   and immediately continue into §2–§4 in the same turn to produce the
+   document. Skip further confirmation unless the doctype is release-facing
+   and consequential (e.g. a public release note with breaking changes) or
+   the user explicitly asked to see a plan first.
+6. If the user already volunteered some of this information in the initial
+   request, skip the corresponding question — don't re-ask what's already
+   known.
 
 | Request | doctype | reference file |
 |---|---|---|
@@ -84,9 +105,33 @@ Before writing, pin down these three points. Ask the user if any is unclear.
 | Code comments / docstrings | code-comments | `references/doctypes/code-comments.md` |
 
 For technical documents that don't fit any of these, apply only the general
-principles in `references/style-constitution.md`.
+principles in `references/style-constitution.md`, using the same
+one-question-at-a-time intake for reader and outcome.
 
-## 2. Write — under the structure constitution
+## 2. Outline first for long documents
+
+For documents likely to run long — design docs/ADRs, user manuals with
+multiple steps, API references covering several endpoints, or anything the
+user calls "long"/"detailed"/"comprehensive" — draft a table of contents
+(heading outline) before writing any body prose.
+
+1. Build the heading outline from the reader and outcome gathered in §1 and
+   the doctype's recommended skeleton (in its reference file).
+2. **Review the outline from the reader's point of view before writing
+   further**: read only the headings, in order, as the reader identified in
+   §1 would. Check whether they can predict what they'll learn from each
+   section, whether the order matches how they'd naturally look for that
+   information, and whether following the outline gets them to the
+   §1 outcome. Reorder, merge, or split headings if not — this is cheaper
+   to fix in outline form than after the prose is written.
+3. Only once the outline holds up under that reader-perspective read-through
+   should you write the body, section by section.
+
+Skip this step for inherently short documents (a single commit message, a
+short PR description, a short release-notes entry) and draft directly under
+§3.
+
+## 3. Write — under the structure constitution
 
 Write under the 8 rules in `references/style-constitution.md`. Summary: state
 "what this is" and "the outcome for the reader" in the first three lines;
@@ -103,13 +148,16 @@ the above: avoid overly long sentences, avoid double negatives, and don't
 drop the subject (especially important in technical Japanese). Sentence-level
 polish is left to a paired skill such as natural-japanese.
 
-## 3. Review — structural check
+## 4. Review — structural check
 
 After writing, work through the following in order:
 
-1. **Skeleton read-through**: extract just the headings and the first
-   sentence of each section, and confirm the argument holds together. If
-   not, revisit how the headings are structured.
+1. **Skeleton read-through, from the reader's seat**: extract just the
+   headings and the first sentence of each section, and re-read them as the
+   §1 reader would — not as the author. Confirm the argument holds together
+   and nothing assumes knowledge that reader doesn't have yet. If not,
+   revisit how the headings are structured (for long documents, this is the
+   same lens as the §2 outline review, now applied to the finished prose).
 2. **Doctype checklist**: compare against the checklist at the end of the
    matching reference file.
 3. **Structural lint**: where possible, run `uv run scripts/lint.py <file>`
@@ -120,7 +168,7 @@ After writing, work through the following in order:
 4. **Reader-goal recheck**: confirm the "what the reader can do after
    reading" outcome from §1 is actually achievable from this document alone.
 
-## 4. Doctype checklist summary
+## 5. Doctype checklist summary
 
 See each reference file for detail. Common items to confirm:
 
