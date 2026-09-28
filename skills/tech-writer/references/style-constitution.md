@@ -7,17 +7,20 @@ Sentence-level naturalness, vocabulary, and rhythm are out of scope here
 ## Scope: living documents vs. atomic artifacts
 
 These 8 rules assume a **living, multi-section reference document** —
-README, design doc/ADR, API reference, release notes, user manual. Apply
-all 8 rules to those doctypes.
+README, design doc/ADR, API reference, release notes/CHANGELOG file as a
+whole, user manual. Apply all 8 rules to those doctypes.
 
 **Atomic, single-purpose artifacts** — commit messages, PR descriptions,
-issue reports, and code comments/docstrings — have their own skeleton in
-`references/doctypes/pr-commit.md` and `references/doctypes/code-comments.md`
-that already encodes the equivalent discipline in a form that fits their
-size (e.g. a PR description's What/Why/How opens the same way rule 1 asks
-a README to). Follow that doctype's own skeleton for those instead of
-applying the heading-hierarchy and document-metadata rules below verbatim;
-where the two disagree, the doctype reference wins.
+issue reports, code comments/docstrings, and a single new entry appended
+to an existing release-notes/CHANGELOG file — have their own skeleton in
+`references/doctypes/pr-commit.md`, `references/doctypes/code-comments.md`,
+and `references/doctypes/release-notes.md` that already encodes the
+equivalent discipline in a form that fits their size (e.g. a PR
+description's What/Why/How opens the same way rule 1 asks a README to; a
+single release-notes entry opens with its version/date heading instead of
+a title-plus-paragraph). Follow that doctype's own skeleton for those
+instead of applying the heading-hierarchy and document-metadata rules
+below verbatim; where the two disagree, the doctype reference wins.
 
 ## 1. Say "what this is" and "the outcome" in the first three lines
 

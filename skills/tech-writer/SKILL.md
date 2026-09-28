@@ -162,10 +162,12 @@ hiding them; and keep a last-updated date or target version where
 staleness is a real risk.
 
 For atomic artifacts (commit messages, PR descriptions, issue reports,
-code comments/docstrings), follow their own skeleton in
-`references/doctypes/pr-commit.md` or `references/doctypes/code-comments.md`
-instead — see the scope note in `references/style-constitution.md` for why
-the 8 rules don't apply verbatim there.
+code comments/docstrings, a single entry appended to an existing
+release-notes/CHANGELOG file), follow their own skeleton in
+`references/doctypes/pr-commit.md`, `references/doctypes/code-comments.md`,
+or `references/doctypes/release-notes.md` instead — see the scope note in
+`references/style-constitution.md` for why the 8 rules don't apply
+verbatim there.
 
 Sentence-level concerns — keeping individual sentences concise, avoiding
 double negatives, not dropping the subject, and general naturalness — are
@@ -178,9 +180,10 @@ don't treat it as this skill's responsibility to enforce.
 ## 4. Review — structural check
 
 After writing, work through the following in order. For atomic artifacts
-(commit message, PR description, issue report, code comment/docstring),
-steps 1 and 4 collapse into simply re-reading the short artifact against
-its own doctype skeleton — treat step 2 as the primary check for those.
+(commit message, PR description, issue report, code comment/docstring, a
+single appended release-notes entry), steps 1 and 4 collapse into simply
+re-reading the short artifact against its own doctype skeleton — treat
+step 2 as the primary check for those.
 
 1. **Skeleton read-through, from the reader's seat**: extract just the
    headings and the first sentence of each section, and re-read them as the

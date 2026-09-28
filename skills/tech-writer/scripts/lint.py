@@ -16,13 +16,13 @@ Findings are flags, not mandates: exit code is always 0 regardless of the
 finding count (it's a lint, so it shouldn't block CI). Exit code 1 is
 reserved for the input file being missing or unreadable.
 
-Known deliberate exceptions: files under references/doctypes/ and
-assets/templates/ sometimes *show* an atomic artifact's own skeleton
-(e.g. a PR description that has no H1 title, or prose that mentions bare
-`TODO`/`FIXME` as the concept being discussed). Those files are expected
-to still surface a few findings when linted directly — that's the same
-self-referential/illustrative content the reader is meant to see, not an
-unresolved placeholder or a document missing rule 1's intro paragraph.
+Known deliberate exception: assets/templates/pr-description.md shows an
+atomic artifact's own skeleton (a PR description has no H1 title by
+convention), so linting it directly still surfaces a `missing_intro`
+finding. That's expected — it's the doctype's own atomic form, not a
+document missing rule 1's intro paragraph. If a similar template or
+illustrative reference file is added later and legitimately can't satisfy
+a given check, document it here too rather than leaving it unexplained.
 
 Usage:
     uv run scripts/lint.py <file>
@@ -101,9 +101,16 @@ def parse_fences(lines: list) -> tuple:
     open_len = 0
     open_line = None
 
+    def fence_match(raw_line):
+        # CommonMark/GFM only recognizes a fence indented by at most three
+        # spaces; four or more spaces is indented code, not a fence.
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if indent > 3:
+            return None
+        return FENCE_RE.match(raw_line.strip())
+
     for i, line in enumerate(lines):
-        stripped = line.strip()
-        m = FENCE_RE.match(stripped)
+        m = fence_match(line)
         if open_char is None:
             if m:
                 marker, info = m.group(1), m.group(2).strip()
@@ -229,14 +236,15 @@ def check_links(lines: list, fence_mask: list) -> list:
 
 
 def check_intro_paragraph(lines: list, fence_mask: list) -> list:
-    """Check that the document opens with an H1 title followed immediately
-    by a genuine body paragraph, before any second heading.
+    """Check that the document opens with a non-empty H1 title immediately
+    followed by a genuine body paragraph.
 
     This is a heuristic proxy for structure constitution rule 1 ("say what
-    this is and the outcome up front"). A list item, blockquote, HTML
-    comment, table row, or thematic break does not count as the opening
-    paragraph — only plain prose text does. A leading YAML frontmatter
-    block (e.g. skill metadata) is skipped before this check begins.
+    this is and the outcome up front"). The very first non-blank line after
+    the title must be plain prose — a list item, blockquote, HTML comment,
+    table row, thematic break, or another heading does not count, even if
+    real prose follows it further down. A leading YAML frontmatter block
+    (e.g. skill metadata) is skipped before this check begins.
     """
     start = 0
     if lines and lines[0].strip() == "---":
@@ -255,29 +263,22 @@ def check_intro_paragraph(lines: list, fence_mask: list) -> list:
             continue
         m = HEADING_RE.match(stripped)
         if state == "before_title":
-            if m:
-                if len(m.group(1)) == 1:
-                    state = "after_title"
-                    continue
-                # First heading isn't a top-level title; there's nothing to
-                # anchor an "intro right after the title" check against.
-                break
-            # Prose (or anything else) appeared before any title heading.
+            if m and len(m.group(1)) == 1 and m.group(2).strip():
+                state = "after_title"
+                continue
+            # Either the first heading isn't a non-empty top-level title,
+            # or non-heading content appeared before any title — either way
+            # there's nothing valid to anchor the check against.
             break
-        # state == "after_title"
-        if m:
-            # A second heading appeared before any genuine paragraph.
+        # state == "after_title": the very next non-blank line decides it.
+        if m or NON_PARAGRAPH_RE.match(stripped):
             break
-        if NON_PARAGRAPH_RE.match(stripped):
-            # List item / blockquote / comment / table row / thematic
-            # break: structural, not the reader-facing opening paragraph.
-            continue
         return []
     return [
         Finding(
             line=1,
             category="missing_intro",
-            message="Document must open with a single '#' title heading immediately followed by a plain-prose paragraph (not a list, blockquote, comment, or table) stating what this is and the reader outcome, before the next heading (structure constitution rule 1).",
+            message="Document must open with a non-empty '#' title heading immediately followed by a plain-prose paragraph (not a list, blockquote, comment, table, or another heading) stating what this is and the reader outcome (structure constitution rule 1).",
         )
     ]
 
