@@ -130,4 +130,22 @@ test("the packed npm artifact installs a usable CLI", () => {
       ),
     ),
   );
+  const installedSkill = fs.readFileSync(
+    path.join(
+      consumerDirectory,
+      ".copilot",
+      "skills",
+      "tech-writer",
+      "SKILL.md",
+    ),
+    "utf8",
+  );
+  assert.match(installedSkill, /Rubber-duck review loop/);
+  assert.match(installedSkill, /write mode only/);
+  assert.match(installedSkill, /registered `rubber-duck` agent/);
+  assert.match(installedSkill, /at most five rubber-duck rounds/);
+  assert.match(installedSkill, /run one[\s\S]*round and finish immediately/);
+  assert.match(installedSkill, /review not performed/);
+  assert.match(installedSkill, /review did not converge/);
+  assert.match(installedSkill, /## 6\. Doctype checklist summary/);
 });

@@ -22,6 +22,10 @@ Japanese prose with natural-japanese.
   descriptions/commit messages/issue reports, release notes, user manuals,
   code comments, and Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
+- Iterative rubber-duck review after document creation, with fixes and
+  re-review until no actionable findings remain; unavailable reviews are
+  reported as `review not performed`, while unresolved review loops are
+  reported as `review did not converge`
 - `scripts/lint.py` for mechanical structural checks (heading-level skips,
   code blocks missing a language tag, leftover placeholders, suspicious
   links, etc.); pass `--atomic` for commit messages, PR descriptions, issue

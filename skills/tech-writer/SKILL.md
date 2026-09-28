@@ -62,9 +62,12 @@ first, then hand Japanese prose to natural-japanese for polish.
 Infer the mode from the argument or the request:
 
 - `write` (default): new document, or restructuring a draft. Runs the full
-  §1–§4 workflow, starting with the intake loop in §1.
+  §1–§5 workflow, starting with the intake loop in §1 and ending only after
+  the rubber-duck review loop has no remaining actionable findings. If an
+  independent review cannot run or cannot converge, returns the explicit
+  review status required by §5 instead of claiming a clean review.
 - `review`: structural review of an existing document. Does not rewrite;
-  reports the gap against the doctype checklist (§5).
+  reports the gap against the doctype checklist (§6).
 - `score`: structure-only quick diagnostic. Runs
   `scripts/lint.py --json <file>` and summarizes the findings (no rewrite).
 
@@ -110,7 +113,7 @@ hand the user a checklist to fill in. Instead:
    one-line note) and move on.
 6. **Once complete, do not ask the user to compose anything.** Synthesize
    the gathered answers into the best possible generation approach yourself
-   and immediately continue into §2–§4 in the same turn to produce the
+   and immediately continue into §2–§5 in the same turn to produce the
    document. Skip further confirmation unless the doctype is release-facing
    and consequential (e.g. a public release note with breaking changes) or
    the user explicitly asked to see a plan first.
@@ -221,7 +224,51 @@ step 2 as the primary check for those.
 4. **Reader-goal recheck**: confirm the "what the reader can do after
    reading" outcome from §1 is actually achievable from this document alone.
 
-## 5. Doctype checklist summary
+## 5. Rubber-duck review loop — write mode only
+
+After the structural review in §4, use the host's subagent mechanism to
+launch an independent reviewer in the `rubber-duck` role to challenge the
+completed document for meaningful problems that the authoring pass may have
+missed. Prefer a registered `rubber-duck` agent when the host provides one;
+otherwise use an independent general-purpose or critic-style subagent with
+the same review prompt. Treat the reviewer as unavailable only when the host
+has no independent subagent mechanism. Do not substitute the author's own
+self-review: independence is the point of this pass. This loop is mandatory
+for `write` mode; do not run it for `review` or `score` mode.
+
+1. **Start the review with full context**: give the reviewer the target file,
+   doctype, intended reader, one-sentence reader outcome from §1, and any
+   explicit constraints or assumptions. Ask it to report concrete,
+   actionable problems in correctness, logic, missing information, reader
+   flow, examples, and stated limitations — not cosmetic preferences.
+2. **Resolve every valid finding**: edit the document rather than merely
+   listing proposed fixes. If a finding conflicts with a stated requirement
+   or is factually inapplicable, record a one-line reason for declining it.
+3. **Re-run the relevant checks after each edit round**: repeat the doctype
+   checklist and structural lint from §4 before asking for another
+   rubber-duck review. A fix must not introduce a new structural defect.
+4. **Review again with the prior decisions**: reuse the same reviewer context
+   when supported. Otherwise, include the previous findings, applied fixes,
+   and declined findings with their reasons in every new review prompt. Ask
+   specifically for unresolved or newly introduced actionable findings.
+5. **Use a bounded convergence rule**: allow at most five rubber-duck rounds
+   for a living, multi-section document. For an atomic artifact, run one
+   round and finish immediately if it is clean; only continue after an
+   actionable finding, with a maximum of three rounds. A round is clean only
+   when no unaddressed actionable correctness, logic, completeness,
+   reader-flow, example, or limitation findings remain. A finding declined
+   with a recorded requirement-based or factual reason is a resolved
+   exception rather than an open finding. If another round runs, supply that
+   exception back to the reviewer under step 4. Purely cosmetic preferences
+   are not actionable.
+6. **Report non-clean outcomes precisely**: if the host has no independent
+   reviewer, label the result `review not performed` and do not claim the
+   rubber-duck pass completed. If the round limit is reached with
+   unaddressed actionable findings, or findings oscillate between
+   contradictory requirements, label it `review did not converge` and
+   include the latest unresolved findings and fixes already attempted.
+
+## 6. Doctype checklist summary
 
 See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
