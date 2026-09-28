@@ -8,7 +8,12 @@ Sentence-level naturalness, vocabulary, and rhythm are out of scope here
 
 These 8 rules assume a **living, multi-section reference document** —
 README, design doc/ADR, API reference, release notes/CHANGELOG file as a
-whole, user manual. Apply all 8 rules to those doctypes.
+whole, user manual, Zenn/Qiita article. Apply all 8 rules to those
+doctypes. For Zenn/Qiita specifically, rule 1's "title" lives in YAML
+frontmatter rather than an in-body '#' heading — see their doctype
+reference files for the platform-specific frontmatter fields — but every
+other rule (heading hierarchy starting at '##', code examples, disclosed
+limitations, etc.) still applies verbatim.
 
 **Atomic, single-purpose artifacts** — commit messages, PR descriptions,
 issue reports, code comments/docstrings, and a single new entry appended

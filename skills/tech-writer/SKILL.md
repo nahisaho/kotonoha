@@ -3,13 +3,15 @@ name: tech-writer
 description: >-
   Helps structure and polish technical documents: README, design docs/ADRs,
   API reference, PR descriptions/commit messages/issue reports, release
-  notes/CHANGELOG, user manuals/how-to guides, and code comments/docstrings.
-  Use for requests like "write a README", "draft a design doc", "write this
-  PR description", "clean up my commit message", "make this how-to guide
-  clearer", "write API docs", "summarize the release notes", as well as
+  notes/CHANGELOG, user manuals/how-to guides, code comments/docstrings, and
+  Qiita/Zenn articles. Use for requests like "write a README", "draft a
+  design doc", "write this PR description", "clean up my commit message",
+  "make this how-to guide clearer", "write API docs", "summarize the release
+  notes", "write a Zenn article", "write this up for Qiita", as well as
   Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
   「PRの説明文を書いて」「コミットメッセージを整えて」「手順書を分かりやすくして」
-  「APIドキュメントを整備して」「リリースノートをまとめて」). Especially useful when
+  「APIドキュメントを整備して」「リリースノートをまとめて」「Zennの記事を書いて」
+  「Qiitaに投稿する記事を書いて」). Especially useful when
   the request is a bare goal without enough context to start (e.g. "I want
   to write a README" / "○○を書きたい"), since this skill drives a one
   question-at-a-time intake before writing. Supports both Japanese and
@@ -29,7 +31,15 @@ argument-hint: "[write|review|score] [doctype] <target file or request>"
 Structures technical documents so readers reach the information they need
 with the shortest path. Covers README, design docs/ADRs, API reference, PR
 descriptions/commit messages/issue reports, release notes/CHANGELOG, user
-manuals/how-to guides, and code comments/docstrings.
+manuals/how-to guides, code comments/docstrings, and Qiita/Zenn articles.
+
+Default format: Markdown for every doctype in this skill, except a git
+commit message body (plain text by convention — light "-" bullets are
+fine, but don't add Markdown headings or fenced code there) and code
+comments/docstrings (the target programming language's own comment/
+docstring syntax). Qiita and Zenn use Markdown with a platform-specific
+YAML frontmatter and a few platform extensions on top — see their doctype
+reference files.
 
 ## Division of labor
 
@@ -74,7 +84,10 @@ hand the user a checklist to fill in. Instead:
    commit message, PR description, bug report, or feature request — as
    part of this same first question: `references/doctypes/pr-commit.md`
    gives each a different skeleton and different musts, so don't proceed
-   past this doctype without knowing which one applies.
+   past this doctype without knowing which one applies. Similarly, a bare
+   "write a tech blog post" request doesn't by itself say Qiita, Zenn, or
+   neither — ask which platform (or "no platform, just a plain document")
+   as part of this same first question.
 2. Open the matching reference file and note its target reader and any
    "settle before writing" items. Combined with the general musts below,
    this is your information checklist — but never show it to the user as a
@@ -114,6 +127,8 @@ hand the user a checklist to fill in. Instead:
 | Release notes / CHANGELOG | release-notes | `references/doctypes/release-notes.md` |
 | User manual / how-to guide / tutorial | user-manual | `references/doctypes/user-manual.md` |
 | Code comments / docstrings | code-comments | `references/doctypes/code-comments.md` |
+| Zenn article | zenn | `references/doctypes/zenn.md` |
+| Qiita article | qiita | `references/doctypes/qiita.md` |
 
 For technical documents that don't fit any of these, apply only the general
 principles in `references/style-constitution.md`, using the same
@@ -150,16 +165,19 @@ document and needs the outline step below.
 ## 3. Write — under the structure constitution
 
 For living, multi-section documents (README, design doc, API reference,
-release notes, user manual), write under the 8 rules in
-`references/style-constitution.md`. Summary: state "what this is" and "the
-outcome for the reader" in the first three lines; make headings labels
-that preview content (not "Overview", but "Overview of what"); order steps
-as executed and put prerequisites before the steps; one action per
-numbered step; put a concrete example or number right after any abstract
-term; keep code examples minimal and runnable, marking omissions
-explicitly; disclose known limitations and unsupported cases instead of
-hiding them; and keep a last-updated date or target version where
-staleness is a real risk.
+release notes, user manual, Zenn/Qiita article), write under the 8 rules
+in `references/style-constitution.md`. Summary: state "what this is" and
+"the outcome for the reader" in the first three lines; make headings
+labels that preview content (not "Overview", but "Overview of what");
+order steps as executed and put prerequisites before the steps; one
+action per numbered step; put a concrete example or number right after
+any abstract term; keep code examples minimal and runnable, marking
+omissions explicitly; disclose known limitations and unsupported cases
+instead of hiding them; and keep a last-updated date or target version
+where staleness is a real risk. For Zenn/Qiita, rule 1's "first three
+lines" maps to the frontmatter `title` plus the lead paragraph right
+after it — see their doctype reference files for why there's no in-body
+'#' title.
 
 For atomic artifacts (commit messages, PR descriptions, issue reports,
 code comments/docstrings, a single entry appended to an existing
@@ -207,11 +225,11 @@ step 2 as the primary check for those.
 
 See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
-user manual). Atomic artifacts (commit message, PR description, issue
-report, code comment/docstring, a single appended release-notes entry) are
-already covered by their own doctype checklist via step 2 in §4 — these
-common items don't add extra requirements on top of that. Common items to
-confirm:
+user manual, Zenn/Qiita article). Atomic artifacts (commit message, PR
+description, issue report, code comment/docstring, a single appended
+release-notes entry) are already covered by their own doctype checklist
+via step 2 in §4 — these common items don't add extra requirements on top
+of that. Common items to confirm:
 
 - Do the first three lines convey the purpose and target reader?
 - Does reading only the headings trace the whole document's flow?

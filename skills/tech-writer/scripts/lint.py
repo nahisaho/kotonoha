@@ -78,6 +78,10 @@ NON_PARAGRAPH_RE = re.compile(
 )
 # CommonMark indented code block: 4+ leading spaces or a leading tab.
 INDENTED_CODE_RE = re.compile(r"^(?: {4,}|\t)\S")
+# A YAML frontmatter field named "title" with a non-empty value, e.g. a
+# Zenn/Qiita article's `title: "..."` (the platform renders this as the
+# page title, so the body conventionally has no in-body '#' heading).
+TITLE_FIELD_RE = re.compile(r'^title:\s*(["\']?)\S')
 
 
 def strip_inline_code(line: str) -> str:
@@ -248,17 +252,27 @@ def check_intro_paragraph(lines: list, fence_mask: list) -> list:
     the title must be plain prose — a list item, blockquote, HTML comment,
     table row, thematic break, another heading, a fenced code block, or
     indented code does not count, even if real prose follows it further
-    down. A leading YAML frontmatter block (e.g. skill metadata) is skipped
-    before this check begins; fenced code is only skipped while still
-    searching for the title itself (a heading can't appear inside one).
+    down. A leading YAML frontmatter block (e.g. skill metadata, or a
+    platform frontmatter with its own `title:` field such as Zenn/Qiita) is
+    skipped before this check begins; fenced code is only skipped while
+    still searching for the title itself (a heading can't appear inside
+    one).
+
+    A frontmatter block that already carries a non-empty `title:` field
+    counts as satisfying the title requirement on its own — those platforms
+    render that field as the page/article title and conventionally don't
+    repeat it as an in-body '#' heading.
     """
     start = 0
+    frontmatter_has_title = False
     if lines and lines[0].strip() == "---":
         for j in range(1, len(lines)):
             if lines[j].strip() == "---":
                 start = j + 1
                 break
-    state = "before_title"
+            if TITLE_FIELD_RE.match(lines[j]):
+                frontmatter_has_title = True
+    state = "after_title" if frontmatter_has_title else "before_title"
     for i, line in enumerate(lines):
         if i < start:
             continue

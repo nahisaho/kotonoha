@@ -3,8 +3,8 @@
 kotonoha provides `tech-writer`, a GitHub Copilot CLI skill that helps
 structure and polish technical documents. It covers README, design
 docs/ADRs, API reference, PR descriptions/commit messages/issue reports,
-release notes, user manuals/how-to guides, and code comments, structured so
-readers never get lost.
+release notes, user manuals/how-to guides, code comments, and Qiita/Zenn
+articles, structured so readers never get lost.
 
 ## What tech-writer solves
 
@@ -20,11 +20,15 @@ Japanese prose with natural-japanese.
 
 - Create/review README, design docs/ADRs, API reference, PR
   descriptions/commit messages/issue reports, release notes, user manuals,
-  and code comments
+  code comments, and Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
 - `scripts/lint.py` for mechanical structural checks (heading-level skips,
   code blocks missing a language tag, leftover placeholders, suspicious
-  links, etc.)
+  links, etc.); pass `--atomic` for commit messages, PR descriptions, issue
+  reports, code comments, and single release-notes entries
+- Markdown as the default format for every doctype, except a commit
+  message body (plain text by convention) and code comments/docstrings
+  (the target programming language's own syntax)
 - Japanese as the primary target language, with English document support
 
 ## Setup
@@ -72,7 +76,7 @@ works too (standard library only).
 skills/tech-writer/          # the skill itself
   SKILL.md                   # skill definition
   references/                # structure constitution + doctype rules/checklists
-  references/doctypes/       # README, design doc, API docs, PR/issue, release notes, manual, comments
+  references/doctypes/       # README, design doc, API docs, PR/issue, release notes, manual, comments, Qiita/Zenn
   scripts/lint.py            # structural lint script
   assets/templates/          # skeleton templates for the main doctypes
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
