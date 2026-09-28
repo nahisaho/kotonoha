@@ -1,0 +1,35 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.1] - 2026-09-28
+
+### Added
+
+- Add the `kotonoha install` CLI for installing `tech-writer` into a
+  project or user skill directory.
+- Add `--target` for selecting a skill directory and `--force` for
+  explicitly replacing an existing installation.
+- Add automated tests for default installation, overwrite protection,
+  forced replacement, and installation from the packed npm artifact.
+
+### Changed
+
+- Document separate npm and source-checkout installation workflows in the
+  README.
+
+## [0.1.0] - 2026-09-28
+
+### Added
+
+- Publish the initial `tech-writer` skill for structuring README files,
+  design documents, API references, PR and issue text, release notes,
+  user manuals, code comments, and Qiita and Zenn articles.
+- Add structural linting for headings, code fences, placeholders, and
+  suspicious links.
+
+[0.1.1]: https://github.com/nahisaho/kotonoha/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/nahisaho/kotonoha/releases/tag/v0.1.0

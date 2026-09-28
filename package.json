@@ -30,6 +30,7 @@
     "markdown"
   ],
   "files": [
+    "CHANGELOG.md",
     "bin/",
     "skills/"
   ]
