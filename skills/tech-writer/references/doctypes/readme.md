@@ -1,5 +1,8 @@
 # README type
 
+The recommended skeleton and checklist for a project README: the document
+most readers see first, and the one that decides whether they keep reading.
+
 ## Target reader
 
 Someone visiting this repository for the first time. They want to judge
@@ -16,8 +19,11 @@ Someone visiting this repository for the first time. They want to judge
 4. **Install / setup**: a command sequence that runs as copy-pasted.
    Prerequisites (versions, OS, permissions) go in a separate section
    *before* the steps.
-5. **Usage / quickstart**: the smallest successful experience (a "hello
-   world" equivalent) first. Move advanced usage to a separate section.
+5. **Quickstart, headed with what it does**: the smallest successful
+   experience (a "hello world" equivalent) first, under a heading that
+   previews the concrete task (e.g. "Send your first request"), not the
+   generic label "Usage" (structure constitution rule 2). Move advanced
+   usage to a separate, similarly specific heading.
 6. **Configuration / options** (if applicable): a table (key, default,
    description).
 7. **Known limitations / what's not supported**: don't omit this.
@@ -29,8 +35,9 @@ Someone visiting this repository for the first time. They want to judge
       this does"?
 - [ ] Do the install steps run top-to-bottom via copy-paste (no
       prerequisite hidden mid-steps)?
-- [ ] Is "Usage" the smallest successful experience, not an exhaustive
-      feature list?
+- [ ] Is the quickstart section headed with a specific, task-previewing
+      label instead of the generic "Usage", and does it show the smallest
+      successful experience rather than an exhaustive feature list?
 - [ ] Do badges/acknowledgments/license come after the main content, not
       before it?
 - [ ] Does a known-limitations section exist?

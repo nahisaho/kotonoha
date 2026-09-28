@@ -1,5 +1,8 @@
 # Release notes / CHANGELOG type
 
+The recommended skeleton and checklist for a per-version changelog entry,
+written for a reader deciding whether and how to upgrade.
+
 ## Target reader
 
 An existing user deciding whether to upgrade. Reading time: seconds to a

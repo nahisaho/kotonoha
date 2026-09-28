@@ -1,5 +1,9 @@
 # API reference type
 
+The recommended skeleton and checklist for endpoint/function-level
+reference documentation, optimized for a developer who wants to get a
+first call working.
+
 ## Target reader
 
 A developer who wants to call this API from their own code. The goal is

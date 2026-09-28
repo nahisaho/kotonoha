@@ -16,6 +16,14 @@ Findings are flags, not mandates: exit code is always 0 regardless of the
 finding count (it's a lint, so it shouldn't block CI). Exit code 1 is
 reserved for the input file being missing or unreadable.
 
+Known deliberate exceptions: files under references/doctypes/ and
+assets/templates/ sometimes *show* an atomic artifact's own skeleton
+(e.g. a PR description that has no H1 title, or prose that mentions bare
+`TODO`/`FIXME` as the concept being discussed). Those files are expected
+to still surface a few findings when linted directly — that's the same
+self-referential/illustrative content the reader is meant to see, not an
+unresolved placeholder or a document missing rule 1's intro paragraph.
+
 Usage:
     uv run scripts/lint.py <file>
     uv run scripts/lint.py --json <file>
@@ -57,15 +65,85 @@ GENERIC_HEADINGS = {
     "overview", "introduction", "usage", "notes", "misc", "others",
     "概要", "はじめに", "使い方", "使用方法", "注意点", "注意事項", "その他", "補足",
 }
-CODE_FENCE_RE = re.compile(r"^(```|~~~)(\w*)\s*$")
+# A fence marker is 3+ backticks or 3+ tildes, optionally followed by an
+# info string (e.g. the language). CommonMark requires the closing fence to
+# use the same character and be at least as long as the opener, with no
+# info string of its own.
+FENCE_RE = re.compile(r"^(`{3,}|~{3,})(.*)$")
 PLACEHOLDER_RE = re.compile(r"\b(TODO|FIXME|TBD|XXX)\b", re.IGNORECASE)
 MD_LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
+INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
+NON_PARAGRAPH_RE = re.compile(
+    r"^(?:[-*+]\s|\d+[.)]\s|>|<!--|\|)|^(?:-{3,}|\*{3,}|_{3,})$"
+)
 
 
-def check_heading_hierarchy(lines: list) -> list:
+def strip_inline_code(line: str) -> str:
+    """Blank out inline `code span` contents so placeholder/link checks
+    don't fire on tokens that are only being *mentioned* as code, not left
+    unresolved in prose (e.g. a doctype guide showing `TODO(#123): ...` as
+    an example of the correct form)."""
+    return INLINE_CODE_RE.sub(lambda m: " " * len(m.group(0)), line)
+
+
+def parse_fences(lines: list) -> tuple:
+    """Scan for fenced code blocks.
+
+    Returns (findings, fence_mask) where fence_mask[i] is True when line i
+    (0-based) is part of a fenced code block (opening/closing marker or
+    content in between). Other checks should skip masked lines so that
+    headings, TODOs, or links written *inside* example code blocks aren't
+    mistaken for real document structure.
+    """
+    findings = []
+    fence_mask = [False] * len(lines)
+    open_char = None
+    open_len = 0
+    open_line = None
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        m = FENCE_RE.match(stripped)
+        if open_char is None:
+            if m:
+                marker, info = m.group(1), m.group(2).strip()
+                open_char, open_len, open_line = marker[0], len(marker), i + 1
+                fence_mask[i] = True
+                if not info:
+                    findings.append(
+                        Finding(
+                            line=i + 1,
+                            category="code_fence_no_lang",
+                            message="Code block has no language tag (recommended for syntax highlighting and copy detection).",
+                            snippet=line.strip(),
+                        )
+                    )
+            continue
+
+        fence_mask[i] = True
+        if m:
+            marker, info = m.group(1), m.group(2).strip()
+            is_closing = marker[0] == open_char and len(marker) >= open_len and not info
+            if is_closing:
+                open_char, open_len, open_line = None, 0, None
+
+    if open_char is not None:
+        findings.append(
+            Finding(
+                line=open_line or 0,
+                category="unclosed_code_fence",
+                message="A code block may not be closed.",
+            )
+        )
+    return findings, fence_mask
+
+
+def check_heading_hierarchy(lines: list, fence_mask: list) -> list:
     findings = []
     prev_level = 0
-    for i, line in enumerate(lines, start=1):
+    for i, line in enumerate(lines):
+        if fence_mask[i]:
+            continue
         m = HEADING_RE.match(line)
         if not m:
             continue
@@ -74,7 +152,7 @@ def check_heading_hierarchy(lines: list) -> list:
         if prev_level and level > prev_level + 1:
             findings.append(
                 Finding(
-                    line=i,
+                    line=i + 1,
                     category="heading_skip",
                     message=f"Heading level jumps from H{prev_level} to H{level}.",
                     snippet=line.strip(),
@@ -84,7 +162,7 @@ def check_heading_hierarchy(lines: list) -> list:
         if stripped in GENERIC_HEADINGS:
             findings.append(
                 Finding(
-                    line=i,
+                    line=i + 1,
                     category="generic_heading",
                     message="Generic heading label; make it preview the content instead (structure constitution rule 2).",
                     snippet=line.strip(),
@@ -94,63 +172,45 @@ def check_heading_hierarchy(lines: list) -> list:
     return findings
 
 
-def check_code_fences(lines: list) -> list:
+def check_placeholders(lines: list, fence_mask: list) -> list:
     findings = []
-    open_fence = None
-    open_line = None
-    for i, line in enumerate(lines, start=1):
-        m = CODE_FENCE_RE.match(line.strip())
-        if m and open_fence is None:
-            open_fence = m.group(1)
-            open_line = i
-            lang = m.group(2)
-            if not lang:
-                findings.append(
-                    Finding(
-                        line=i,
-                        category="code_fence_no_lang",
-                        message="Code block has no language tag (recommended for syntax highlighting and copy detection).",
-                        snippet=line.strip(),
-                    )
-                )
-        elif m and open_fence is not None and m.group(1) == open_fence:
-            open_fence = None
-            open_line = None
-    if open_fence is not None:
-        findings.append(
-            Finding(
-                line=open_line or 0,
-                category="unclosed_code_fence",
-                message="A code block may not be closed.",
-            )
-        )
-    return findings
-
-
-def check_placeholders(lines: list) -> list:
-    findings = []
-    for i, line in enumerate(lines, start=1):
-        for m in PLACEHOLDER_RE.finditer(line):
+    for i, line in enumerate(lines):
+        if fence_mask[i]:
+            continue
+        checked = strip_inline_code(line)
+        for m in PLACEHOLDER_RE.finditer(checked):
+            # A justified/tracked marker like "TODO(#123): ..." documents a
+            # reason and a tracking reference, which is exactly what this
+            # skill's own guidance asks for — don't flag that form. An empty
+            # "TODO()" carries no reason at all, so it still gets flagged.
+            if checked[m.end():m.end() + 1] == "(":
+                close_idx = checked.find(")", m.end())
+                content = checked[m.end() + 1:close_idx] if close_idx != -1 else ""
+                if content.strip():
+                    continue
             findings.append(
                 Finding(
-                    line=i,
+                    line=i + 1,
                     category="placeholder",
-                    message=f"Unresolved placeholder '{m.group(1)}' remains; resolve before publishing.",
+                    message=f"Unresolved placeholder '{m.group(1)}' remains without a reason/tracking reference; resolve before publishing.",
                     snippet=line.strip(),
                 )
             )
     return findings
 
 
-def check_links(lines: list) -> list:
+def check_links(lines: list, fence_mask: list) -> list:
     findings = []
-    for i, line in enumerate(lines, start=1):
-        for m in MD_LINK_RE.finditer(line):
+    for i, line in enumerate(lines):
+        if fence_mask[i]:
+            continue
+        checked = strip_inline_code(line)
+        for m in MD_LINK_RE.finditer(checked):
             text, target = m.group(1), m.group(2)
             if not text.strip():
                 findings.append(
                     Finding(
-                        line=i,
+                        line=i + 1,
                         category="empty_link_text",
                         message="Link text is empty. Avoid content-free link text like 'here'/'こちら' too.",
                         snippet=line.strip(),
@@ -159,7 +219,7 @@ def check_links(lines: list) -> list:
             if target.strip() in ("#", "", "javascript:void(0)"):
                 findings.append(
                     Finding(
-                        line=i,
+                        line=i + 1,
                         category="dead_link_placeholder",
                         message="Link target is still an unset placeholder.",
                         snippet=line.strip(),
@@ -168,43 +228,70 @@ def check_links(lines: list) -> list:
     return findings
 
 
-def check_intro_length(lines: list) -> list:
-    """Quick check that the opening non-empty lines exist (structure constitution rule 1)."""
-    findings = []
-    body_started = False
-    first_para_lines = []
-    for i, line in enumerate(lines, start=1):
+def check_intro_paragraph(lines: list, fence_mask: list) -> list:
+    """Check that the document opens with an H1 title followed immediately
+    by a genuine body paragraph, before any second heading.
+
+    This is a heuristic proxy for structure constitution rule 1 ("say what
+    this is and the outcome up front"). A list item, blockquote, HTML
+    comment, table row, or thematic break does not count as the opening
+    paragraph — only plain prose text does. A leading YAML frontmatter
+    block (e.g. skill metadata) is skipped before this check begins.
+    """
+    start = 0
+    if lines and lines[0].strip() == "---":
+        for j in range(1, len(lines)):
+            if lines[j].strip() == "---":
+                start = j + 1
+                break
+    state = "before_title"
+    for i, line in enumerate(lines):
+        if i < start:
+            continue
+        if fence_mask[i]:
+            continue
         stripped = line.strip()
         if not stripped:
-            if body_started:
+            continue
+        m = HEADING_RE.match(stripped)
+        if state == "before_title":
+            if m:
+                if len(m.group(1)) == 1:
+                    state = "after_title"
+                    continue
+                # First heading isn't a top-level title; there's nothing to
+                # anchor an "intro right after the title" check against.
                 break
-            continue
-        if HEADING_RE.match(stripped) and not body_started:
-            continue
-        body_started = True
-        first_para_lines.append((i, stripped))
-        if len(first_para_lines) >= 3:
+            # Prose (or anything else) appeared before any title heading.
             break
-    if not first_para_lines:
-        findings.append(
-            Finding(
-                line=1,
-                category="missing_intro",
-                message="No opening body text found. State 'what this is' within the first three lines (structure constitution rule 1).",
-            )
+        # state == "after_title"
+        if m:
+            # A second heading appeared before any genuine paragraph.
+            break
+        if NON_PARAGRAPH_RE.match(stripped):
+            # List item / blockquote / comment / table row / thematic
+            # break: structural, not the reader-facing opening paragraph.
+            continue
+        return []
+    return [
+        Finding(
+            line=1,
+            category="missing_intro",
+            message="Document must open with a single '#' title heading immediately followed by a plain-prose paragraph (not a list, blockquote, comment, or table) stating what this is and the reader outcome, before the next heading (structure constitution rule 1).",
         )
-    return findings
+    ]
 
 
 def run_lint(path: Path) -> LintResult:
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
     result = LintResult(file=str(path))
-    result.findings.extend(check_heading_hierarchy(lines))
-    result.findings.extend(check_code_fences(lines))
-    result.findings.extend(check_placeholders(lines))
-    result.findings.extend(check_links(lines))
-    result.findings.extend(check_intro_length(lines))
+    fence_findings, fence_mask = parse_fences(lines)
+    result.findings.extend(fence_findings)
+    result.findings.extend(check_heading_hierarchy(lines, fence_mask))
+    result.findings.extend(check_placeholders(lines, fence_mask))
+    result.findings.extend(check_links(lines, fence_mask))
+    result.findings.extend(check_intro_paragraph(lines, fence_mask))
     result.findings.sort(key=lambda f: f.line)
     return result
 

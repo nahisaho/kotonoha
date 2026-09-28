@@ -69,7 +69,12 @@ without enough context to start. Do not front-load a long questionnaire or
 hand the user a checklist to fill in. Instead:
 
 1. **Determine the doctype first**, from the table below. If the request
-   itself doesn't make it clear, that ambiguity is your first question.
+   itself doesn't make it clear, that ambiguity is your first question. If
+   the table maps the request to `pr-commit`, resolve the **subtype** —
+   commit message, PR description, bug report, or feature request — as
+   part of this same first question: `references/doctypes/pr-commit.md`
+   gives each a different skeleton and different musts, so don't proceed
+   past this doctype without knowing which one applies.
 2. Open the matching reference file and note its target reader and any
    "settle before writing" items. Combined with the general musts below,
    this is your information checklist — but never show it to the user as a
@@ -80,17 +85,23 @@ hand the user a checklist to fill in. Instead:
    one message.
 4. Stop asking once you have, at minimum: (a) the reader, (b) the
    one-sentence outcome the reader should reach after reading, (c) the
-   doctype (already known from step 1), and (d) any doctype-specific
+   doctype (and subtype, for `pr-commit`), and (d) any doctype-specific
    musts (e.g. the decision and alternatives for a design doc, the
    prior-knowledge floor for a user manual, breaking-change status for
-   release notes, the related issue for a PR description).
-5. **Once complete, do not ask the user to compose anything.** Synthesize
+   release notes, the related issue for a PR description or bug report).
+5. **A "don't know" / "not applicable" / "no ticket for this" answer
+   satisfies a must — it is not a reason to keep asking.** Ask that must
+   at most once; if the answer is a non-answer, record it as a stated
+   assumption or an open question inside the document itself (design docs
+   already have an Open Questions section for this; for others, add a
+   one-line note) and move on.
+6. **Once complete, do not ask the user to compose anything.** Synthesize
    the gathered answers into the best possible generation approach yourself
    and immediately continue into §2–§4 in the same turn to produce the
    document. Skip further confirmation unless the doctype is release-facing
    and consequential (e.g. a public release note with breaking changes) or
    the user explicitly asked to see a plan first.
-6. If the user already volunteered some of this information in the initial
+7. If the user already volunteered some of this information in the initial
    request, skip the corresponding question — don't re-ask what's already
    known.
 
@@ -127,30 +138,49 @@ user calls "long"/"detailed"/"comprehensive" — draft a table of contents
 3. Only once the outline holds up under that reader-perspective read-through
    should you write the body, section by section.
 
-Skip this step for inherently short documents (a single commit message, a
-short PR description, a short release-notes entry) and draft directly under
-§3.
+Skip this step for inherently short, atomic artifacts (a single commit
+message, a short PR description, one new entry appended to an existing
+release-notes/CHANGELOG file, a code comment/docstring) and draft directly
+under §3 — see the scope note at the top of
+`references/style-constitution.md`. This exception is about a single
+*entry*, not the release-notes/CHANGELOG document as a whole: a CHANGELOG
+being drafted or restructured from scratch is still a living, multi-section
+document and needs the outline step below.
 
 ## 3. Write — under the structure constitution
 
-Write under the 8 rules in `references/style-constitution.md`. Summary: state
-"what this is" and "the outcome for the reader" in the first three lines;
-make headings labels that preview content (not "Overview", but "Overview of
-what"); order steps as executed and put prerequisites before the steps;
-one action per numbered step; put a concrete example or number right after
-any abstract term; keep code examples minimal and runnable, marking
-omissions explicitly; disclose known limitations and unsupported cases
-instead of hiding them; and keep a last-updated date or target version in
-the document.
+For living, multi-section documents (README, design doc, API reference,
+release notes, user manual), write under the 8 rules in
+`references/style-constitution.md`. Summary: state "what this is" and "the
+outcome for the reader" in the first three lines; make headings labels
+that preview content (not "Overview", but "Overview of what"); order steps
+as executed and put prerequisites before the steps; one action per
+numbered step; put a concrete example or number right after any abstract
+term; keep code examples minimal and runnable, marking omissions
+explicitly; disclose known limitations and unsupported cases instead of
+hiding them; and keep a last-updated date or target version where
+staleness is a real risk.
 
-When writing in Japanese, also prioritize concision and clarity on top of
-the above: avoid overly long sentences, avoid double negatives, and don't
-drop the subject (especially important in technical Japanese). Sentence-level
-polish is left to a paired skill such as natural-japanese.
+For atomic artifacts (commit messages, PR descriptions, issue reports,
+code comments/docstrings), follow their own skeleton in
+`references/doctypes/pr-commit.md` or `references/doctypes/code-comments.md`
+instead — see the scope note in `references/style-constitution.md` for why
+the 8 rules don't apply verbatim there.
+
+Sentence-level concerns — keeping individual sentences concise, avoiding
+double negatives, not dropping the subject, and general naturalness — are
+out of this skill's scope regardless of doctype. When natural-japanese (or
+an equivalent prose-polishing skill) is available, hand Japanese prose to
+it for that pass; otherwise apply ordinary careful-writing judgment, but
+don't treat it as this skill's responsibility to enforce.
+
 
 ## 4. Review — structural check
 
-After writing, work through the following in order:
+After writing, work through the following in order. For atomic artifacts
+(commit message, PR description, issue report, code comment/docstring),
+steps 1 and 4 collapse into simply re-reading the short artifact against
+its own doctype skeleton — treat step 2 as the primary check for those.
 
 1. **Skeleton read-through, from the reader's seat**: extract just the
    headings and the first sentence of each section, and re-read them as the
@@ -162,7 +192,7 @@ After writing, work through the following in order:
    matching reference file.
 3. **Structural lint**: where possible, run `uv run scripts/lint.py <file>`
    to mechanically catch heading-level skips, code blocks missing a
-   language tag, leftover TODO/placeholders, and suspicious links. Findings
+   language tag, leftover placeholders, and suspicious links. Findings
    are flags, not mandates — deliberate exceptions can stay; note the reason
    briefly.
 4. **Reader-goal recheck**: confirm the "what the reader can do after
@@ -170,14 +200,20 @@ After writing, work through the following in order:
 
 ## 5. Doctype checklist summary
 
-See each reference file for detail. Common items to confirm:
+See each reference file for detail. The items below are for living,
+multi-section documents (README, design doc, API reference, release notes,
+user manual). Atomic artifacts (commit message, PR description, issue
+report, code comment/docstring) are already covered by their own doctype
+checklist via step 2 in §4 — these common items don't add extra
+requirements on top of that. Common items to confirm:
 
 - Do the first three lines convey the purpose and target reader?
 - Does reading only the headings trace the whole document's flow?
 - Are prerequisites/dependencies stated before the usage steps?
 - Can code/command examples be copied and run as-is?
 - Are known limitations/unsupported cases/caveats stated, not omitted?
-- (Where relevant) Is the version/last-updated date/target branch stated?
+- Where staleness is a real risk, is the version/last-updated date/target
+  branch stated?
 
 ## Acknowledgment
 

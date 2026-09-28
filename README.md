@@ -49,7 +49,7 @@ that repository's `.github/skills/`, `.claude/skills/`, or your global
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 ```
 
-## Usage
+## Ask Copilot for the document you need
 
 Just ask for the document type you need in a Copilot CLI session, and it's
 invoked automatically.
@@ -68,7 +68,7 @@ works too (standard library only).
 
 ## Repository layout
 
-```
+```text
 skills/tech-writer/          # the skill itself
   SKILL.md                   # skill definition
   references/                # structure constitution + doctype rules/checklists

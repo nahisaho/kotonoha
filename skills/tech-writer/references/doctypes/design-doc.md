@@ -1,5 +1,9 @@
 # Design doc / ADR / RFC type
 
+The recommended skeleton and checklist for a design decision record: a
+document meant to earn a reviewer's agreement now and explain the "why" to
+someone reading it long after the decision was made.
+
 ## Target reader
 
 Someone reviewing to reach a decision, or someone later tracing the history

@@ -4,6 +4,21 @@ Constraints to fix a technical document's *structure* before writing.
 Sentence-level naturalness, vocabulary, and rhythm are out of scope here
 (→ the domain of a prose-polishing skill such as natural-japanese).
 
+## Scope: living documents vs. atomic artifacts
+
+These 8 rules assume a **living, multi-section reference document** —
+README, design doc/ADR, API reference, release notes, user manual. Apply
+all 8 rules to those doctypes.
+
+**Atomic, single-purpose artifacts** — commit messages, PR descriptions,
+issue reports, and code comments/docstrings — have their own skeleton in
+`references/doctypes/pr-commit.md` and `references/doctypes/code-comments.md`
+that already encodes the equivalent discipline in a form that fits their
+size (e.g. a PR description's What/Why/How opens the same way rule 1 asks
+a README to). Follow that doctype's own skeleton for those instead of
+applying the heading-hierarchy and document-metadata rules below verbatim;
+where the two disagree, the doctype reference wins.
+
 ## 1. Say "what this is" and "the outcome" in the first three lines
 
 Readers decide "is this relevant to me" within the first three lines. Don't
@@ -55,8 +70,12 @@ they realize it's broken. When omitting something, mark it explicitly (e.g.
 document's value — it prevents the reader's wasted effort. State it in its
 own section instead of omitting it.
 
-## 8. Keep a last-updated date or target version/branch in the document
+## 8. Keep a last-updated date or target version/branch where staleness is a real risk
 
-A technical document starts going stale the moment it's written. A document
-that doesn't say when or against what version it was written forces the
-reader to pay an extra verification cost: "is this still accurate?"
+A living reference document (README, design doc, API reference, user
+manual) starts going stale the moment it's written. When such a document
+could plausibly be read long after it stops being accurate, state when or
+against what version/branch it was written, so the reader doesn't pay an
+extra verification cost of "is this still accurate?" Skip this rule for
+artifacts whose own metadata already carries that information (a commit
+timestamp, a PR's merge date, a versioned release-notes heading).

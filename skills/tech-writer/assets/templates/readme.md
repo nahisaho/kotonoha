@@ -23,7 +23,7 @@
 <Command(s) that run as copy-pasted>
 ```
 
-## Usage
+## <Verb-first heading naming the smallest successful experience, e.g. "Generate your first README">
 
 ```bash
 <Command/code showing the smallest successful experience>

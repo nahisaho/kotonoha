@@ -1,5 +1,7 @@
 # <Noun phrase naming the decision>
 
+<One-paragraph summary: the decision being proposed and why it matters now.>
+
 - Status: Proposed / Accepted / Rejected / Superseded
 - Date: <YYYY-MM-DD>
 
