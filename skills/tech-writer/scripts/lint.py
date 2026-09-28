@@ -3,16 +3,20 @@
 # requires-python = ">=3.9"
 # dependencies = []
 # ///
-"""tech-writer skill: 技術文書の"構成"を機械的にチェックするlintスクリプト。
+"""tech-writer skill: a lint script that mechanically checks a technical
+document's *structure*.
 
-natural-japanese の lint.py が文単位の自然さ(語彙・リズム)を検出するのに対し、
-本スクリプトは技術文書としての構成的な問題(見出し階層・コード例・プレースホルダの
-残存・リンク切れの疑いなど)のみを検出する。役割は重複させない。
+Where natural-japanese's lint.py detects sentence-level naturalness
+(vocabulary, rhythm), this script only detects structural problems specific
+to technical documents (heading hierarchy, code examples, leftover
+placeholders, suspicious links). The two scripts intentionally don't
+overlap in scope.
 
-検出結果は指摘であり、件数に関わらず exit code 0 を返す(lintなのでCIを止めない)。
-入力ファイルが存在しない/読めない場合のみ exit code 1。
+Findings are flags, not mandates: exit code is always 0 regardless of the
+finding count (it's a lint, so it shouldn't block CI). Exit code 1 is
+reserved for the input file being missing or unreadable.
 
-使い方:
+Usage:
     uv run scripts/lint.py <file>
     uv run scripts/lint.py --json <file>
 """
@@ -48,9 +52,10 @@ class LintResult:
 
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
+# Generic heading labels that read as content-free in either language.
 GENERIC_HEADINGS = {
-    "概要", "はじめに", "使い方", "使用方法", "注意点", "注意事項", "その他", "補足",
     "overview", "introduction", "usage", "notes", "misc", "others",
+    "概要", "はじめに", "使い方", "使用方法", "注意点", "注意事項", "その他", "補足",
 }
 CODE_FENCE_RE = re.compile(r"^(```|~~~)(\w*)\s*$")
 PLACEHOLDER_RE = re.compile(r"\b(TODO|FIXME|TBD|XXX)\b", re.IGNORECASE)
@@ -71,7 +76,7 @@ def check_heading_hierarchy(lines: list) -> list:
                 Finding(
                     line=i,
                     category="heading_skip",
-                    message=f"見出しレベルが H{prev_level} から H{level} へ飛んでいます。",
+                    message=f"Heading level jumps from H{prev_level} to H{level}.",
                     snippet=line.strip(),
                 )
             )
@@ -81,7 +86,7 @@ def check_heading_hierarchy(lines: list) -> list:
                 Finding(
                     line=i,
                     category="generic_heading",
-                    message="見出しが汎用ラベルです。内容を予告する見出しに具体化してください(構成憲法2条)。",
+                    message="Generic heading label; make it preview the content instead (structure constitution rule 2).",
                     snippet=line.strip(),
                 )
             )
@@ -104,7 +109,7 @@ def check_code_fences(lines: list) -> list:
                     Finding(
                         line=i,
                         category="code_fence_no_lang",
-                        message="コードブロックに言語指定がありません(シンタックスハイライトとコピー時の判別のため推奨)。",
+                        message="Code block has no language tag (recommended for syntax highlighting and copy detection).",
                         snippet=line.strip(),
                     )
                 )
@@ -116,7 +121,7 @@ def check_code_fences(lines: list) -> list:
             Finding(
                 line=open_line or 0,
                 category="unclosed_code_fence",
-                message="コードブロックが閉じられていない可能性があります。",
+                message="A code block may not be closed.",
             )
         )
     return findings
@@ -130,7 +135,7 @@ def check_placeholders(lines: list) -> list:
                 Finding(
                     line=i,
                     category="placeholder",
-                    message=f"未解決のプレースホルダ '{m.group(1)}' が残っています。公開前に解消してください。",
+                    message=f"Unresolved placeholder '{m.group(1)}' remains; resolve before publishing.",
                     snippet=line.strip(),
                 )
             )
@@ -147,7 +152,7 @@ def check_links(lines: list) -> list:
                     Finding(
                         line=i,
                         category="empty_link_text",
-                        message="リンクテキストが空です。'こちら'のような無内容なリンクテキストも避けてください。",
+                        message="Link text is empty. Avoid content-free link text like 'here'/'こちら' too.",
                         snippet=line.strip(),
                     )
                 )
@@ -156,7 +161,7 @@ def check_links(lines: list) -> list:
                     Finding(
                         line=i,
                         category="dead_link_placeholder",
-                        message="リンク先が未設定のプレースホルダのままです。",
+                        message="Link target is still an unset placeholder.",
                         snippet=line.strip(),
                     )
                 )
@@ -164,7 +169,7 @@ def check_links(lines: list) -> list:
 
 
 def check_intro_length(lines: list) -> list:
-    """先頭の非空行が短すぎ/長すぎないかの簡易チェック(構成憲法1条)。"""
+    """Quick check that the opening non-empty lines exist (structure constitution rule 1)."""
     findings = []
     body_started = False
     first_para_lines = []
@@ -185,7 +190,7 @@ def check_intro_length(lines: list) -> list:
             Finding(
                 line=1,
                 category="missing_intro",
-                message="冒頭に本文が見当たりません。最初の3行で「これは何か」を言い切ってください(構成憲法1条)。",
+                message="No opening body text found. State 'what this is' within the first three lines (structure constitution rule 1).",
             )
         )
     return findings
@@ -205,9 +210,9 @@ def run_lint(path: Path) -> LintResult:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="tech-writer 構成lint")
-    parser.add_argument("file", type=str, help="対象のMarkdownファイル")
-    parser.add_argument("--json", action="store_true", help="JSON形式で出力する")
+    parser = argparse.ArgumentParser(description="tech-writer structural lint")
+    parser.add_argument("file", type=str, help="Target Markdown file")
+    parser.add_argument("--json", action="store_true", help="Output as JSON")
     args = parser.parse_args()
 
     path = Path(args.file)
@@ -225,9 +230,9 @@ def main() -> int:
         print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
     else:
         if not result.findings:
-            print(f"{path}: 構成上の指摘はありませんでした。")
+            print(f"{path}: no structural findings.")
         else:
-            print(f"{path}: {len(result.findings)} 件の指摘")
+            print(f"{path}: {len(result.findings)} finding(s)")
             for f in result.findings:
                 print(f"  L{f.line} [{f.category}] {f.message}")
                 if f.snippet:

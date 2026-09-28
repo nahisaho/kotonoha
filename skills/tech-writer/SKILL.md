@@ -1,82 +1,141 @@
 ---
 name: tech-writer
 description: >-
-  技術文書の構成・型・仕上げを支援するスキル。README・設計ドキュメント/ADR・API仕様書・PR説明文/コミットメッセージ/issueレポート・リリースノート/CHANGELOG・ユーザーマニュアル/手順書・コードコメント/docstring
-  の新規作成、改善、レビューのいずれでも使用する。「READMEを書いて」「設計ドキュメントを作って」「このPRの説明文を書いて」「コミットメッセージを整えて」「手順書を分かりやすくして」「APIドキュメントを整備して」
-  「リリースノートをまとめて」といった依頼、および技術文書の見出し構成・情報の過不足・読者に応じた説明順序・Markdown整形に関する指摘に対応する。日本語・英語のどちらの技術文書にも対応するが、日本語文書では洗練された自然な言い回し
-  (https://github.com/coji/natural-japanese が提供する文体校正スキルとの併用を推奨) を志向する。文単位の「AI臭さ除去」や語彙・リズムの校正そのものは対象外——それは natural-japanese
-  など文章校正スキルの領域であり、本スキルは技術文書としての構成・型・過不足・読者適合性に特化する。
+  Helps structure and polish technical documents: README, design docs/ADRs,
+  API reference, PR descriptions/commit messages/issue reports, release
+  notes/CHANGELOG, user manuals/how-to guides, and code comments/docstrings.
+  Use for requests like "write a README", "draft a design doc", "write this
+  PR description", "clean up my commit message", "make this how-to guide
+  clearer", "write API docs", "summarize the release notes", as well as
+  Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
+  「PRの説明文を書いて」「コミットメッセージを整えて」「手順書を分かりやすくして」
+  「APIドキュメントを整備して」「リリースノートをまとめて」). Supports both Japanese
+  and English documents, with Japanese as the primary target for polished,
+  natural phrasing (pairing well with https://github.com/coji/natural-japanese
+  for sentence-level Japanese refinement). Does NOT handle sentence-level
+  naturalness, word choice, or rhythm ("AI smell" removal) — that is the
+  domain of natural-japanese and similar prose-polishing skills. This skill
+  is specific to a document's structure, information completeness, and
+  reader fit.
 license: MIT
-argument-hint: "[write|review|score] [doctype] <対象ファイルや依頼内容>"
+argument-hint: "[write|review|score] [doctype] <target file or request>"
 ---
 
 # tech-writer
 
-技術文書を「型」に沿って設計し、読者が探している情報に最短距離で到達できる形に整えるスキル。対象は README・設計ドキュメント/ADR・API仕様書・PR説明文/コミットメッセージ/issueレポート・リリースノート/CHANGELOG・ユーザーマニュアル/手順書・コードコメント/docstring。
+Structures technical documents so readers reach the information they need
+with the shortest path. Covers README, design docs/ADRs, API reference, PR
+descriptions/commit messages/issue reports, release notes/CHANGELOG, user
+manuals/how-to guides, and code comments/docstrings.
 
-## このスキルの役割分担
+## Division of labor
 
-技術文書の品質は「構成が正しいか」と「文章として自然で読みやすいか」の2層に分かれる。本スキルは前者(構成・型・情報の過不足・読者適合性)を担当する。後者(文単位の自然さ・AI臭さの除去・リズム)は本スキルの対象外であり、[natural-japanese](https://github.com/coji/natural-japanese) のような文章校正スキルに委ねる。両方が導入されている環境では、本スキルで構成を確定させた後、日本語の文章を natural-japanese で磨く、という順で組み合わせるとよい。
+Document quality splits into two layers: "is the structure right" and "is
+the prose natural and readable". This skill owns the first layer (structure,
+document type conventions, completeness, reader fit). The second layer
+(sentence-level naturalness, removing "AI smell", rhythm) is out of scope and
+belongs to a prose-polishing skill such as [natural-japanese](https://github.com/coji/natural-japanese).
+When both skills are installed, use this skill to lock down the structure
+first, then hand Japanese prose to natural-japanese for polish.
 
-- 迷ったときの原則: 「見出しを削っても意味が通るか」で構成の課題を判定し、「この文だけ読んで意味が変わるか」で文章の課題を判定する。前者だけが本スキルの担当。
-- コードコメント/docstringのように文書化対象がコードそのものである場合も、型と情報の過不足の観点は同じ枠組みで扱う。
+- Rule of thumb: "does removing a heading still make sense?" tests structure
+  (this skill's job). "Does rereading a single sentence change its meaning?"
+  tests prose (not this skill's job).
+- Code comments/docstrings document code itself, but the same
+  structure-and-completeness framing still applies.
 
-## 実行モード
+## Execution modes
 
-引数または依頼内容から次を判定する。
+Infer the mode from the argument or the request:
 
-- `write` (既定): 新規作成、またはドラフトからの構成し直し。§1〜§3の全工程を通す。
-- `review`: 既存文書の構成レビュー。書き換えず、doctype別チェックリスト(§4)との差分を指摘する。
-- `score`: 構成面のみの簡易診断。`scripts/lint.py --json <file>` を実行し、結果を要約して返す(書き換えない)。
+- `write` (default): new document, or restructuring a draft. Runs the full
+  §1–§3 workflow.
+- `review`: structural review of an existing document. Does not rewrite;
+  reports the gap against the doctype checklist (§4).
+- `score`: structure-only quick diagnostic. Runs
+  `scripts/lint.py --json <file>` and summarizes the findings (no rewrite).
 
-モード指定がなければ、依頼が「書いて」「作って」なら write、「直して」「レビューして」なら review、「どう?」「診断して」なら score と解釈する。
+If no mode is given, interpret "write/create" requests as `write`,
+"fix/review" requests as `review`, and "how does this look?/diagnose"
+requests as `score`.
 
-## 1. 読者と目的の特定
+## 1. Identify the reader and the goal
 
-書く前に次の3点を確定する。不明なら質問する。
+Before writing, pin down these three points. Ask the user if any is unclear.
 
-1. **読者**: 誰が読むか(初めて触るユーザー、同僚エンジニア、将来の自分、意思決定者など)。読者が変われば説明すべき前提知識の量が変わる。
-2. **読了後に読者が取れる行動**: 「動かせるようになる」「意思決定できる」「レビューを承認できる」など、文書のゴールを一文で言えるか確認する。言えない場合は文書の目的自体が定まっていない。
-3. **文書タイプ**: 下表からdoctypeを特定し、対応する型ファイルを読む。
+1. **Reader**: who reads this (a first-time user, a fellow engineer, your
+   future self, a decision-maker)? The reader determines how much prior
+   knowledge you can assume.
+2. **What the reader can do after reading**: can you state the document's
+   goal in one sentence — "can get it running", "can make a decision", "can
+   approve the review"? If not, the document's purpose itself isn't settled
+   yet.
+3. **Document type**: identify the doctype from the table below and read the
+   matching reference file.
 
-| 依頼の内容 | doctype | 型ファイル |
+| Request | doctype | reference file |
 |---|---|---|
-| README / プロジェクト概要 | readme | `references/doctypes/readme.md` |
-| 設計ドキュメント / ADR / RFC | design-doc | `references/doctypes/design-doc.md` |
-| API仕様書 / リファレンス | api-docs | `references/doctypes/api-docs.md` |
-| PR説明文 / コミットメッセージ / issueレポート | pr-commit | `references/doctypes/pr-commit.md` |
-| リリースノート / CHANGELOG | release-notes | `references/doctypes/release-notes.md` |
-| ユーザーマニュアル / 手順書 / チュートリアル | user-manual | `references/doctypes/user-manual.md` |
-| コードコメント / docstring | code-comments | `references/doctypes/code-comments.md` |
+| README / project overview | readme | `references/doctypes/readme.md` |
+| Design doc / ADR / RFC | design-doc | `references/doctypes/design-doc.md` |
+| API reference | api-docs | `references/doctypes/api-docs.md` |
+| PR description / commit message / issue report | pr-commit | `references/doctypes/pr-commit.md` |
+| Release notes / CHANGELOG | release-notes | `references/doctypes/release-notes.md` |
+| User manual / how-to guide / tutorial | user-manual | `references/doctypes/user-manual.md` |
+| Code comments / docstrings | code-comments | `references/doctypes/code-comments.md` |
 
-どの型にも当てはまらない技術文書は、`references/style-constitution.md` の一般原則のみで進めてよい。
+For technical documents that don't fit any of these, apply only the general
+principles in `references/style-constitution.md`.
 
-## 2. 執筆 — 構成憲法の下で書く
+## 2. Write — under the structure constitution
 
-`references/style-constitution.md` の8箇条を制約として構成・執筆する。要点: 最初の3行で「これは何か」と「読者が得られる結果」を言い切る、見出しは内容を予告するラベルにする(「概要」ではなく何の概要かを書く)、手順は実行順に並べ前提条件を手順の前に出す、1手順1動作で番号付けする、抽象語の直後に具体例か数値を置く、コード例は実行可能な最小単位で示し省略部分を明示する、既知の制約・未対応ケースを隠さず明記する、更新日または対象バージョンを文書内に残す。
+Write under the 8 rules in `references/style-constitution.md`. Summary: state
+"what this is" and "the outcome for the reader" in the first three lines;
+make headings labels that preview content (not "Overview", but "Overview of
+what"); order steps as executed and put prerequisites before the steps;
+one action per numbered step; put a concrete example or number right after
+any abstract term; keep code examples minimal and runnable, marking
+omissions explicitly; disclose known limitations and unsupported cases
+instead of hiding them; and keep a last-updated date or target version in
+the document.
 
-日本語で執筆する場合は、上記に加えて簡潔さと明確さを優先する。一文を長くしすぎない、二重否定を避ける、主語を省略しない(技術文書では特に)、といった基本を守りつつ、文単位の洗練は natural-japanese との併用に委ねる。
+When writing in Japanese, also prioritize concision and clarity on top of
+the above: avoid overly long sentences, avoid double negatives, and don't
+drop the subject (especially important in technical Japanese). Sentence-level
+polish is left to a paired skill such as natural-japanese.
 
-## 3. 検査 — 構成レビュー
+## 3. Review — structural check
 
-執筆後、以下を順に行う。
+After writing, work through the following in order:
 
-1. **スケルトン通読**: 見出しと各セクションの最初の1文だけを抜き出して読み、論旨が通るか確認する。通らなければ見出しの立て方から見直す。
-2. **doctype別チェックリスト**: 対応する型ファイル末尾のチェックリストと突き合わせる。
-3. **構成lint**: 可能なら `uv run scripts/lint.py <file>` を実行し、見出し階層の飛び、コードブロックの言語指定漏れ、TODO/プレースホルダの残存、リンク切れの疑いなどを機械的に検出する。findings は指摘であり、文脈上意図的なものは残してよい。判断根拠を一言添える。
-4. **読者視点の再確認**: §1で定めた「読了後に読者が取れる行動」が、実際にこの文書を読むだけで達成できるか最終確認する。
+1. **Skeleton read-through**: extract just the headings and the first
+   sentence of each section, and confirm the argument holds together. If
+   not, revisit how the headings are structured.
+2. **Doctype checklist**: compare against the checklist at the end of the
+   matching reference file.
+3. **Structural lint**: where possible, run `uv run scripts/lint.py <file>`
+   to mechanically catch heading-level skips, code blocks missing a
+   language tag, leftover TODO/placeholders, and suspicious links. Findings
+   are flags, not mandates — deliberate exceptions can stay; note the reason
+   briefly.
+4. **Reader-goal recheck**: confirm the "what the reader can do after
+   reading" outcome from §1 is actually achievable from this document alone.
 
-## 4. doctype別チェックリスト(要約)
+## 4. Doctype checklist summary
 
-詳細は各型ファイルを参照。共通して確認する項目:
+See each reference file for detail. Common items to confirm:
 
-- 冒頭3行で目的と対象読者が分かるか
-- 見出しだけを読んで文書全体の流れが追えるか
-- 前提条件・依存関係が使用手順より前に書かれているか
-- コード例・コマンド例はコピーして即実行できる状態か
-- 既知の制約・未対応・注意事項が省略されていないか
-- (該当する場合)バージョン・更新日・対象ブランチが明記されているか
+- Do the first three lines convey the purpose and target reader?
+- Does reading only the headings trace the whole document's flow?
+- Are prerequisites/dependencies stated before the usage steps?
+- Can code/command examples be copied and run as-is?
+- Are known limitations/unsupported cases/caveats stated, not omitted?
+- (Where relevant) Is the version/last-updated date/target branch stated?
 
-## 参考にしたプロジェクト
+## Acknowledgment
 
-構成と文章の役割分離という設計思想は、[natural-japanese](https://github.com/coji/natural-japanese)(MIT License)の「検出は機械、判断は人間(またはエージェント)」「事後修正より生成時制約」という考え方から着想を得ている。本スキルはその領域を技術文書の構成面に広げたものであり、文章の自然さそのものは意図的に対象外としている。
+The idea of separating structure from prose comes from
+[natural-japanese](https://github.com/coji/natural-japanese) (MIT License)
+and its design principle "machines detect, humans (or agents) judge" and
+"prevent at generation time rather than fix afterward". This skill extends
+that separation to the structural side of technical documents, deliberately
+leaving prose naturalness out of scope.

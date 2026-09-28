@@ -1,38 +1,38 @@
-# <プロジェクト名>
+# <Project name>
 
-<一文で「これは何か」>
+<What this is, in one sentence>
 
-## <プロジェクトが解決する課題>
+## <The problem this project solves>
 
-<課題→アプローチを2〜4文で>
+<Problem → approach, 2–4 sentences>
 
-## できること
+## What you can do
 
-- <機能1(動詞から始める)>
-- <機能2>
+- <Feature 1 (start with a verb)>
+- <Feature 2>
 
-## セットアップ
+## Setup
 
-### 前提条件
+### Prerequisites
 
-- <必要なバージョン・権限・OS等>
+- <Required versions, permissions, OS, etc.>
 
-### インストール
-
-```bash
-<コピー&ペーストで動くコマンド>
-```
-
-## 使い方
+### Install
 
 ```bash
-<最小の成功体験を示すコマンド/コード>
+<Command(s) that run as copy-pasted>
 ```
 
-## 既知の制約
+## Usage
 
-- <対応していないこと・注意点>
+```bash
+<Command/code showing the smallest successful experience>
+```
 
-## ライセンス
+## Known limitations
 
-<ライセンス名>
+- <What's not supported / caveats>
+
+## License
+
+<License name>

@@ -1,70 +1,99 @@
 # kotonoha
 
-kotonoha は、技術文書の構成・型・仕上げを支援する GitHub Copilot CLI 用スキル `tech-writer` を提供するリポジトリです。README・設計ドキュメント/ADR・API仕様書・PR説明文/コミットメッセージ/issueレポート・リリースノート・ユーザーマニュアル/手順書・コードコメントを、読者が迷わない「型」に沿って書く/直すことができます。
+kotonoha provides `tech-writer`, a GitHub Copilot CLI skill that helps
+structure and polish technical documents. It covers README, design
+docs/ADRs, API reference, PR descriptions/commit messages/issue reports,
+release notes, user manuals/how-to guides, and code comments, structured so
+readers never get lost.
 
-## tech-writer が解決する課題
+## What tech-writer solves
 
-技術文書は「文章として自然か」と「構成として過不足がないか」の2層の問題を抱えがちです。`tech-writer` は後者に特化し、前者(文単位の自然さ・AI臭さの除去)は [natural-japanese](https://github.com/coji/natural-japanese) のような文章校正スキルに委ねます。両方を導入すると、構成を `tech-writer` で確定させた後、日本語の文章を natural-japanese で磨く、という組み合わせで使えます。
+Technical documents tend to have two separate problems: "is the prose
+natural" and "does the structure have the right amount of information".
+`tech-writer` specializes in the latter, leaving the former (sentence-level
+naturalness, removing "AI smell") to a prose-polishing skill such as
+[natural-japanese](https://github.com/coji/natural-japanese). With both
+installed, lock down the structure with `tech-writer` first, then polish
+Japanese prose with natural-japanese.
 
-## できること
+## What it does
 
-- README・設計ドキュメント/ADR・API仕様書・PR説明文/コミットメッセージ/issueレポート・リリースノート・ユーザーマニュアル・コードコメントの新規作成/レビュー
-- doctype別の型とチェックリストに沿った執筆支援
-- `scripts/lint.py` による構成面の機械チェック(見出し階層の飛び、コードブロックの言語指定漏れ、プレースホルダの残存、リンク切れの疑いなど)
-- 日本語主軸、英語文書作成にも対応
+- Create/review README, design docs/ADRs, API reference, PR
+  descriptions/commit messages/issue reports, release notes, user manuals,
+  and code comments
+- Doctype-specific structure and checklists to guide writing
+- `scripts/lint.py` for mechanical structural checks (heading-level skips,
+  code blocks missing a language tag, leftover placeholders, suspicious
+  links, etc.)
+- Japanese as the primary target language, with English document support
 
-## セットアップ
+## Setup
 
-### 前提条件
+### Prerequisites
 
-- GitHub Copilot CLI がインストール済みであること
-- lintスクリプトを実行する場合は Python 3.9 以上(標準ライブラリのみで動作、追加インストール不要)
+- GitHub Copilot CLI installed
+- Python 3.9+ if you want to run the lint script (standard library only,
+  no extra install needed)
 
-### インストール
+### Install
 
-このリポジトリ内で Copilot CLI を使う場合、スキルは `.github/skills/tech-writer` に配置済みのため追加作業は不要です。
+Inside this repository, the skill is already placed at
+`.github/skills/tech-writer`, so no extra setup is needed to use it with
+Copilot CLI here.
 
-他のプロジェクトで使う場合は、`skills/tech-writer` ディレクトリを対象リポジトリの `.github/skills/`、`.claude/skills/`、または `~/.copilot/skills/`(グローバル)にコピーしてください。
+To use it in another project, copy the `skills/tech-writer` directory into
+that repository's `.github/skills/`, `.claude/skills/`, or your global
+`~/.copilot/skills/`.
 
 ```bash
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 ```
 
-## 使い方
+## Usage
 
-Copilot CLI のセッション内で、対象文書の種類を含めて依頼するだけで自動的に呼び出されます。
+Just ask for the document type you need in a Copilot CLI session, and it's
+invoked automatically.
 
-- 「READMEを書いて」「この設計ドキュメントをレビューして」「PRの説明文を書いて」「この手順書を分かりやすくして」
+- "Write a README", "Review this design doc", "Write the PR description",
+  "Make this how-to guide clearer"
 
-構成面のみの簡易診断を行いたい場合:
+To run a quick structure-only diagnostic:
 
 ```bash
 uv run skills/tech-writer/scripts/lint.py --json path/to/document.md
 ```
 
-`uv` がない環境では `python3 skills/tech-writer/scripts/lint.py path/to/document.md` でも実行できます(標準ライブラリのみに依存)。
+Without `uv`, `python3 skills/tech-writer/scripts/lint.py path/to/document.md`
+works too (standard library only).
 
-## リポジトリ構成
+## Repository layout
 
 ```
-skills/tech-writer/          # スキル本体
-  SKILL.md                   # スキル定義
-  references/                # 構成憲法・doctype別の型とチェックリスト
-  references/doctypes/       # README・設計書・API仕様書・PR/issue・リリースノート・手順書・コメントの型
-  scripts/lint.py            # 構成面の検査スクリプト
-  assets/templates/          # 主要doctypeの雛形
-.github/skills/tech-writer   # skills/tech-writer へのシンボリックリンク(Copilot CLIが読む場所)
+skills/tech-writer/          # the skill itself
+  SKILL.md                   # skill definition
+  references/                # structure constitution + doctype rules/checklists
+  references/doctypes/       # README, design doc, API docs, PR/issue, release notes, manual, comments
+  scripts/lint.py            # structural lint script
+  assets/templates/          # skeleton templates for the main doctypes
+.github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
 ```
 
-## 既知の制約
+## Known limitations
 
-- `scripts/lint.py` は構成面(見出し・コードブロック・プレースホルダ・リンク)のみを検出し、文章の自然さ・語彙・リズムは検出しません。
-- doctypeは日本語の技術文書慣習を主に想定しており、英語文書では一部の型(特にコミットメッセージの命令形規則など)がそのまま適用できます。
+- `scripts/lint.py` only detects structural issues (headings, code blocks,
+  placeholders, links); it does not detect prose naturalness, vocabulary,
+  or rhythm.
+- The doctypes are written mainly with Japanese technical-writing
+  conventions in mind; most of the guidance (especially the commit-message
+  imperative-mood rule) applies directly to English documents as well.
 
-## 参考にしたプロジェクト
+## Acknowledgment
 
-- [natural-japanese](https://github.com/coji/natural-japanese)(MIT License) — 「検出は機械、判断は人間(またはエージェント)」「事後修正より生成時制約」という設計思想を参考にしました。
+- [natural-japanese](https://github.com/coji/natural-japanese) (MIT
+  License) — the design principle "machines detect, humans (or agents)
+  judge" and "prevent at generation time rather than fix afterward"
+  informed this project's design.
 
-## ライセンス
+## License
 
 MIT. See [LICENSE](./LICENSE).

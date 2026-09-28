@@ -1,23 +1,23 @@
 ## What
 
-<何を変更したか、1〜3文>
+<What changed, 1–3 sentences>
 
 ## Why
 
-<なぜ必要か。関連issue: #___>
+<Why it's needed. Related issue: #___>
 
 ## How
 
-<主要な設計判断。実装詳細はdiffに任せる>
+<Main design decisions. Implementation detail is left to the diff>
 
-## 動作確認方法
+## How to verify
 
-1. <レビュアーが再現できる具体的な手順>
+1. <Concrete steps the reviewer can use to reproduce>
 
-## 影響範囲 / 破壊的変更
+## Impact / breaking changes
 
-- <あれば明記。なければ「なし」と明記>
+- <State explicitly if any; otherwise state "none">
 
-## 残課題
+## Remaining work
 
-- <あれば>
+- <If any>

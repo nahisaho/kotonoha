@@ -1,28 +1,38 @@
-# 設計ドキュメント / ADR / RFC の型
+# Design doc / ADR / RFC type
 
-## 想定読者
+## Target reader
 
-レビューして意思決定する人、後から経緯を追う人。目的は「合意形成」または「記録」であり、実装の教科書ではない。
+Someone reviewing to reach a decision, or someone later tracing the history
+of that decision. The goal is "consensus" or "record", not a how-to guide
+for implementation.
 
-## 推奨スケルトン(ADR形式)
+## Recommended skeleton (ADR format)
 
-1. **タイトル**: 決定内容が分かる名詞句(例:「非同期ジョブキューにRedisを採用する」)。
-2. **ステータス**: 提案中 / 承認済み / 却下 / 廃止、のいずれかを明記。
-3. **背景・課題(Context)**: なぜこの決定が必要になったか。現状の制約を事実ベースで書く(意見と分離)。
-4. **決定内容(Decision)**: 何を選んだかを最初に一文で言い切り、その後に詳細。
-5. **検討した代替案(Alternatives Considered)**: 却下した理由を含めて最低1つは残す。将来「なぜAを使わなかったか」の再質問を防ぐ。
-6. **結果として生じるトレードオフ(Consequences)**: 良い面だけでなく、受け入れたコスト・制約も書く。
-7. **未解決の論点(Open Questions)**(任意): レビュー段階で残す。
+1. **Title**: a noun phrase naming the decision (e.g. "Adopt Redis for the
+   async job queue").
+2. **Status**: Proposed / Accepted / Rejected / Superseded — state one.
+3. **Context**: why this decision is needed now. State the current
+   constraints as facts, separate from opinion.
+4. **Decision**: say what was chosen in one sentence first, then the
+   details.
+5. **Alternatives considered**: keep at least one, including why it was
+   rejected. Prevents future re-litigation of "why not A".
+6. **Consequences**: not just the upside — include the costs/constraints
+   accepted.
+7. **Open questions** (optional): leave unresolved points during review.
 
-## 設計ドキュメント(RFC形式・実装前)特有の注意
+## Design doc (RFC format, pre-implementation) specifics
 
-- 「何を作るか」の前に「何を作らないか(Non-Goals)」を明記すると、レビューでの論点のブレを防げる。
-- 図(シーケンス図・構成図)がある場合、図だけで一次情報が伝わるようにし、本文はその補足に徹する。
+- Stating "what we will *not* build" (Non-Goals) before "what we will build"
+  keeps review discussion from drifting.
+- If there are diagrams (sequence/architecture), make the diagram carry the
+  primary information; keep the prose as supporting detail only.
 
-## チェックリスト
+## Checklist
 
-- [ ] 決定内容が冒頭で一文に言い切られているか
-- [ ] 代替案とその却下理由が残っているか(「唯一の案」として書かれていないか)
-- [ ] トレードオフ(失うもの)が明記されているか
-- [ ] Non-Goals が明記されているか(RFCの場合)
-- [ ] ステータスが最新の状態を反映しているか
+- [ ] Is the decision stated in one sentence up front?
+- [ ] Are alternatives and their rejection reasons present (not written as
+      "the only option")?
+- [ ] Are trade-offs (what's given up) stated explicitly?
+- [ ] Are Non-Goals stated (for RFCs)?
+- [ ] Does the status reflect the current state?

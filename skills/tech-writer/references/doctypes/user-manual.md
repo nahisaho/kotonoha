@@ -1,36 +1,58 @@
-# ユーザーマニュアル / 手順書 / チュートリアルの型
+# User manual / how-to guide / tutorial type
 
-このdoctypeは「読者が実際に手を動かして再現できるか」が品質の全てであるため、他の型より厳密に運用する。
+For this doctype, quality is almost entirely determined by "can the reader
+actually reproduce this by following it", so apply it more strictly than
+the other types.
 
-## 想定読者
+## Target reader
 
-対象製品/機能を初めて、または久しぶりに操作する人。専門用語の前提知識は薄いと仮定する。
+Someone using the target product/feature for the first time, or after a
+long gap. Assume thin prior knowledge of jargon.
 
-## 執筆前に確定すること
+## Settle before writing
 
-1. **前提知識の下限**: 「この手順書は〇〇を知っている人向け」を冒頭に明記する。書かないと、読者は自分がこの文書の対象かを毎回自分で判断するコストを払う。
-2. **完了条件**: 手順の最後に「何ができていれば成功か」を検証可能な形(表示される画面、返ってくる値、生成されるファイル)で書く。
+1. **Floor of prior knowledge**: state up front "this guide assumes you
+   already know X". Without it, the reader pays a recurring cost of
+   deciding whether they're the intended audience.
+2. **Completion condition**: at the end of the steps, state what "success"
+   looks like in a verifiable form (a screen shown, a value returned, a
+   file produced).
 
-## 推奨スケルトン
+## Recommended skeleton
 
-1. **この手順で何ができるようになるか**: 冒頭3行(構成憲法1条)。
-2. **前提条件**: 必要な権限・インストール済みソフトウェア・バージョン。手順の前に独立セクションとして置く。
-3. **手順**: 1手順1動作、番号付け(構成憲法4条)。各手順は次の3要素を持つ。
-   - 実行する操作(コマンド/クリック対象)
-   - 実行後に画面/出力がどう変化するか(読者が「合っているか」を自己確認できる材料)
-   - つまずきやすい分岐点があれば、その場で注記(手順の後にまとめて書かない)
-4. **完了確認**: 「ここまでできていれば成功」の具体的な検証方法。
-5. **うまくいかない場合(トラブルシューティング)**: 症状→原因→対処、の表形式。「エラーが出た場合は管理者に問い合わせてください」のような読者に行動を丸投げする記述は避ける。
+1. **What this guide gets you**: the first three lines (rule 1 of the
+   structure constitution).
+2. **Prerequisites**: required permissions, installed software, versions.
+   A separate section, before the steps.
+3. **Steps**: one action per numbered step (rule 4). Each step has three
+   parts:
+   - the action to take (command/click target)
+   - how the screen/output changes afterward (so the reader can
+     self-verify they're on track)
+   - any tricky branch point, noted right there (not collected at the end)
+4. **Completion check**: a concrete way to verify "if you see this,
+   you've succeeded".
+5. **Troubleshooting**: symptom → cause → fix, as a table. Avoid phrasing
+   that just offloads the problem to the reader, like "if you see an
+   error, contact your administrator".
 
-## チュートリアル特有の注意
+## Tutorial-specific notes
 
-- チュートリアルは「網羅」ではなく「1つの成功体験を最短距離で」が目的。応用的なオプションは「発展」セクションに分離し、本筋の手順を長くしない。
-- 各手順の直後に検証ポイント(スクリーンショット、期待される出力例)を置くと、読者は迷わず先に進める。
+- A tutorial's goal is "one success experience via the shortest path", not
+  exhaustive coverage. Move advanced options to a "further reading"
+  section instead of lengthening the main steps.
+- Placing a verification point (screenshot, expected output sample) right
+  after each step lets the reader proceed without doubt.
 
-## チェックリスト
+## Checklist
 
-- [ ] 前提条件(必要な権限・環境・事前インストール)が手順より前に独立して書かれているか
-- [ ] 各手順が1動作単位で、実行後の状態変化が確認できる情報を伴っているか
-- [ ] 完了条件が「検証可能な形」(画面・出力・生成物)で書かれているか
-- [ ] トラブルシューティングが「症状→原因→対処」の形式で、読者への行動丸投げになっていないか
-- [ ] 専門用語は初出時に一言説明が添えられているか(対象読者の前提知識に対して)
+- [ ] Are prerequisites (permissions/environment/pre-installs) stated in
+      their own section before the steps?
+- [ ] Is each step a single action, with information to confirm the state
+      change after executing it?
+- [ ] Is the completion condition stated in a verifiable form (screen,
+      output, artifact)?
+- [ ] Is troubleshooting in "symptom → cause → fix" form, without
+      offloading action entirely to the reader?
+- [ ] Is jargon given a brief explanation on first use (relative to the
+      target reader's prior knowledge)?

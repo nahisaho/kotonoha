@@ -1,20 +1,34 @@
-# コードコメント / docstring の型
+# Code comments / docstrings type
 
-## 想定読者
+## Target reader
 
-このコードを次に変更する人(将来の自分を含む)。目的は「なぜこう書いたか」を伝えることであり、「何をしているか」はコード自体が語るべき。
+Whoever changes this code next (including your future self). The goal is
+to convey "why it's written this way" — the "what" should be conveyed by
+the code itself.
 
-## 原則
+## Principles
 
-1. **「何を」ではなく「なぜ」を書く**: コードを読めば分かることをコメントで繰り返さない。「なぜこの実装/この順序/この例外処理が必要か」を書く。
-2. **docstringは呼び出し側の視点で書く**: 引数・戻り値・例外・副作用を、実装ではなく「使う人が知りたい順」で並べる。
-3. **TODO/FIXMEには理由と(可能なら)issue番号を添える**: 「TODO: あとで直す」は情報量がゼロ。「TODO(#123): 一時的に同期実行。非同期化はキューの導入待ち」のように書く。
-4. **自明なコメントを書かない**: `i += 1  # iを1増やす` のようなコメントは削除対象。
-5. **非直感的な選択にのみコメントする**: 一見遠回りに見える実装、パフォーマンス上の理由での特殊な書き方、外部制約(APIの仕様・過去のバグ回避)には必ずコメントを残す。
+1. **Write "why", not "what"**: don't repeat in a comment what the code
+   already shows. Explain why this implementation/ordering/exception
+   handling is necessary.
+2. **Write docstrings from the caller's perspective**: order arguments,
+   return values, exceptions, and side effects by what the *caller* wants
+   to know, not by internal implementation order.
+3. **Give TODO/FIXME a reason and, if possible, an issue link**: "TODO: fix
+   later" carries zero information. Write "TODO(#123): running
+   synchronously for now; async pending queue rollout" instead.
+4. **Don't write comments that state the obvious**: delete comments like
+   `i += 1  # increment i by 1`.
+5. **Only comment on non-obvious choices**: implementations that look like
+   a detour, special code for performance reasons, or external constraints
+   (API quirks, past-bug workarounds) must always get a comment.
 
-## チェックリスト
+## Checklist
 
-- [ ] コメントを削除してもコードの意図が分かる箇所に、冗長なコメントが残っていないか
-- [ ] 非直感的な実装に理由の説明が付いているか
-- [ ] docstringの引数説明の順序が、実装の内部変数順ではなく呼び出し側の関心順になっているか
-- [ ] TODO/FIXMEに理由または追跡先(issue番号など)があるか
+- [ ] Are there redundant comments left where the code's intent is clear
+      even without them?
+- [ ] Do non-obvious implementations have their reasoning explained?
+- [ ] Is docstring argument order driven by the caller's concerns rather
+      than internal variable order?
+- [ ] Do TODO/FIXME items have a reason or a tracking reference (issue
+      number, etc.)?

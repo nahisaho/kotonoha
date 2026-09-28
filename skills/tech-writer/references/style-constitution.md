@@ -1,44 +1,62 @@
-# 技術文書 構成憲法(8箇条)
+# Technical Document Structure Constitution (8 rules)
 
-技術文書の「構成」を書く前に固定するための制約集。文章の自然さ・語彙・リズムはここでは扱わない(→ natural-japanese 等の文章校正スキルの領域)。
+Constraints to fix a technical document's *structure* before writing.
+Sentence-level naturalness, vocabulary, and rhythm are out of scope here
+(→ the domain of a prose-polishing skill such as natural-japanese).
 
-## 1. 最初の3行で「これは何か」と「得られる結果」を言い切る
+## 1. Say "what this is" and "the outcome" in the first three lines
 
-読者は冒頭3行で「自分に関係があるか」を判断する。背景説明や謝辞から始めない。「これは何のための文書で、読み終えると何ができるようになるか」を最初に置く。
+Readers decide "is this relevant to me" within the first three lines. Don't
+open with background or acknowledgments. State up front what the document is
+for and what the reader can do after reading it.
 
-- 悪い例: 「本プロジェクトは日々成長を続けており、多くの貢献者の協力により…」
-- 良い例: 「kotonoha は技術文書の構成を整えるための Copilot スキルです。README・設計書・PR説明文などを型に沿って書けます。」
+- Bad (Japanese example): 「本プロジェクトは日々成長を続けており、多くの貢献者の協力により…」
+- Good (Japanese example): 「kotonoha は技術文書の構成を整えるための Copilot スキルです。README・設計書・PR説明文などを型に沿って書けます。」
 
-## 2. 見出しは内容を予告するラベルにする
+## 2. Make headings labels that preview content
 
-「概要」「使い方」「注意点」のような汎用ラベルは、見出しだけを読んでも中身が分からない。何の概要か、何をどう使うのかまで見出しに含める。
+Generic labels like "Overview", "Usage", "Notes" tell the reader nothing
+until they read the body. Include *what* is being overviewed or used.
 
-- 悪い例: `## 概要` `## 使い方` `## 注意点`
-- 良い例: `## kotonoha が解決する課題` `## スキルを .github/skills に配置する` `## sudachipy 未導入時の挙動`
+- Bad: `## Overview` `## Usage` `## Notes`
+- Good: `## What kotonoha solves` `## Installing the skill into .github/skills` `## Behavior without sudachipy installed`
 
-## 3. 手順は実行順に並べ、前提条件を手順の前に出す
+## 3. Order steps as executed, and put prerequisites before the steps
 
-読者は文書を上から順に実行する。前提条件(依存パッケージ、権限、事前設定)を手順の途中や末尾に置くと、途中でやり直しが発生する。前提条件は必ず手順セクションより前に独立させる。
+Readers execute a document top to bottom. Placing prerequisites
+(dependencies, permissions, prior setup) mid-way or at the end forces
+readers to redo work partway through. Always give prerequisites their own
+section before the steps.
 
-## 4. 1手順1動作で番号付けする
+## 4. One action per numbered step
 
-1つの番号に複数の動作を詰め込まない。「Aをインストールし、Bを設定し、Cを実行する」は3手順に分ける。番号が並んでいれば、読者は今どこにいるかを見失わずに済む。
+Don't pack multiple actions into one numbered item. "Install A, configure B,
+and run C" should be three steps. Numbered steps let readers track exactly
+where they are.
 
-## 5. 抽象語の直後に具体例か数値を置く
+## 5. Put a concrete example or number right after an abstract term
 
-「高速」「安全」「柔軟」「わかりやすい」といった抽象語は、それ単体では読者に何も伝えない。直後に具体的な数値・条件・コード例を添える。
+Words like "fast", "safe", "flexible", "easy to understand" convey nothing
+by themselves. Follow them immediately with a concrete number, condition, or
+code example.
 
-- 悪い例: 「lint.py は高速に動作します。」
-- 良い例: 「lint.py は1万字の文書を通常1秒未満で処理します(sudachipy の初期化を除く)。」
+- Bad: "lint.py runs fast."
+- Good: "lint.py processes a 10,000-character document in under 1 second (excluding sudachipy initialization)."
 
-## 6. コード例は実行可能な最小単位で示し、省略部分を明示する
+## 6. Keep code examples minimal and runnable; mark omissions explicitly
 
-コピー&ペーストして動かないコード例は、動かない事実に気づくまでの時間を読者から奪う。省略する場合は `# ...` のように明示し、「ここは実際にはあなたの設定に置き換えてください」を書き添える。
+A code example that doesn't run as copy-pasted costs the reader time before
+they realize it's broken. When omitting something, mark it explicitly (e.g.
+`# ...`) and note that the reader should substitute their own values.
 
-## 7. 既知の制約・未対応ケースを隠さず明記する
+## 7. Disclose known limitations and unsupported cases; don't hide them
 
-「まだ対応していない」「この条件では動作しない」は文書の価値を下げるものではなく、読者の手戻りを防ぐ情報である。省略せずセクションを立てて明記する。
+"Not yet supported" or "doesn't work under this condition" doesn't lower a
+document's value — it prevents the reader's wasted effort. State it in its
+own section instead of omitting it.
 
-## 8. 更新日または対象バージョン・対象ブランチを文書内に残す
+## 8. Keep a last-updated date or target version/branch in the document
 
-技術文書は書いた瞬間から古くなり始める。いつ・何のバージョンを対象に書かれたかが分からない文書は、読者に「これは今も正しいのか」という余計な検証コストを強いる。
+A technical document starts going stale the moment it's written. A document
+that doesn't say when or against what version it was written forces the
+reader to pay an extra verification cost: "is this still accurate?"

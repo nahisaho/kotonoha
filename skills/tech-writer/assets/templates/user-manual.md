@@ -1,22 +1,22 @@
-# <この手順で何ができるようになるか>
+# <What this guide gets you>
 
-対象読者: <前提知識の下限>
+Target reader: <floor of prior knowledge assumed>
 
-## 前提条件
+## Prerequisites
 
-- <必要な権限・環境・事前インストール>
+- <Required permissions, environment, pre-installs>
 
-## 手順
+## Steps
 
-1. <操作> — 実行すると<状態変化>が確認できます。
-2. <操作> — 実行すると<状態変化>が確認できます。
+1. <Action> — after running this, you'll see <state change>.
+2. <Action> — after running this, you'll see <state change>.
 
-## 完了確認
+## Completion check
 
-<何が表示/生成されていれば成功か>
+<What should be displayed/generated to confirm success>
 
-## うまくいかない場合
+## Troubleshooting
 
-| 症状 | 原因 | 対処 |
+| Symptom | Cause | Fix |
 |---|---|---|
 | <...> | <...> | <...> |

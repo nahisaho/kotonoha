@@ -1,23 +1,29 @@
-# API仕様書 / リファレンスの型
+# API reference type
 
-## 想定読者
+## Target reader
 
-このAPIを呼び出して自分のコードに組み込みたい開発者。目的は「最小のリクエストを成功させる」こと。
+A developer who wants to call this API from their own code. The goal is
+"get the smallest request to succeed".
 
-## 推奨スケルトン(エンドポイント/関数単位)
+## Recommended skeleton (per endpoint/function)
 
-1. **シグネチャ**: エンドポイント(メソッド+パス)または関数シグネチャを最初に。
-2. **一文説明**: 何をするAPIか。副作用(状態変更・課金・非同期処理など)があれば明記。
-3. **パラメータ**: 表形式(名前・型・必須/任意・既定値・説明)。説明には単位(秒/ms、バイト/KB)を明記。
-4. **リクエスト例**: 実行可能な最小のコード例(curlまたは対象言語)。認証情報はプレースホルダと明記。
-5. **レスポンス例**: 成功時の実例(型ではなく実際の値の例)。
-6. **エラー / ステータスコード**: 表形式(コード・意味・再試行すべきか)。
-7. **レート制限・非推奨情報**(該当する場合): 省略しない。
+1. **Signature**: the endpoint (method + path) or function signature first.
+2. **One-sentence description**: what it does. State side effects (state
+   changes, billing, async processing) if any.
+3. **Parameters**: a table (name, type, required/optional, default,
+   description). Include units (seconds/ms, bytes/KB) in the description.
+4. **Request example**: a minimal, runnable code example (curl or the
+   target language). Mark credentials clearly as placeholders.
+5. **Response example**: a real success example (actual sample values, not
+   just types).
+6. **Errors / status codes**: a table (code, meaning, whether to retry).
+7. **Rate limits / deprecation notices** (if applicable): don't omit.
 
-## チェックリスト
+## Checklist
 
-- [ ] リクエスト例をコピーして書き換えるだけで動くか(URL・トークン欄が明確にプレースホルダになっているか)
-- [ ] パラメータ表に「必須/任意」の列があるか
-- [ ] エラーコードごとに「クライアント側で何をすべきか」まで書かれているか
-- [ ] 非推奨(deprecated)のパラメータ/エンドポイントに移行先が示されているか
-- [ ] 単位(時間・サイズ・通貨)が明記されているか
+- [ ] Does the request example run after just swapping in values (URL/token
+      fields clearly marked as placeholders)?
+- [ ] Does the parameter table have a required/optional column?
+- [ ] Does each error code say what the client should do about it?
+- [ ] Do deprecated parameters/endpoints point to a migration path?
+- [ ] Are units (time, size, currency) stated explicitly?

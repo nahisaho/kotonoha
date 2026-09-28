@@ -1,65 +1,82 @@
-# PR説明文 / コミットメッセージ / issueレポートの型
+# PR description / commit message / issue report type
 
-このdoctypeはレビュアーの判断速度に直結するため、他の型より厳密に運用する。
+This doctype directly affects a reviewer's decision speed, so apply it more
+strictly than the other types.
 
-## コミットメッセージ
+## Commit messages
 
-### 型
+### Format
 
 ```text
-<type>: <要約(命令形・50字程度まで)>
+<type>: <summary (imperative mood, ~50 chars)>
 
-<本文(任意) - 何を・なぜ変更したか。実装の詳細はdiffが語るので繰り返さない>
+<body (optional) - what and why the change was made; the diff already
+shows the "what" implementation details, so don't repeat them>
 
-<フッタ(任意) - Fixes #123, BREAKING CHANGE: ... など>
+<footer (optional) - Fixes #123, BREAKING CHANGE: ... etc.>
 ```
 
-- 要約行は「〜した」ではなく命令形(例: 「修正する」ではなく「修正」、英語なら "Fix" であって "Fixed"/"Fixes" ではない)で統一する。
-- 本文には「何を変えたか」ではなく「なぜ変えたか」を書く。差分自体が「何を」を語っている。
-- 1コミット1関心事。複数の無関係な変更を1コミットのメッセージにまとめない。
+- Use imperative mood consistently in the summary line (e.g. "Fix", not
+  "Fixed"/"Fixes").
+- The body should explain *why* the change was made, not restate *what*
+  changed — the diff already shows that.
+- One concern per commit. Don't bundle unrelated changes into one commit
+  message.
 
-### チェックリスト
+### Checklist
 
-- [ ] 要約行だけで変更内容が推測できるか(「修正」「更新」だけで終わっていないか)
-- [ ] 本文が diff の言い換えではなく、「なぜ」を説明しているか
-- [ ] 関連issue番号がフッタに記載されているか
+- [ ] Can the change be inferred from the summary line alone (not just
+      "fix" or "update")?
+- [ ] Does the body explain "why" rather than paraphrase the diff?
+- [ ] Is the related issue number in the footer?
 
-## PR説明文
+## PR descriptions
 
-### 推奨スケルトン
+### Recommended skeleton
 
-1. **What**: 何を変更したかを1〜3文で。
-2. **Why**: なぜこの変更が必要か(背景issue・不具合報告・要望へのリンク)。
-3. **How**: 主要なアプローチ。実装の詳細はコードコメントとdiffに任せ、ここでは設計判断のみ書く。
-4. **How to verify(動作確認方法)**: レビュアーが再現・検証できる具体的な手順。テスト実行コマンドやスクリーンショット/GIFの位置。
-5. **影響範囲 / 破壊的変更の有無**: 他チームのコードやAPI利用者に影響する変更は明記する。
-6. **残課題 / フォローアップ予定**(該当する場合): レビューで指摘されそうな未対応点を先回りして書く。
+1. **What**: what changed, in 1–3 sentences.
+2. **Why**: why this change is needed (link to the background issue, bug
+   report, or request).
+3. **How**: the main approach. Leave implementation detail to code
+   comments and the diff; state only the design decisions here.
+4. **How to verify**: concrete steps the reviewer can use to reproduce and
+   verify — test commands, or where to find screenshots/GIFs.
+5. **Impact / breaking changes**: state explicitly if this affects other
+   teams' code or API consumers.
+6. **Remaining work / follow-ups** (if applicable): preempt likely review
+   questions about unfinished items.
 
-### チェックリスト
+### Checklist
 
-- [ ] What/Why/How が分離されており、Whatだけ読んでも変更の輪郭が分かるか
-- [ ] レビュアーが自分の手元で動作確認できる具体的な手順(コマンド・URL・再現条件)があるか
-- [ ] 破壊的変更・DB migration・設定変更など、レビュアーが見落とすと事故になる項目が先頭付近にあるか
-- [ ] 関連issue/チケットへのリンクがあるか
-- [ ] スクリーンショットが必要な変更(UI等)で、実際に添付されているか
+- [ ] Are What/Why/How separated, so reading only "What" gives the shape
+      of the change?
+- [ ] Are there concrete steps (commands, URLs, repro conditions) the
+      reviewer can use to verify locally?
+- [ ] Are breaking changes, DB migrations, config changes — anything a
+      reviewer could miss and cause an incident — near the top?
+- [ ] Is there a link to the related issue/ticket?
+- [ ] For UI changes, are screenshots actually attached?
 
-## issueレポート(バグ報告 / 機能要望)
+## Issue reports (bug reports / feature requests)
 
-### バグ報告の推奨スケルトン
+### Bug report skeleton
 
-1. **概要**: 一文で症状。
-2. **再現手順**: 番号付きで、環境情報(バージョン・OS・ブラウザ等)を手順の前に明記。
-3. **期待する結果 / 実際の結果**: 対比させて書く。
-4. **影響範囲**: 誰に・どの程度の頻度で発生するか。
+1. **Summary**: the symptom, in one sentence.
+2. **Steps to reproduce**: numbered, with environment info (version, OS,
+   browser, etc.) stated *before* the steps.
+3. **Expected vs. actual result**: contrast them explicitly.
+4. **Impact**: who is affected, and how often.
 
-### 機能要望の推奨スケルトン
+### Feature request skeleton
 
-1. **解決したい課題**: 機能そのものではなく、困っている状況を先に書く。
-2. **提案する解決策**(任意): 具体案があれば。
-3. **検討した代替案**(任意)。
+1. **Problem to solve**: state the situation causing pain before the
+   feature itself.
+2. **Proposed solution** (optional): if you have one in mind.
+3. **Alternatives considered** (optional).
 
-### チェックリスト(issue共通)
+### Checklist (issues, common)
 
-- [ ] 再現手順(またはユースケース)が読者の環境非依存で再現可能なレベルまで具体的か
-- [ ] 「期待する結果」と「実際の結果」が明確に対比されているか(バグ報告の場合)
-- [ ] 環境情報(バージョン等)が再現手順より前に書かれているか
+- [ ] Are the repro steps (or use case) concrete enough to reproduce
+      independent of the reader's environment?
+- [ ] Are "expected" and "actual" explicitly contrasted (bug reports)?
+- [ ] Is environment info stated before the repro steps?

@@ -1,27 +1,27 @@
-# <決定内容が分かる名詞句>
+# <Noun phrase naming the decision>
 
-- ステータス: 提案中 / 承認済み / 却下 / 廃止
-- 日付: <YYYY-MM-DD>
+- Status: Proposed / Accepted / Rejected / Superseded
+- Date: <YYYY-MM-DD>
 
-## 背景・課題
+## Context
 
-<なぜこの決定が必要になったか。事実ベースで>
+<Why this decision is needed now. State facts, not opinion>
 
-## 決定内容
+## Decision
 
-<何を選んだかを一文で言い切り、その後に詳細>
+<State what was chosen in one sentence, then the details>
 
-## 検討した代替案
+## Alternatives considered
 
-### 案A: <名称>
+### Option A: <name>
 
-<内容と却下理由>
+<Description and why it was rejected>
 
-## 結果として生じるトレードオフ
+## Consequences
 
-- 得られるもの: <...>
-- 失う/受け入れるコスト: <...>
+- Gains: <...>
+- Costs / trade-offs accepted: <...>
 
-## 未解決の論点
+## Open questions
 
-- <あれば>
+- <If any>

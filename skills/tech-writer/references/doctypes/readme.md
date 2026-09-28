@@ -1,24 +1,36 @@
-# README の型
+# README type
 
-## 想定読者
+## Target reader
 
-このリポジトリを初めて訪れた人。「これは何か」「自分に必要か」「どう始めるか」を数十秒で判断したい。
+Someone visiting this repository for the first time. They want to judge
+"what is this", "do I need it", and "how do I start" within seconds.
 
-## 推奨スケルトン
+## Recommended skeleton
 
-1. **タイトル + 一文説明**: プロジェクト名の直後に、何をするものかを一文で。
-2. **これは何を解決するか(Why)**: 課題→アプローチの順で2〜4文。機能一覧の前に置く。
-3. **主な機能 / できること**: 箇条書き。1項目1機能。動詞から始める。
-4. **インストール / セットアップ**: コピー&ペーストで動くコマンド列。前提条件(バージョン、OS、権限)は手順の前に別項目で。
-5. **使い方 / クイックスタート**: 最小の成功体験(Hello World相当)を最初に。応用は別セクションに分離。
-6. **設定 / オプション**(該当する場合): 表形式(キー・既定値・説明)。
-7. **既知の制約 / 対応していないこと**: 省略しない。
-8. **貢献方法 / ライセンス**: 末尾でよい。
+1. **Title + one-sentence description**: right after the project name, say
+   what it does in one sentence.
+2. **What problem it solves (Why)**: problem → approach in 2–4 sentences,
+   before the feature list.
+3. **Key features / what you can do**: a bullet list, one feature per item,
+   starting with a verb.
+4. **Install / setup**: a command sequence that runs as copy-pasted.
+   Prerequisites (versions, OS, permissions) go in a separate section
+   *before* the steps.
+5. **Usage / quickstart**: the smallest successful experience (a "hello
+   world" equivalent) first. Move advanced usage to a separate section.
+6. **Configuration / options** (if applicable): a table (key, default,
+   description).
+7. **Known limitations / what's not supported**: don't omit this.
+8. **Contributing / license**: fine to leave at the end.
 
-## チェックリスト
+## Checklist
 
-- [ ] タイトル直後の一文だけで「何をするものか」が分かるか
-- [ ] インストール手順は上から順にコピー&ペーストで通るか(前提条件が手順内に紛れていないか)
-- [ ] 「使い方」セクションが機能一覧の網羅ではなく、最小の成功体験になっているか
-- [ ] バッジ・謝辞・ライセンスなど付随情報が本文の主旨より前に来ていないか
-- [ ] 既知の制約セクションが存在するか
+- [ ] Does the one-sentence description right after the title convey "what
+      this does"?
+- [ ] Do the install steps run top-to-bottom via copy-paste (no
+      prerequisite hidden mid-steps)?
+- [ ] Is "Usage" the smallest successful experience, not an exhaustive
+      feature list?
+- [ ] Do badges/acknowledgments/license come after the main content, not
+      before it?
+- [ ] Does a known-limitations section exist?

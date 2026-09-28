@@ -1,19 +1,27 @@
-# リリースノート / CHANGELOG の型
+# Release notes / CHANGELOG type
 
-## 想定読者
+## Target reader
 
-アップグレードするかどうかを判断したい既存ユーザー。読む時間は数秒〜数十秒。
+An existing user deciding whether to upgrade. Reading time: seconds to a
+few tens of seconds.
 
-## 推奨スケルトン
+## Recommended skeleton
 
-1. **バージョン + 日付**: 見出しに必ず両方を含める。
-2. **Breaking Changes(あれば最上部)**: 何が壊れるか、移行方法へのリンクを添えて。ここだけは省略も後回しもしない。
-3. **Added / Changed / Fixed / Deprecated / Removed**: [Keep a Changelog](https://keepachangelog.com/) のカテゴリに沿って分類する。1項目1変更、動詞から始める。
-4. **影響を受けるユーザー層の注記**(該当する場合): 「〜を使っている場合のみ影響」のように限定する。
+1. **Version + date**: always include both in the heading.
+2. **Breaking changes (topmost, if any)**: what breaks, with a link to the
+   migration steps. This is the one section that must never be omitted or
+   deferred.
+3. **Added / Changed / Fixed / Deprecated / Removed**: categorize per
+   [Keep a Changelog](https://keepachangelog.com/). One change per item,
+   starting with a verb.
+4. **Notes on affected user segments** (if applicable): scope it, e.g.
+   "affects only users of X".
 
-## チェックリスト
+## Checklist
 
-- [ ] Breaking Changes が最上部にあり、移行方法(またはそのリンク)があるか
-- [ ] 各項目が「何がどう変わったか」を一文で言い切っているか(コミットメッセージの転記になっていないか)
-- [ ] カテゴリ(Added/Changed/Fixed等)が実際の変更内容と一致しているか
-- [ ] バージョン番号と日付が両方明記されているか
+- [ ] Are breaking changes at the top, with a migration path (or link)?
+- [ ] Does each item state "what changed and how" in one sentence (not a
+      raw copy of the commit message)?
+- [ ] Do the categories (Added/Changed/Fixed, etc.) match the actual
+      change?
+- [ ] Are both the version number and the date stated?
