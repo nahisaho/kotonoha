@@ -5,13 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - Unreleased
+## [0.1.2] - 2026-09-29
 
 ### Added
 
 - Add a mandatory rubber-duck review loop to `write` mode. Generated
   documents are revised, structurally rechecked, and reviewed again until
-  the reviewer reports no remaining meaningful findings.
+  no actionable findings remain.
+- Distinguish a missing independent reviewer (`review not performed`) from
+  a review that reaches its round limit with unresolved findings
+  (`review did not converge`).
 
 ## [0.1.1] - 2026-09-28
 
@@ -39,6 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add structural linting for headings, code fences, placeholders, and
   suspicious links.
 
-[0.1.2]: https://github.com/nahisaho/kotonoha/compare/v0.1.1...HEAD
+[0.1.2]: https://github.com/nahisaho/kotonoha/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/nahisaho/kotonoha/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/nahisaho/kotonoha/releases/tag/v0.1.0
