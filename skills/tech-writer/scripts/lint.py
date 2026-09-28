@@ -16,17 +16,17 @@ Findings are flags, not mandates: exit code is always 0 regardless of the
 finding count (it's a lint, so it shouldn't block CI). Exit code 1 is
 reserved for the input file being missing or unreadable.
 
-Known deliberate exception: assets/templates/pr-description.md shows an
-atomic artifact's own skeleton (a PR description has no H1 title by
-convention), so linting it directly still surfaces a `missing_intro`
-finding. That's expected — it's the doctype's own atomic form, not a
-document missing rule 1's intro paragraph. If a similar template or
-illustrative reference file is added later and legitimately can't satisfy
-a given check, document it here too rather than leaving it unexplained.
+Pass --atomic when linting a commit message, PR description, issue report,
+code comment/docstring, or a single release-notes entry: these atomic
+artifacts follow their own doctype skeleton (see style-constitution.md's
+scope note) and legitimately have no H1 title, so --atomic skips the
+living-document intro-paragraph check that would otherwise misfire on
+them (e.g. assets/templates/pr-description.md lints clean with --atomic).
 
 Usage:
     uv run scripts/lint.py <file>
     uv run scripts/lint.py --json <file>
+    uv run scripts/lint.py --atomic <file>
 """
 from __future__ import annotations
 
@@ -105,8 +105,10 @@ def parse_fences(lines: list) -> tuple:
 
     def fence_match(raw_line):
         # CommonMark/GFM only recognizes a fence indented by at most three
-        # spaces; four or more spaces is indented code, not a fence.
-        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        # spaces; four or more spaces (or a leading tab, which expands to
+        # 4+ columns) is indented code, not a fence.
+        expanded = raw_line.expandtabs(4)
+        indent = len(expanded) - len(expanded.lstrip(" "))
         if indent > 3:
             return None
         return FENCE_RE.match(raw_line.strip())
@@ -290,7 +292,7 @@ def check_intro_paragraph(lines: list, fence_mask: list) -> list:
     ]
 
 
-def run_lint(path: Path) -> LintResult:
+def run_lint(path: Path, atomic: bool = False) -> LintResult:
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
     result = LintResult(file=str(path))
@@ -299,7 +301,13 @@ def run_lint(path: Path) -> LintResult:
     result.findings.extend(check_heading_hierarchy(lines, fence_mask))
     result.findings.extend(check_placeholders(lines, fence_mask))
     result.findings.extend(check_links(lines, fence_mask))
-    result.findings.extend(check_intro_paragraph(lines, fence_mask))
+    if not atomic:
+        # check_intro_paragraph assumes a living, multi-section document
+        # (H1 title + opening paragraph); atomic artifacts like a PR
+        # description or a single release-notes entry follow their own
+        # doctype skeleton instead (see style-constitution.md's scope
+        # note) and legitimately have no H1 at all.
+        result.findings.extend(check_intro_paragraph(lines, fence_mask))
     result.findings.sort(key=lambda f: f.line)
     return result
 
@@ -308,6 +316,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="tech-writer structural lint")
     parser.add_argument("file", type=str, help="Target Markdown file")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
+    parser.add_argument(
+        "--atomic",
+        action="store_true",
+        help=(
+            "Lint as an atomic artifact (commit message, PR description, "
+            "issue report, code comment/docstring, a single release-notes "
+            "entry): skips the living-document intro-paragraph check, "
+            "which doesn't apply to these doctypes' own skeletons."
+        ),
+    )
     args = parser.parse_args()
 
     path = Path(args.file)
@@ -316,7 +334,7 @@ def main() -> int:
         return 1
 
     try:
-        result = run_lint(path)
+        result = run_lint(path, atomic=args.atomic)
     except OSError as e:
         print(f"error: failed to read file: {e}", file=sys.stderr)
         return 1

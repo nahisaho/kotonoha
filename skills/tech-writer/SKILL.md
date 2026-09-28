@@ -194,7 +194,9 @@ step 2 as the primary check for those.
 2. **Doctype checklist**: compare against the checklist at the end of the
    matching reference file.
 3. **Structural lint**: where possible, run `uv run scripts/lint.py <file>`
-   to mechanically catch heading-level skips, code blocks missing a
+   (add `--atomic` for a commit message, PR description, issue report,
+   code comment/docstring, or a single release-notes entry) to
+   mechanically catch heading-level skips, code blocks missing a
    language tag, leftover placeholders, and suspicious links. Findings
    are flags, not mandates — deliberate exceptions can stay; note the reason
    briefly.
