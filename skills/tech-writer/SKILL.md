@@ -27,10 +27,9 @@ description: >-
   question-at-a-time intake before writing. Supports both Japanese and
   English documents, with Japanese as the primary target. Owns document
   structure, information completeness, and reader fit; for living Japanese
-  documents, it orchestrates a registered prose-polishing skill such as
-  https://github.com/coji/natural-japanese for sentence-level naturalness,
-  word choice, rhythm, and "AI smell" removal without reimplementing that
-  skill.
+  documents, it invokes the bundled
+  https://github.com/coji/natural-japanese skill for sentence-level
+  naturalness, word choice, rhythm, and "AI smell" removal.
 license: MIT
 argument-hint: "[write|review|score] [doctype] <target file or request>"
 ---
@@ -57,11 +56,10 @@ reference files.
 
 Document quality splits into two layers: "is the structure right" and "is
 the prose natural and readable". This skill owns the first layer (structure,
-document type conventions, completeness, reader fit). A prose-polishing skill
-such as [natural-japanese](https://github.com/coji/natural-japanese) owns the
-second layer (sentence-level naturalness, removing "AI smell", rhythm);
-tech-writer orchestrates that skill without duplicating its rules or scripts.
-When both skills are installed, this skill locks down the structure and
+document type conventions, completeness, reader fit). The bundled
+[natural-japanese](https://github.com/coji/natural-japanese) skill owns the
+second layer (sentence-level naturalness, removing "AI smell", rhythm).
+Kotonoha packages both layers: tech-writer locks down the structure and
 orchestrates the §5 handoff to natural-japanese during `write` mode before
 the final rubber-duck review.
 
@@ -274,21 +272,20 @@ step 2 as the primary check for those.
 ## 5. Optimize Japanese prose without changing the structure — write mode only
 
 For a living, multi-section document whose requested final language is
-Japanese, read
-`references/japanese-prose-optimization.md` and hand the completed draft to a
-registered `natural-japanese` or equivalent Japanese prose-polishing skill.
-This pass is mandatory when such a skill is available.
+Japanese, read `references/japanese-prose-optimization.md` and hand the
+completed draft to kotonoha's bundled `natural-japanese` skill. This pass is
+mandatory for an in-scope document.
 
-Treat the optimizer as available when the host's registered skill list
-contains `natural-japanese` or a compatible Japanese prose-polishing skill.
-Invoke it through the host's skill-loading mechanism; when only installed
-skill files are exposed, check
+Load `natural-japanese` through the host's skill-loading mechanism. When only
+installed skill files are exposed, resolve the sibling path
+`<tech-writer-dir>/../natural-japanese/SKILL.md` first, then check
 `.github/skills/natural-japanese/SKILL.md`,
 `.copilot/skills/natural-japanese/SKILL.md`, and
-`$HOME/.copilot/skills/natural-japanese/SKILL.md`, then load the discovered
-`SKILL.md` and follow that workflow. Treat the pass as unavailable only when
-no compatible registration or readable skill installation exists, or when
-the optimizer cannot start.
+`$HOME/.copilot/skills/natural-japanese/SKILL.md`. Load the discovered
+`SKILL.md` and follow its quick or full workflow. A standard
+`npx kotonoha install` installs this sibling skill automatically. Treat the
+pass as unavailable only when someone copied or installed tech-writer without
+its bundled sibling, or when the optimizer cannot start.
 
 Freeze heading hierarchy, section order, identifiers, numeric facts,
 citations, normative language, tables, code, commands, acceptance criteria,
@@ -394,10 +391,9 @@ of that. Common items to confirm:
 
 ## Acknowledgment
 
-The idea of separating structure from prose comes from
+The bundled prose optimizer is vendored from
 [natural-japanese](https://github.com/coji/natural-japanese) (MIT License)
-and its design principle "machines detect, humans (or agents) judge" and
-"prevent at generation time rather than fix afterward". This skill extends
-that separation by owning technical-document structure while orchestrating,
-but not reimplementing, the registered prose-polishing skill responsible for
-sentence-level naturalness.
+and retains its design principles: "machines detect, humans (or agents)
+judge" and "prevent at generation time rather than fix afterward".
+Tech-writer extends that separation by owning technical-document structure
+while the bundled skill handles sentence-level naturalness.

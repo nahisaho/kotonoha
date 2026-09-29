@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Make Japanese prose optimization built in by packaging `natural-japanese`
+  with kotonoha and installing it through the default `install --skill all`
+  workflow; separate skill installation is no longer required.
 - Generate Markdown with half-width spaces around `**strong emphasis**`
   whenever the delimiters would otherwise touch surrounding prose, and flag
   violations in the structural lint.
@@ -17,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Vendor `coji/natural-japanese` at commit
+  `9a78a42964096da509b8f3e011f0085a5f080151`, preserving its MIT license,
+  prose lint, reading-load analysis, terminology extraction, writing rules,
+  and evaluation workflow.
 - Add `README-ja.md` as a complete Japanese guide and link it from the
   English README.
 - Explain the meaning of the name `kotonoha` in both READMEs, distinguishing

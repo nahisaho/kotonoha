@@ -5,7 +5,7 @@ are complete. The goal is to remove mechanical or translated-sounding prose
 without changing the document's approved meaning, obligations, evidence, or
 traceability.
 
-The preferred optimizer is the
+The optimizer is kotonoha's bundled
 [natural-japanese prose-polishing skill](https://github.com/coji/natural-japanese).
 Kotonoha owns document structure and completeness; `natural-japanese` owns
 sentence-level clarity, rhythm, word choice, reading load, and detection of
@@ -17,8 +17,7 @@ repeated AI-like phrasing.
   whose audience-facing prose is primarily Japanese.
 - The task is `write` mode.
 - The artifact is a living, multi-section document.
-- A registered `natural-japanese` or equivalent Japanese prose-polishing
-  skill is available.
+- The bundled `natural-japanese` skill is readable.
 
 Skip it for English documents, generated machine-readable files, and source
 code. Also skip atomic artifacts such as commit messages, PR descriptions,
@@ -47,9 +46,9 @@ Never trade technical precision for conversational phrasing.
 
 ## Optimization loop
 
-1. Inspect the host's registered skill list for `natural-japanese` or a
-   compatible Japanese prose-polishing skill. Invoke it through the host's
-   skill-loading mechanism. If the host exposes only skill files, check
+1. Invoke kotonoha's bundled `natural-japanese` through the host's
+   skill-loading mechanism. If the host exposes only skill files, resolve
+   `<tech-writer-dir>/../natural-japanese/SKILL.md` first, then check
    `.github/skills/natural-japanese/SKILL.md`,
    `.copilot/skills/natural-japanese/SKILL.md`, and
    `$HOME/.copilot/skills/natural-japanese/SKILL.md`; expand `$HOME`, load the
@@ -95,9 +94,10 @@ final language is Japanese, in `write` mode), report exactly one status:
   no actionable prose findings remain. Run diagnostics when available; if
   `uv` or a diagnostic script is unavailable, note that limitation without
   changing this status.
-- `Japanese prose optimization not performed`: no compatible optimizer was
-  registered or loaded, so no prose review or rewrite ran; include the
-  concrete reason.
+- `Japanese prose optimization not performed`: the bundled optimizer was
+  missing or unreadable, so no prose review or rewrite ran; include the
+  concrete reason. A standard `npx kotonoha install` should prevent this
+  state.
 - `Japanese prose optimization did not converge`: three rounds completed with
   unresolved actionable findings or invariant violations, or the optimizer
   started but failed before producing a valid result, a required

@@ -14,15 +14,15 @@ kotonohaは、技術文書の作成とプレゼンテーション設計を支援
 
 ## tech-writerが解決する課題
 
-技術文書には、「文章が自然か」と「必要な情報が適切な構成で含まれているか」という別々の課題があります。`tech-writer`は後者を担当し、文単位の自然さ、読みやすさ、用語統一、AIらしい表現の除去は、[natural-japanese](https://github.com/coji/natural-japanese)などの文章最適化スキルへ委譲します。
+技術文書には、「文章が自然か」と「必要な情報が適切な構成で含まれているか」という別々の課題があります。kotonohaは両方の機能を同梱しています。`tech-writer`が構成と情報の完全性を担当し、同梱された[natural-japanese](https://github.com/coji/natural-japanese)が文単位の自然さ、読解負荷、用語統一、AIらしい表現を検査します。
 
-両方をインストールすると、kotonohaは文書構造と技術的な不変条件を固定してから日本語表現を最適化し、構造を再検証した後にrubber-duck reviewを実施します。
+kotonohaは文書構造と技術的な不変条件を固定してから日本語表現を最適化し、構造を再検証した後にrubber-duck reviewを実施します。
 
 ## 主な機能
 
 - README、設計書・ADR、APIリファレンス、PR説明・コミットメッセージ・Issue、リリースノート、ユーザーマニュアル、コードコメント、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、RFI・RFP、Qiita・Zenn記事の作成とレビュー
 - 文書種別ごとの推奨構成とチェックリスト
-- ID、事実、表、コード、受け入れ基準を変更せずに日本語表現を反復的に最適化する、任意の`natural-japanese`連携
+- ID、事実、表、コード、受け入れ基準を変更せずに日本語表現を反復的に最適化する、同梱`natural-japanese`の文章診断
 - 文書作成後のrubber-duck reviewと、対応可能な指摘がなくなるまでの修正・再レビュー
 - 見出しレベルの飛び、言語指定のないコードブロック、未解決のプレースホルダー、不審なリンク、文章に隣接した強調記号などを検出する`scripts/lint.py`
 - コミットメッセージ本文とコードコメント・docstringを除き、すべての文書種別でMarkdownを標準形式として使用
@@ -66,8 +66,8 @@ README、設計判断、ユーザーマニュアル、PR説明、要件定義書
 ### 前提条件
 
 - GitHub Copilot CLIがインストールされていること
-- lintスクリプトを実行する場合はPython 3.9以上。標準ライブラリだけを使用するため追加インストールは不要
-- `natural-japanese`のフレーズlint、読解負荷分析、アウトライン抽出、用語検査を使用する場合は`uv`
+- tech-writerの構造lintを実行する場合はPython 3.9以上
+- 同梱natural-japaneseのフレーズlint、読解負荷分析、アウトライン抽出、用語検査を実行する場合はPython 3.10以上と`uv`。Python依存関係は初回実行時に`uv`が解決
 
 ### npmからインストール
 
@@ -78,39 +78,34 @@ npm install --save-dev kotonoha
 npx kotonoha install
 ```
 
-### tech-writerとpresentation-plannerをまとめてインストール
+### 同梱スキルをまとめてインストール
 
-`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`tech-writer`と`presentation-planner`を`.github/skills/`へインストールします。
+`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`tech-writer`、`natural-japanese`、`presentation-planner`を`.github/skills/`へインストールします。
 
 ```bash
 npm install --save-dev kotonoha
 npx kotonoha install --skill all
 ```
 
-`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。両方のスキルがインストールされたことを確認します。
+`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。3つのスキルがインストールされたことを確認します。
 
 ```bash
 test -f .github/skills/tech-writer/SKILL.md
+test -f .github/skills/natural-japanese/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
-いずれかのディレクトリがすでに存在する場合、既定のコマンドはそのディレクトリを保持し、不足しているスキルだけをインストールします。両方のインストール済みスキルをまとめて置き換える場合は、ローカルのカスタマイズを確認またはバックアップしてから実行します。
+いずれかのディレクトリがすでに存在する場合、既定のコマンドはそのディレクトリを保持し、不足しているスキルだけをインストールします。すべてのインストール済みスキルをまとめて置き換える場合は、ローカルのカスタマイズを確認またはバックアップしてから実行します。
 
 ```bash
 npx kotonoha install --skill all --force
 ```
 
-日本語の文単位の最適化も行う場合は、`natural-japanese`が対応する方法で追加インストールします。
+### 内蔵された日本語表現最適化
 
-```bash
-npx skills add coji/natural-japanese
-```
+kotonohaにはMITライセンスの`natural-japanese`が同梱されるため、`npx skills add coji/natural-japanese`による追加インストールは不要です。`npx kotonoha install`により`tech-writer`と同じスキルルートへ配置され、フレーズlint、読解負荷検査、用語抽出、アウトライン検査、反復的な文章レビューをローカルで実行できます。取り込んだ上流ソースとライセンスは、`skills/natural-japanese/UPSTREAM.md`と`skills/natural-japanese/LICENSE`に記録しています。
 
-インストールしたスキルが、`.github/skills/natural-japanese`や`~/.copilot/skills/natural-japanese`など、Copilot CLIから参照できる登録済みスキルルートに存在することを確認してください。別のホスト向けディレクトリにインストールされた場合は、上流の代替インストール手順に従い、Copilotから参照できるスキルディレクトリへ配置またはリンクします。
-
-互換性のある日本語文章最適化スキルが登録されていない場合、kotonohaは構造化ワークフローを完了し、文章が最適化されたと誤って報告せず、`Japanese prose optimization not performed`と報告します。
-
-既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`と`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、別の対応ディレクトリを使用する場合は、次のように指定します。
+既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`、`.github/skills/natural-japanese`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、別の対応ディレクトリを使用する場合は、次のように指定します。
 
 ```bash
 npx kotonoha install --skill presentation-planner
@@ -129,6 +124,7 @@ npx kotonoha install --force
 ```bash
 npx kotonoha install
 # Skipped tech-writer (...)
+# Installed natural-japanese (...)
 # Installed presentation-planner (...)
 ```
 
@@ -158,6 +154,7 @@ npx kotonoha install --force
 
 ```bash
 npx kotonoha install --skill tech-writer --force
+npx kotonoha install --skill natural-japanese --force
 npx kotonoha install --skill presentation-planner --force
 ```
 
@@ -184,6 +181,7 @@ git diff -- .github/skills
 
 ```bash
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
+cp -r skills/natural-japanese /path/to/your-repo/.github/skills/natural-japanese
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -216,25 +214,31 @@ skills/tech-writer/          # tech-writerスキル
   references/doctypes/       # README、要件、設計、テスト、運用、移行、セキュリティ、API、PR・Issue、リリースノート、提案、RFI・RFP、Qiita・Zenn
   scripts/lint.py            # 構造とMarkdown表示のlintスクリプト
   assets/templates/          # 要件、設計、テスト、運用、移行、セキュリティ、調達などの文書テンプレート
+skills/natural-japanese/     # 同梱された日本語表現最適化スキル
+  SKILL.md                   # 執筆、lint、レビュー、収束のワークフロー
+  references/                # 文体憲法、読みやすさ規則、評価ルーブリック
+  scripts/                   # フレーズlint、読解負荷、アウトライン、用語検査
+  LICENSE                    # 上流のMITライセンス
 skills/presentation-planner/ # シナリオ、デザイン仕様、PPTX引き継ぎスキル
   SKILL.md
   references/                # 責任境界、シナリオ・デザインガイド、カスタマイズ、引き継ぎ契約
   assets/scenario-templates/ # 経営判断、技術説明、データ報告向けシナリオ
   assets/design-templates/   # 経営提案、技術説明、データ報告向けYAMLデザイン
 .github/skills/tech-writer   # Copilot CLIが読み込むskills/tech-writerへのシンボリックリンク
+.github/skills/natural-japanese
 .github/skills/presentation-planner
 ```
 
 ## 既知の制約
 
-- `scripts/lint.py`は、見出し、コードブロック、プレースホルダー、リンク、Markdown強調記号などの構造・表示上の問題だけを検出します。文章の自然さ、語彙、リズムの検査には、`natural-japanese`などの登録済み文章最適化スキルが必要です。
+- `skills/tech-writer/scripts/lint.py`は、見出し、コードブロック、プレースホルダー、リンク、Markdown強調記号などの構造・表示上の問題を検出します。文章の自然さ、語彙、リズム、読解負荷は、別工程として呼び出される同梱`skills/natural-japanese`が検査します。
 - 文書種別は主に日本語の技術文書作成規則を前提としています。コミットメッセージの命令形などを含む多くのガイドは、英語文書にも適用できます。
 - `presentation-planner`だけでは`.pptx`バイナリを生成または検証できません。生成と視覚的な品質確認には専用PPTXスキルが必要です。
 - デザインのカスタマイズ方法は、`skills/presentation-planner/references/customizing-design-templates.md`に記載されています。
 
 ## 謝辞
 
-- [natural-japanese](https://github.com/coji/natural-japanese)（MIT License）—「機械が検出し、人間またはエージェントが判断する」「後から修正するのではなく、生成時に防ぐ」という設計原則を参考にしています。
+- [natural-japanese](https://github.com/coji/natural-japanese)（MIT License）— kotonoha内蔵の日本語表現最適化スキルとして同梱しています。上流の著作権表示とライセンスは`skills/natural-japanese/LICENSE`に保持しています。
 
 ## ライセンス
 

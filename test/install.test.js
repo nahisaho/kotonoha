@@ -150,6 +150,17 @@ test("installs all skills into the default project directory", () => {
         workingDirectory,
         ".github",
         "skills",
+        "natural-japanese",
+        "SKILL.md",
+      ),
+    ),
+  );
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        workingDirectory,
+        ".github",
+        "skills",
         "presentation-planner",
         "SKILL.md",
       ),
@@ -226,6 +237,7 @@ test("default install adds missing skills without replacing existing ones", () =
   assert.ok(
     fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
   );
+  assert.ok(fs.existsSync(path.join(target, "natural-japanese", "SKILL.md")));
 });
 
 test("refuses to replace an explicitly selected skill without --force", () => {
@@ -280,6 +292,7 @@ test("--force replaces an existing installation", () => {
   assert.ok(
     fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
   );
+  assert.ok(fs.existsSync(path.join(target, "natural-japanese", "SKILL.md")));
 });
 
 test("the packed npm artifact installs a usable CLI", () => {
@@ -334,6 +347,39 @@ test("the packed npm artifact installs a usable CLI", () => {
         "skills",
         "tech-writer",
         "SKILL.md",
+      ),
+    ),
+  );
+  const installedNaturalJapanese = path.join(
+    consumerDirectory,
+    ".copilot",
+    "skills",
+    "natural-japanese",
+  );
+  assert.ok(fs.existsSync(path.join(installedNaturalJapanese, "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(installedNaturalJapanese, "LICENSE")));
+  assert.ok(fs.existsSync(path.join(installedNaturalJapanese, "UPSTREAM.md")));
+  assert.ok(
+    fs.existsSync(path.join(installedNaturalJapanese, "scripts", "lint.py")),
+  );
+  assert.equal(
+    fs.existsSync(
+      path.join(installedNaturalJapanese, "scripts", "__pycache__"),
+    ),
+    false,
+  );
+  assert.equal(
+    fs.existsSync(
+      path.join(installedNaturalJapanese, "scripts", "calibrate.py"),
+    ),
+    false,
+  );
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        installedNaturalJapanese,
+        "references",
+        "writing-constitution.md",
       ),
     ),
   );
