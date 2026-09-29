@@ -40,6 +40,31 @@ Japanese prose with natural-japanese.
   (the target programming language's own syntax)
 - Japanese as the primary target language, with English document support
 
+## Supported document types
+
+| Document type | Examples | Doctype |
+|---|---|---|
+| Project overview | README | `readme` |
+| Design decision | Design doc, ADR, RFC | `design-doc` |
+| Requirements definition | 要件定義書, functional and non-functional requirements | `requirements-definition` |
+| System design | システム設計書, architecture and detailed system design | `system-design` |
+| API reference | REST API, events, SDK reference | `api-docs` |
+| Development workflow text | PR description, commit message, bug report, feature request | `pr-commit` |
+| Release documentation | Release notes, CHANGELOG | `release-notes` |
+| User guidance | User manual, how-to guide, tutorial | `user-manual` |
+| Source documentation | Code comments, docstrings | `code-comments` |
+| Internal technical proposal | Architecture, investment, and delivery proposal | `technical-proposal` |
+| Request for information | RFI | `rfi` |
+| Request for proposal | RFP | `rfp` |
+| Technical article | Zenn article | `zenn` |
+| Technical article | Qiita article | `qiita` |
+
+Reusable templates are included for README, design decisions, user manuals,
+PR descriptions, requirements definitions, system designs, technical
+proposals, RFI, and RFP documents. Every supported doctype includes dedicated
+structure guidance and a review checklist under
+`skills/tech-writer/references/doctypes/`.
+
 ## What presentation-planner does
 
 - Defines the audience, decision, call to action, and presentation constraints
