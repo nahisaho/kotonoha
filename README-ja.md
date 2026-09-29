@@ -8,9 +8,9 @@ kotonohaは、技術文書の作成とプレゼンテーション設計を支援
 
 `kotonoha`は、「言葉」「言語」「和歌」を表す古典的・詩的な表現「言の葉（ことのは）」に由来します。読み手の意図を、明確で構造化された言葉へ育てるという、このプロジェクトの目的を表しています。
 
-『万葉集』との関係には補足が必要です。『万葉集』という書名を「万（よろづ）の言の葉、すなわち数多くの歌」と解釈する伝統的な説がありますが、書名の由来は確定していません。「やまとうたは、人の心を種として、よろづの言の葉とぞなれりける」という有名な表現の直接の典拠は、『万葉集』ではなく紀貫之による[『古今和歌集』仮名序](https://ja.wikisource.org/wiki/%E5%8F%A4%E4%BB%8A%E5%92%8C%E6%AD%8C%E9%9B%86%E4%BB%AE%E5%90%8D%E5%BA%8F)です。
+『万葉集』との関係には補足が必要です。その書名を「万（よろづ）の言の葉、すなわち数多くの歌」と解釈する伝統的な説がありますが、由来は確定していません。「やまとうたは、人の心を種として、よろづの言の葉とぞなれりける」という有名な表現の直接の典拠は、『万葉集』ではなく紀貫之による[『古今和歌集』仮名序](https://ja.wikisource.org/wiki/%E5%8F%A4%E4%BB%8A%E5%92%8C%E6%AD%8C%E9%9B%86%E4%BB%AE%E5%90%8D%E5%BA%8F)です。
 
-それ以前の『万葉集』にも、言葉が現実に働きかけるという近い思想が「言霊」として詠まれています。奈良県立万葉文化館の「万葉百科」では、山上憶良の[894番歌](https://manyo-hyakka.pref.nara.jp/db/detailLink?cls=db_manyo&pkey=894)や[3254番歌](https://manyo-hyakka.pref.nara.jp/db/detailLink?cls=db_manyo&pkey=3254)で確認できます。「言の葉」の歴史的な語義については、[コトバンク](https://kotobank.jp/word/%E8%A8%80%E3%81%AE%E8%91%89-503155)も参照しています。
+一方、それ以前に成立した『万葉集』でも、言葉が現実に働きかけるという近い思想が「言霊」として詠まれています。奈良県立万葉文化館の「万葉百科」では、山上憶良の[894番歌](https://manyo-hyakka.pref.nara.jp/db/detailLink?cls=db_manyo&pkey=894)や[3254番歌](https://manyo-hyakka.pref.nara.jp/db/detailLink?cls=db_manyo&pkey=3254)で確認できます。「言の葉」の歴史的な語義については、[コトバンク](https://kotobank.jp/word/%E8%A8%80%E3%81%AE%E8%91%89-503155)も参照しています。
 
 ## tech-writerが解決する課題
 
@@ -20,7 +20,7 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 
 ## 主な機能
 
-- README、設計書・ADR、APIリファレンス、PR説明・コミットメッセージ・Issue、リリースノート、ユーザーマニュアル、コードコメント、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、RFI・RFP、Qiita・Zenn記事の作成とレビュー
+- README、設計書・ADR、APIリファレンス、PR説明、コミットメッセージ、Issue本文、リリースノート、ユーザーマニュアル、コードコメント、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、RFI・RFP、Qiita・Zenn記事の作成とレビュー
 - 文書種別ごとの推奨構成とチェックリスト
 - ID、事実、表、コード、受け入れ基準を変更せずに日本語表現を反復的に最適化する、GiNZAベースの独自`japanese-prose`文章診断
 - 文書作成後のrubber-duck reviewと、対応可能な指摘がなくなるまでの修正・再レビュー
@@ -57,10 +57,10 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 
 - 対象者、意思決定、行動喚起、プレゼンテーションの制約を定義
 - ブリーフ、対象者の理解を導くシナリオ、主張型タイトルを使ったスライド構成を生成
-- YAMLデザイン仕様とPPTX作成スキル向けの決定的な引き継ぎ情報を生成
+- YAMLデザイン仕様とPPTX作成スキル向けの再現可能で明確な引き継ぎ情報を生成
 - 経営判断、技術説明、データ報告向けのシナリオテンプレート
 - 経営提案、技術説明、データ報告向けのデザイン仕様
-- `.pptx`の生成、バイナリ編集、レンダリング、視覚的な品質確認は専用PPTXスキルへ委譲
+- `.pptx`の生成、バイナリ編集、レンダリング、視覚的な品質確認は専用のPPTXスキルに委ねる
 
 ## セットアップ
 
@@ -72,7 +72,7 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 
 ### npmからインストール
 
-パッケージをインストールし、同梱CLIでスキルをスキルディレクトリへコピーします。
+パッケージをインストールし、同梱CLIで各スキルを対象のスキルディレクトリへコピーします。
 
 ```bash
 npm install --save-dev kotonoha
@@ -106,7 +106,7 @@ npx kotonoha install --skill all --force
 
 kotonohaには独自開発の`japanese-prose`が同梱されるため、文章最適化スキルを別途インストールする必要はありません。`npx kotonoha install`により`tech-writer`と同じスキルルートへ配置され、GiNZAを使った文章lint、読解負荷検査、用語抽出、アウトライン検査、反復的な文章レビューをローカルで実行できます。この実装はkotonoha向けにゼロから開発しており、`natural-japanese`のソースコードを含みません。GiNZAの依存関係とライセンス情報は`skills/japanese-prose/NOTICE.md`に記録しています。
 
-自然言語で指示するときは、GiNZAを明示する必要はありません。日本語文書を自然にする、読みやすくする、簡潔にする、AIらしい定型表現を減らす、といった依頼により、同梱された文章最適化ワークフローが呼び出されます。
+自然言語で指示するときは、GiNZAを明示する必要はありません。「日本語文書を自然にする」「読みやすくする」「簡潔にする」「AIらしい定型表現を減らす」といった依頼をすると、同梱の文章最適化ワークフローが呼び出されます。
 
 ```text
 README-ja.mdの日本語を自然で読みやすい表現に修正して
@@ -127,7 +127,7 @@ README-ja.mdの日本語を自然で読みやすい表現に修正して
 
 新しい日本語文書では、`このリポジトリの日本語READMEを作成して`のように依頼すると、`tech-writer`が下書きと構造レビューを行い、rubber-duck reviewの前にGiNZAベースの文章最適化を実行します。文章最適化を確実に指定する場合は、`<ファイル名>を技術文書として作成または修正し、GiNZAによる日本語表現最適化まで実施して`と指示します。
 
-既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`、`.github/skills/japanese-prose`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、別の対応ディレクトリを使用する場合は、次のように指定します。
+既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`、`.github/skills/japanese-prose`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、対応している別のディレクトリを使用する場合は、次のように指定します。
 
 ```bash
 npx kotonoha install --skill presentation-planner
@@ -135,13 +135,13 @@ npx kotonoha install --target .claude/skills
 npx kotonoha install --target ~/.copilot/skills
 ```
 
-`--skill <name>`を明示したインストールは、既存のスキルディレクトリを上書きしません。既存のインストールを確認またはバックアップし、選択したスキルを置き換える場合にだけ`--force`を指定します。
+`--skill <name>`を明示したインストールは、既存のスキルディレクトリを上書きしません。すべてのスキルを置き換える場合は、既存のインストールを確認またはバックアップしてから`--force`を指定します。
 
 ```bash
 npx kotonoha install --force
 ```
 
-すべてのスキルをインストールする場合、既存のスキルディレクトリはスキップされ、不足しているスキルだけが追加されます。このため、`tech-writer`だけをインストール済みの環境から安全に更新できます。
+既定の全スキルインストールでは、既存のスキルディレクトリをスキップし、不足しているスキルだけを追加します。このため、`tech-writer`だけがインストールされた環境にも、ほかの同梱スキルを安全に追加できます。
 
 ```bash
 npx kotonoha install
@@ -160,7 +160,7 @@ npx kotonoha install
 npm install --save-dev kotonoha@latest
 ```
 
-現在のプレリリース版を試す場合は、`next`タグをインストールします。
+`next`タグで公開されているプレリリース版を試す場合は、次のようにインストールします。
 
 ```bash
 npm install --save-dev kotonoha@next
@@ -180,13 +180,13 @@ npx kotonoha install --skill japanese-prose --force
 npx kotonoha install --skill presentation-planner --force
 ```
 
-最初のインストールで別のインストール先を指定した場合は、同じディレクトリを再度指定します。
+最初のインストールで別のインストール先を指定した場合は、更新時にも同じディレクトリを指定します。
 
 ```bash
 npx kotonoha install --target ~/.copilot/skills --force
 ```
 
-インストール済みパッケージのバージョンを確認し、置き換えられたファイルをコミット前に確認します。
+インストール済みパッケージのバージョンと、置き換えられたファイルの差分をコミット前に確認します。
 
 ```bash
 npx kotonoha --version
@@ -199,7 +199,7 @@ git diff -- .github/skills
 
 このリポジトリでは、スキルが`.github/skills/`配下にリンクされているため、Copilot CLIで使用するための追加設定は不要です。
 
-別のプロジェクトでソースチェックアウトのスキルを使用する場合は、スキルのディレクトリを対象リポジトリの`.github/skills/`、`.claude/skills/`、またはグローバルの`~/.copilot/skills/`へコピーします。
+別のプロジェクトでソースチェックアウトに含まれるスキルを使用する場合は、各スキルのディレクトリを対象リポジトリの`.github/skills/`、`.claude/skills/`、またはグローバルの`~/.copilot/skills/`へコピーします。
 
 ```bash
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
@@ -260,7 +260,7 @@ skills/presentation-planner/ # シナリオ、デザイン仕様、PPTX引き継
 
 ## 謝辞
 
-- [GiNZA](https://github.com/megagonlabs/ginza)（MIT License）— kotonoha独自の日本語文章診断に、形態素解析、品詞タグ付け、係り受け解析、見出し語化、文境界、固有表現抽出を提供します。
+- [GiNZA](https://github.com/megagonlabs/ginza)（MIT License）— kotonoha独自の日本語文章診断に、形態素解析、品詞タグ付け、係り受け解析、原形化、文境界、固有表現抽出を提供します。
 
 ## ライセンス
 
