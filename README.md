@@ -172,6 +172,33 @@ scratch for kotonoha and does not include `natural-japanese` source code.
 GiNZA dependency and license information is recorded in
 `skills/japanese-prose/NOTICE.md`.
 
+You do not need to name GiNZA explicitly in a natural-language request.
+Requests to make a Japanese document more natural, readable, concise, or less
+formulaic invoke the bundled prose-optimization workflow. For example:
+
+```text
+Rewrite README-ja.md in natural, readable Japanese.
+```
+
+```text
+Review this design document for unnatural Japanese, overly long sentences,
+and repetitive AI-like phrasing, then fix the findings.
+```
+
+You can specify the intended mode more precisely:
+
+- Edit the file: `Optimize the Japanese prose in README-ja.md.`
+- Review without editing: `Review the Japanese in README-ja.md, but do not modify the file.`
+- Score only: `Score the Japanese prose in README-ja.md out of 100.`
+- Run every diagnostic: `Run the full Japanese prose optimization workflow on README-ja.md.`
+- Request GiNZA explicitly: `Analyze README-ja.md with GiNZA and improve dependency depth and reading load.`
+
+When creating a new Japanese document, asking `Create a Japanese README for
+this repository` lets `tech-writer` create and structurally review the draft,
+then run the GiNZA-based prose pass before rubber-duck review. To require the
+pass unambiguously, ask: `Create or revise <file> as a technical document and
+run GiNZA-based Japanese prose optimization.`
+
 The default destinations are `.github/skills/tech-writer`,
 `.github/skills/japanese-prose`, and
 `.github/skills/presentation-planner` in the current project. To install only

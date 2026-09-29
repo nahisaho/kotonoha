@@ -106,6 +106,27 @@ npx kotonoha install --skill all --force
 
 kotonohaには独自開発の`japanese-prose`が同梱されるため、文章最適化スキルを別途インストールする必要はありません。`npx kotonoha install`により`tech-writer`と同じスキルルートへ配置され、GiNZAを使った文章lint、読解負荷検査、用語抽出、アウトライン検査、反復的な文章レビューをローカルで実行できます。この実装はkotonoha向けにゼロから開発しており、`natural-japanese`のソースコードを含みません。GiNZAの依存関係とライセンス情報は`skills/japanese-prose/NOTICE.md`に記録しています。
 
+自然言語で指示するときは、GiNZAを明示する必要はありません。日本語文書を自然にする、読みやすくする、簡潔にする、AIらしい定型表現を減らす、といった依頼により、同梱された文章最適化ワークフローが呼び出されます。
+
+```text
+README-ja.mdの日本語を自然で読みやすい表現に修正して
+```
+
+```text
+この設計書の不自然な日本語、長すぎる文、AIらしい反復表現を確認し、
+指摘を修正して
+```
+
+目的に応じて、次のようにモードを指定できます。
+
+- ファイルを修正する: `README-ja.mdの日本語表現を最適化して`
+- 修正せずにレビューする: `README-ja.mdの日本語をレビューして。ファイルは修正しないで`
+- 採点だけ行う: `README-ja.mdの日本語表現を100点満点で採点して`
+- すべての診断を実行する: `README-ja.mdをfullモードで日本語表現最適化して`
+- GiNZAを明示する: `README-ja.mdをGiNZAで解析し、係り受けや読解負荷を改善して`
+
+新しい日本語文書では、`このリポジトリの日本語READMEを作成して`のように依頼すると、`tech-writer`が下書きと構造レビューを行い、rubber-duck reviewの前にGiNZAベースの文章最適化を実行します。文章最適化を確実に指定する場合は、`<ファイル名>を技術文書として作成または修正し、GiNZAによる日本語表現最適化まで実施して`と指示します。
+
 既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`、`.github/skills/japanese-prose`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、別の対応ディレクトリを使用する場合は、次のように指定します。
 
 ```bash
