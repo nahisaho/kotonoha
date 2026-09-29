@@ -22,6 +22,8 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Publish package
-        run: npm publish --access public
+        run: |
+          TAG=$(node bin/npm-publish-tag.js)
+          npm publish --access public --tag "$TAG"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

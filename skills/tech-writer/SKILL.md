@@ -25,13 +25,12 @@ description: >-
   the request is a bare goal without enough context to start (e.g. "I want
   to write a README" / "○○を書きたい"), since this skill drives a one
   question-at-a-time intake before writing. Supports both Japanese and
-  English documents, with Japanese as the primary target for polished,
-  natural phrasing (pairing well with https://github.com/coji/natural-japanese
-  for sentence-level Japanese refinement). Does NOT handle sentence-level
-  naturalness, word choice, or rhythm ("AI smell" removal) — that is the
-  domain of natural-japanese and similar prose-polishing skills. This skill
-  is specific to a document's structure, information completeness, and
-  reader fit.
+  English documents, with Japanese as the primary target. Owns document
+  structure, information completeness, and reader fit; for living Japanese
+  documents, it orchestrates a registered prose-polishing skill such as
+  https://github.com/coji/natural-japanese for sentence-level naturalness,
+  word choice, rhythm, and "AI smell" removal without reimplementing that
+  skill.
 license: MIT
 argument-hint: "[write|review|score] [doctype] <target file or request>"
 ---
@@ -58,9 +57,10 @@ reference files.
 
 Document quality splits into two layers: "is the structure right" and "is
 the prose natural and readable". This skill owns the first layer (structure,
-document type conventions, completeness, reader fit). The second layer
-(sentence-level naturalness, removing "AI smell", rhythm) is out of scope and
-belongs to a prose-polishing skill such as [natural-japanese](https://github.com/coji/natural-japanese).
+document type conventions, completeness, reader fit). A prose-polishing skill
+such as [natural-japanese](https://github.com/coji/natural-japanese) owns the
+second layer (sentence-level naturalness, removing "AI smell", rhythm);
+tech-writer orchestrates that skill without duplicating its rules or scripts.
 When both skills are installed, this skill locks down the structure and
 orchestrates the §5 handoff to natural-japanese during `write` mode before
 the final rubber-duck review.
@@ -80,8 +80,8 @@ Infer the mode from the argument or the request:
   the rubber-duck review loop has no remaining actionable findings. If an
   independent review cannot run or cannot converge, returns the explicit
   review status required by §6 instead of claiming a clean review. For a
-  primarily Japanese document, also return the §5 Japanese prose optimization
-  status.
+  in-scope Japanese living document, also return the §5 Japanese prose
+  optimization status.
 - `review`: structural review of an existing document. Does not rewrite;
   reports the gap against the doctype checklist (§7).
 - `score`: structure-only quick diagnostic. Runs
@@ -267,7 +267,8 @@ step 2 as the primary check for those.
 
 ## 5. Optimize Japanese prose without changing the structure — write mode only
 
-For a primarily Japanese document, read
+For a living, multi-section document whose requested final language is
+Japanese, read
 `references/japanese-prose-optimization.md` and hand the completed draft to a
 registered `natural-japanese` or equivalent Japanese prose-polishing skill.
 This pass is mandatory when such a skill is available.
@@ -275,9 +276,13 @@ This pass is mandatory when such a skill is available.
 Treat the optimizer as available when the host's registered skill list
 contains `natural-japanese` or a compatible Japanese prose-polishing skill.
 Invoke it through the host's skill-loading mechanism; when only installed
-skill files are exposed, load its `SKILL.md` and follow that workflow. Treat
-the pass as unavailable only when no compatible registration or readable
-skill installation exists, or when the optimizer cannot start.
+skill files are exposed, check
+`.github/skills/natural-japanese/SKILL.md`,
+`.copilot/skills/natural-japanese/SKILL.md`, and
+`$HOME/.copilot/skills/natural-japanese/SKILL.md`, then load the discovered
+`SKILL.md` and follow that workflow. Treat the pass as unavailable only when
+no compatible registration or readable skill installation exists, or when
+the optimizer cannot start.
 
 Freeze heading hierarchy, section order, identifiers, numeric facts,
 citations, normative language, tables, code, commands, acceptance criteria,
@@ -288,21 +293,27 @@ optional diagnostics are a reported limitation, not proof that the prose pass
 did not run. After the prose pass, repeat the doctype checklist and structural
 lint from §4.
 
-For a primarily Japanese document in `write` mode, report one explicit
-status:
+For an in-scope Japanese document in `write` mode, report one explicit status.
+Do not run this pass or report a status for atomic artifacts such as commit
+messages, PR descriptions, issue reports, single release-note entries, or
+code comments/docstrings unless the user explicitly requests prose polishing
+and supplies the prose in a standalone file:
 
 - `Japanese prose optimization completed`
 - `Japanese prose optimization not performed`
 - `Japanese prose optimization did not converge`
 
-If no compatible optimizer can be loaded, use
+Across the complete write workflow, allow at most 15 optimizer handoffs,
+including reruns after rubber-duck edits. If no compatible optimizer can be
+loaded, use
 `Japanese prose optimization not performed` and state the reason. If the
 optimizer starts but fails, or an edit violates a frozen invariant, revert
 the invalid edit and retry within the three-round limit; unresolved failures
 or invariant violations use
 `Japanese prose optimization did not converge`. Do not claim this
 optimization from kotonoha's structural lint alone. Documents that are not
-primarily Japanese require no optimization status.
+within the Japanese final-language scope defined above require no optimization
+status.
 
 ## 6. Rubber-duck review loop — write mode only
 
@@ -330,7 +341,9 @@ for `write` mode; do not run it for `review` or `score` mode.
    reporting its final status. Then repeat the doctype checklist and
    structural lint from §4 before asking for another rubber-duck review. A
    fix must not introduce a new structural defect or leave the final Japanese
-   prose outside the completed optimization pass.
+   prose outside the completed optimization pass. If a required rerun cannot
+   start because all 15 handoffs were already used, or cannot complete,
+   report `Japanese prose optimization did not converge`, not `completed`.
 4. **Review again with the prior decisions**: reuse the same reviewer context
    when supported. Otherwise, include the previous findings, applied fixes,
    and declined findings with their reasons in every new review prompt. Ask

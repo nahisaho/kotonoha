@@ -4,9 +4,46 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
+const { publishTagForVersion } = require("../bin/npm-publish-tag.js");
 
 const repositoryRoot = path.resolve(__dirname, "..");
 const cli = path.join(repositoryRoot, "bin", "kotonoha.js");
+
+test("tech-writer workflow section references stay aligned", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "tech-writer", "SKILL.md"),
+    "utf8",
+  );
+
+  assert.match(skill, /## 5\. Optimize Japanese prose/);
+  assert.match(skill, /## 6\. Rubber-duck review loop/);
+  assert.match(skill, /## 7\. Doctype checklist summary/);
+  assert.match(skill, /§1–§6 workflow/);
+  assert.match(skill, /review status required by §6/);
+  assert.match(skill, /doctype checklist \(§7\)/);
+});
+
+test("npm publishing routes prereleases away from latest", () => {
+  const packageVersion = require("../package.json").version;
+  const workflow = fs.readFileSync(
+    path.join(repositoryRoot, ".github", "workflows", "npm-publish.yml"),
+    "utf8",
+  );
+
+  assert.equal(publishTagForVersion("0.1.5-dev.0"), "next");
+  assert.equal(publishTagForVersion("0.1.5-beta.1"), "next");
+  assert.equal(publishTagForVersion("0.1.5"), "latest");
+  assert.equal(
+    execFileSync(
+      process.execPath,
+      [path.join(repositoryRoot, "bin", "npm-publish-tag.js")],
+      { encoding: "utf8" },
+    ).trim(),
+    publishTagForVersion(packageVersion),
+  );
+  assert.match(workflow, /TAG=\$\(node bin\/npm-publish-tag\.js\)/);
+  assert.match(workflow, /npm publish --access public --tag "\$TAG"/);
+});
 
 function createTemporaryDirectory() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "kotonoha-test-"));
