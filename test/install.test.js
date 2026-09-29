@@ -304,6 +304,11 @@ test("the packed npm artifact installs a usable CLI", () => {
     cwd: consumerDirectory,
     stdio: "pipe",
   });
+  assert.ok(
+    fs.existsSync(
+      path.join(consumerDirectory, "node_modules", "kotonoha", "README-ja.md"),
+    ),
+  );
 
   const npx = process.platform === "win32" ? "npx.cmd" : "npx";
   execFileSync(

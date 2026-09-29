@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a Qiita article template whose highest-level body sections use `#` and
   subsections use `##`.
 
+### Added
+
+- Add `README-ja.md` as a complete Japanese guide and link it from the
+  English README.
+
 ## [0.1.5] - 2026-09-29
 
 ### Added

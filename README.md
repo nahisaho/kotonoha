@@ -11,6 +11,8 @@ structured so readers never get lost. `presentation-planner` turns source
 material into a reusable presentation scenario, slide outline, design
 specification, and handoff for a dedicated PPTX creation skill.
 
+[English](./README.md) | [日本語](./README-ja.md)
+
 ## What tech-writer solves
 
 Technical documents tend to have two separate problems: "is the prose
