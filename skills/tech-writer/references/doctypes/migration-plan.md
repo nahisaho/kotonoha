@@ -25,6 +25,13 @@ scripts rather than embedding large programs. Do not claim rollback is
 possible unless the plan states how post-cutover writes and data consistency
 will be handled.
 
+The migration section in `system-design` is sufficient for describing the
+chosen transition architecture. Use a standalone `migration-plan` when the
+cutover needs rehearsals, a timed procedure, business communications,
+Go/No-Go gates, reconciliation evidence, or separate approval. When both
+exist, the migration plan is authoritative for execution and the system
+design summarizes the strategy and links to it.
+
 ## Template
 
 Start from `assets/templates/migration-plan.md`.

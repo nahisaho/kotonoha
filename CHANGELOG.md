@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and review checklists.
 - Add the `presentation-planner` skill for presentation requirements,
   storyline, slide outlines, design specifications, and PPTX-skill handoff.
+- Add executive decision, technical briefing, and data report presentation
+  scenario templates plus a `presentation-scenario.md` planning artifact.
 - Add executive proposal, technical briefing, and data report design
   specifications in YAML.
 - Standardize presentation designs on white backgrounds with Microsoft

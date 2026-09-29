@@ -320,6 +320,43 @@ test("the packed npm artifact installs a usable CLI", () => {
   );
   assert.match(installedPresentationSkill, /PPTX generation not performed/);
   assert.match(installedPresentationSkill, /## 0\. Route direct PPTX operations away/);
+  assert.match(installedPresentationSkill, /presentation-scenario\.md/);
+  assert.match(installedPresentationSkill, /five planning artifacts/);
+
+  for (const scenario of [
+    "executive-decision.md",
+    "technical-briefing.md",
+    "data-report.md",
+  ]) {
+    const scenarioPath = path.join(
+      consumerDirectory,
+      ".copilot",
+      "skills",
+      "presentation-planner",
+      "assets",
+      "scenario-templates",
+      scenario,
+    );
+    assert.ok(
+      fs.existsSync(scenarioPath),
+      `${scenario} should be included in the installed presentation skill`,
+    );
+    const scenarioContent = fs.readFileSync(scenarioPath, "utf8");
+    assert.match(scenarioContent, /## Scenario arc/);
+    assert.match(scenarioContent, /## Scenario acceptance checks/);
+  }
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        consumerDirectory,
+        ".copilot",
+        "skills",
+        "presentation-planner",
+        "references",
+        "scenario-templates.md",
+      ),
+    ),
+  );
 
   for (const design of [
     "executive-proposal.yaml",
@@ -480,6 +517,7 @@ test("the packed npm artifact installs a usable CLI", () => {
       "## テスト戦略",
       "## 開始条件と終了条件",
       "## テストケースと要件トレーサビリティ",
+      "対応セキュリティ試験ID",
     ],
     "operations-runbook.md": [
       "## 監視・ログ・アラート",
@@ -512,6 +550,31 @@ test("the packed npm artifact installs a usable CLI", () => {
     );
     for (const marker of markers) {
       assert.ok(content.includes(marker), `${template} should include ${marker}`);
+    }
+  }
+
+  const installedTechWriterDirectory = path.join(
+    consumerDirectory,
+    ".copilot",
+    "skills",
+    "tech-writer",
+  );
+  const installedDoctypeDirectory = path.join(
+    installedTechWriterDirectory,
+    "references",
+    "doctypes",
+  );
+  for (const reference of fs.readdirSync(installedDoctypeDirectory)) {
+    if (!reference.endsWith(".md")) continue;
+    const referenceContent = fs.readFileSync(
+      path.join(installedDoctypeDirectory, reference),
+      "utf8",
+    );
+    for (const match of referenceContent.matchAll(/Start from `([^`]+)`/g)) {
+      assert.ok(
+        fs.existsSync(path.join(installedTechWriterDirectory, match[1])),
+        `${reference} should point to an installed template: ${match[1]}`,
+      );
     }
   }
 });

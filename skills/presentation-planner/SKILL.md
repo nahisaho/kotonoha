@@ -5,9 +5,10 @@ description: >-
   presentations without generating or editing the .pptx file itself. Use for
   requests like "create a PowerPoint", "make a PPTX", "design a slide deck",
   "turn this proposal into slides", 「PowerPointを作って」「PPTXを作成して」
-  「提案書をスライドにして」「プレゼン資料の構成を作って」. Produces a
-  presentation brief, slide-by-slide outline, design specification, and
-  handoff instructions for the host's dedicated PPTX creation skill. Does
+  「提案書をスライドにして」「プレゼン資料の構成を作って」
+  「プレゼンシナリオを作って」. Produces a presentation brief, reusable
+  scenario-based narrative, slide-by-slide outline, design specification,
+  and handoff instructions for the host's dedicated PPTX creation skill. Does
   NOT implement PPTX generation, python-pptx/PptxGenJS code, binary editing,
   rendering, thumbnail creation, or visual-overlap inspection; those remain
   the responsibility of the dedicated PPTX skill. Does NOT handle simple
@@ -29,7 +30,7 @@ handoff package for a dedicated PPTX creation skill, not a `.pptx` file.
 Read `references/responsibility-boundary.md` before acting. This skill owns:
 
 - Audience, objective, decision, and call-to-action definition
-- Storyline and slide ordering
+- Scenario selection, audience reasoning journey, and slide ordering
 - One-message-per-slide content architecture
 - Evidence and source mapping
 - Selection and adaptation of a packaged design specification
@@ -45,16 +46,16 @@ This skill must not:
 
 When the host provides a registered `pptx` or PowerPoint creation skill,
 delegate binary generation and visual QA to it. If no such skill is
-available, still produce the four planning artifacts and report
+available, still produce the five planning artifacts and report
 `PPTX generation not performed`; do not silently implement a renderer.
 
 ## Execution modes
 
-- `plan` (default): gather context, produce the four handoff artifacts, and
+- `plan` (default): gather context, produce the five handoff artifacts, and
   delegate generation when a PPTX skill is available.
-- `review`: review existing brief, outline, and design spec for audience fit,
-  storyline gaps, evidence gaps, and handoff ambiguity. Do not inspect the
-  binary presentation.
+- `review`: review existing brief, scenario, outline, and design spec for
+  audience fit, storyline gaps, evidence gaps, and handoff ambiguity. Do not
+  inspect the binary presentation.
 
 ## 0. Route direct PPTX operations away
 
@@ -63,8 +64,8 @@ when any of the following is true:
 
 - The request is a mechanical edit to an existing deck
 - Only one slide, title, image, note, or formatting property must change
-- The user supplied a final slide outline and design with no request to
-  restructure them
+- The user supplied a final scenario, slide outline, and design with no
+  request to restructure them
 - The task is only binary generation, rendering, conversion, or visual QA
 
 Use `presentation-planner` when the audience, storyline, evidence,
@@ -105,7 +106,21 @@ For project-specific changes or new reusable templates, follow
 
 ## 3. Build the storyline before slide content
 
-Use the shortest storyline that gets the audience to the intended outcome:
+Read `references/scenario-templates.md`, then choose the closest scenario
+under `assets/scenario-templates/`:
+
+| Scenario | Use when |
+|---|---|
+| `executive-decision.md` | Approval, investment, roadmap, policy, or option selection |
+| `technical-briefing.md` | Architecture, engineering behavior, or technical review |
+| `data-report.md` | KPI, research, experiment, survey, or operational analysis |
+
+Copy and adapt it into `presentation-scenario.md`. Use the shortest storyline
+that gets the audience to the intended outcome. The selected template's
+scenario arc is authoritative; keep its stage names unless the adaptation
+records why a stage is removed, merged, or renamed.
+
+When none of the packaged templates fits, use this generic fallback:
 
 1. **Context**: why the audience should care now
 2. **Tension**: the problem, gap, risk, or opportunity
@@ -117,7 +132,7 @@ Use the shortest storyline that gets the audience to the intended outcome:
 Remove a stage when it adds no decision value. Do not add agenda, section
 divider, or summary slides merely to increase slide count.
 
-## 4. Produce the four handoff artifacts
+## 4. Produce the five handoff artifacts
 
 Write the artifacts under `.presentation/<deck-slug>/` unless the user
 specifies another directory. Derive a stable, filesystem-safe slug from the
@@ -135,17 +150,35 @@ Include:
 - Constraints, non-goals, and known unknowns
 - Selected design template and reason
 
+### `presentation-scenario.md`
+
+Copy and adapt one packaged scenario template. If no packaged template fits,
+write the generic fallback arc from §3 into this file using the same fields:
+stage, audience question, assertion, required evidence, transition, and
+suggested slide range. Include:
+
+- Current and intended audience position
+- One assertion and audience question per scenario stage
+- Required evidence, source status, and assumptions
+- The transition that makes the next stage relevant
+- Likely objections, uncertainty, and trade-offs
+- The exact final decision, action, or understanding
+
+The scenario defines the reasoning journey, not individual slide content.
+
 ### `slide-outline.md`
 
 Use one row per slide:
 
-| # | Assertion title | Audience takeaway | Evidence/source | Visual form | Speaker note purpose |
-|---:|---|---|---|---|---|
+| # | Scenario stage(s) | Assertion title | Audience takeaway | Evidence/source | Visual form | Speaker note purpose |
+|---:|---|---|---|---|---|---|
 
 Rules:
 
 - Titles state the slide's conclusion, not its topic
 - Each slide has one primary message
+- Every slide maps to at least one scenario stage; separate multiple stage
+  names with ` / `
 - Evidence is traceable to a source or marked as an assumption
 - Visual form is specific: comparison table, timeline, architecture diagram,
   annotated chart, process, quote, or full-bleed image
@@ -175,6 +208,9 @@ Follow `references/handoff-contract.md`. It must tell the PPTX skill:
 Before handoff, verify:
 
 - Reading only assertion titles reproduces the full argument
+- Reading only scenario-stage assertions reproduces the audience journey
+- Every slide maps to at least one stage without introducing an unsupported
+  conclusion
 - The final slide asks for the exact intended decision or action
 - Every factual or quantitative claim has a source or assumption marker
 - No slide has more than one primary message
@@ -191,7 +227,7 @@ with the unresolved findings and attempted fixes.
 
 ## 6. Delegate PPTX creation
 
-Pass the four artifact paths to the host's dedicated PPTX skill. The PPTX
+Pass the five artifact paths to the host's dedicated PPTX skill. The PPTX
 skill may choose its own implementation library, but it must preserve the
 approved storyline and design tokens unless it reports a concrete rendering
 constraint.

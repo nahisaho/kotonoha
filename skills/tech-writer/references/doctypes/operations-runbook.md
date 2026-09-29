@@ -25,6 +25,13 @@ automation where it exists, but preserve preconditions, safety checks,
 expected results, escalation, and recovery behavior. Never include secret
 values or bypass access and change controls.
 
+The operations section in `system-design` is sufficient for architectural
+operability decisions. Use a standalone `operations-runbook` when on-call
+staff need executable procedures, alerts, escalation, exercises, or a review
+cycle independent of the system design. When both exist, the runbook is
+authoritative for live operations and the system design links to its current
+approved version.
+
 ## Template
 
 Start from `assets/templates/operations-runbook.md`.

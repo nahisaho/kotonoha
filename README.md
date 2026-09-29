@@ -4,11 +4,12 @@ kotonoha provides GitHub Copilot CLI skills for technical documents and
 presentation planning. `tech-writer` helps structure and polish README, design
 docs/ADRs, API reference, PR descriptions/commit messages/issue reports,
 release notes, user manuals/how-to guides, code comments, requirements
-definitions, system designs, technical proposals, RFI/RFP procurement
-documents, and Qiita/Zenn articles,
+definitions, system designs, test plans, operations runbooks, migration plans,
+security designs, technical proposals, RFI/RFP procurement documents, and
+Qiita/Zenn articles,
 structured so readers never get lost. `presentation-planner` turns source
-material into a storyline, slide outline, design specification, and handoff
-for a dedicated PPTX creation skill.
+material into a reusable presentation scenario, slide outline, design
+specification, and handoff for a dedicated PPTX creation skill.
 
 ## What tech-writer solves
 
@@ -24,8 +25,9 @@ Japanese prose with natural-japanese.
 
 - Create/review README, design docs/ADRs, API reference, PR
   descriptions/commit messages/issue reports, release notes, user manuals,
-  code comments, requirements definitions, system designs, technical
-  proposals, RFI/RFP procurement documents, and Qiita/Zenn articles
+  code comments, requirements definitions, system designs, test plans,
+  operations runbooks, migration plans, security designs, technical proposals,
+  RFI/RFP procurement documents, and Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
 - Iterative rubber-duck review after document creation, with fixes and
   re-review until no actionable findings remain; unavailable reviews are
@@ -73,8 +75,11 @@ guidance and a review checklist under
 ## What presentation-planner does
 
 - Defines the audience, decision, call to action, and presentation constraints
-- Produces a brief, assertion-title slide outline, YAML design specification,
-  and deterministic handoff for the host's PPTX creation skill
+- Produces a brief, audience-reasoning scenario, assertion-title slide outline,
+  YAML design specification, and deterministic handoff for the host's PPTX
+  creation skill
+- Includes executive decision, technical briefing, and data report scenario
+  templates
 - Includes executive proposal, technical briefing, and data report design
   specifications
 - Delegates `.pptx` generation, binary editing, rendering, and visual QA to
@@ -167,12 +172,13 @@ works too (standard library only).
 skills/tech-writer/          # the skill itself
   SKILL.md                   # skill definition
   references/                # structure constitution + doctype rules/checklists
-  references/doctypes/       # README, requirements/design/test/operations/migration/security, API docs, proposals, RFI/RFP, Qiita/Zenn
+  references/doctypes/       # README, requirements/design/test/operations/migration/security, API docs, PR/issue, release notes, proposals, RFI/RFP, Qiita/Zenn
   scripts/lint.py            # structural lint script
   assets/templates/          # doctype skeletons including requirements, design, test, operations, migration, security, and procurement
 skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   SKILL.md
-  references/                # boundary, schema, customization, handoff contract
+  references/                # boundary, scenario/design guidance, customization, handoff contract
+  assets/scenario-templates/ # executive, technical, and data-report narrative scenarios
   assets/design-templates/   # executive, technical, and data-report YAML designs
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
 .github/skills/presentation-planner

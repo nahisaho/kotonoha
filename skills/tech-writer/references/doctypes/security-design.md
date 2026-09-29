@@ -26,6 +26,18 @@ include credentials, private keys, exploitable production details, or
 instructions that bypass controls. Vulnerability findings needing restricted
 handling belong in the repository's approved security-reporting channel.
 
+The security section in `system-design` is sufficient for an integrated
+architecture summary. Use a standalone `security-design` when threat
+modeling, control ownership, compliance evidence, exceptions, or risk
+acceptance needs independent review. When both exist, the security design is
+authoritative for threats, controls, and residual risk.
+
+This document owns security-test intent by tracing requirements and threats
+to controls and planned tests, including the expected environment class and
+required evidence type. The `test-plan` owns actual execution environments,
+schedule, release gates, results, and evidence storage; copy the security
+test IDs, threat IDs, and control IDs into its traceability table.
+
 ## Template
 
 Start from `assets/templates/security-design.md`.

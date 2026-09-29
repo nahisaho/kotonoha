@@ -31,6 +31,13 @@ through change control.
 Use `design-doc` or an ADR for one isolated decision and its alternatives.
 Use `system-design` when the reader needs the integrated design across
 components, data, interfaces, deployment, quality attributes, and operations.
+Its test, operation, migration, and security sections summarize the design
+decisions needed to understand the whole system. Split out a `test-plan`,
+`operations-runbook`, `migration-plan`, or `security-design` when that topic
+needs executable procedures, independent evidence, a different approval
+authority, or a separate lifecycle. When a standalone document exists, it is
+the source of truth for that topic; the system design links to and summarizes
+it instead of duplicating details.
 
 ## Template
 

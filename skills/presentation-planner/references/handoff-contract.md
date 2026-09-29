@@ -6,6 +6,7 @@ Use this structure for
 ## Inputs
 
 - Brief: `<path>/presentation-brief.md`
+- Scenario: `<path>/presentation-scenario.md`
 - Slide outline: `<path>/slide-outline.md`
 - Design specification: `<path>/design-spec.yaml`
 - Source materials: `<paths>`
@@ -19,6 +20,9 @@ Use this structure for
 ## Rendering requirements
 
 - Preserve slide order and assertion titles.
+- Preserve the approved scenario stages and audience reasoning journey.
+- Require every slide to map to at least one scenario stage; preserve
+  multi-stage mappings recorded with ` / ` in the outline.
 - Treat evidence and citation fields as content requirements.
 - Apply semantic design tokens from `design-spec.yaml`.
 - Add speaker notes where specified.
@@ -41,5 +45,5 @@ Return:
 1. Output path and final slide count
 2. Visual QA result
 3. Missing or substituted assets/fonts
-4. Deviations and their reasons
+4. Deviations from the scenario, outline, or design and their reasons
 5. Remaining manual-review items

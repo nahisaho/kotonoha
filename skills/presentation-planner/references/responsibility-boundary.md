@@ -5,6 +5,7 @@
 | Concern | presentation-planner | PPTX creation skill |
 |---|---:|---:|
 | Audience, outcome, and decision | Owns | Consumes |
+| Scenario and audience reasoning journey | Owns | Preserves |
 | Storyline and slide sequence | Owns | Preserves |
 | Assertion titles and evidence mapping | Owns | Renders |
 | Design tokens and layout intent | Owns | Implements |
