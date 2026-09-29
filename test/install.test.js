@@ -276,6 +276,14 @@ test("the packed npm artifact installs a usable CLI", () => {
     installedSkill,
     /\| Internal technical proposal \| technical-proposal \|/,
   );
+  assert.match(
+    installedSkill,
+    /\| Requirements definition \/ 要件定義書 \| requirements-definition \|/,
+  );
+  assert.match(
+    installedSkill,
+    /\| System design \/ システム設計書 \| system-design \|/,
+  );
   assert.match(installedSkill, /\| Request for information \/ RFI \| rfi \|/);
   assert.match(installedSkill, /\| Request for proposal \/ RFP \| rfp \|/);
 
@@ -376,7 +384,13 @@ test("the packed npm artifact installs a usable CLI", () => {
     ),
   );
 
-  for (const template of ["technical-proposal.md", "rfi.md", "rfp.md"]) {
+  for (const template of [
+    "requirements-definition.md",
+    "system-design.md",
+    "technical-proposal.md",
+    "rfi.md",
+    "rfp.md",
+  ]) {
     assert.ok(
       fs.existsSync(
         path.join(
@@ -406,4 +420,38 @@ test("the packed npm artifact installs a usable CLI", () => {
       `${template} doctype reference should be included in the installed skill`,
     );
   }
+
+  const requirementsTemplate = fs.readFileSync(
+    path.join(
+      consumerDirectory,
+      ".copilot",
+      "skills",
+      "tech-writer",
+      "assets",
+      "templates",
+      "requirements-definition.md",
+    ),
+    "utf8",
+  );
+  assert.match(requirementsTemplate, /## 機能要件/);
+  assert.match(requirementsTemplate, /## 非機能要件/);
+  assert.match(requirementsTemplate, /## 受入条件/);
+  assert.match(requirementsTemplate, /## 要件トレーサビリティ/);
+
+  const systemDesignTemplate = fs.readFileSync(
+    path.join(
+      consumerDirectory,
+      ".copilot",
+      "skills",
+      "tech-writer",
+      "assets",
+      "templates",
+      "system-design.md",
+    ),
+    "utf8",
+  );
+  assert.match(systemDesignTemplate, /対応する要件定義書/);
+  assert.match(systemDesignTemplate, /## セキュリティ設計/);
+  assert.match(systemDesignTemplate, /シークレット管理/);
+  assert.match(systemDesignTemplate, /## テスト方針と要件トレーサビリティ/);
 });

@@ -3,8 +3,9 @@
 kotonoha provides GitHub Copilot CLI skills for technical documents and
 presentation planning. `tech-writer` helps structure and polish README, design
 docs/ADRs, API reference, PR descriptions/commit messages/issue reports,
-release notes, user manuals/how-to guides, code comments, technical
-proposals, RFI/RFP procurement documents, and Qiita/Zenn articles,
+release notes, user manuals/how-to guides, code comments, requirements
+definitions, system designs, technical proposals, RFI/RFP procurement
+documents, and Qiita/Zenn articles,
 structured so readers never get lost. `presentation-planner` turns source
 material into a storyline, slide outline, design specification, and handoff
 for a dedicated PPTX creation skill.
@@ -23,8 +24,8 @@ Japanese prose with natural-japanese.
 
 - Create/review README, design docs/ADRs, API reference, PR
   descriptions/commit messages/issue reports, release notes, user manuals,
-  code comments, technical proposals, RFI/RFP procurement documents, and
-  Qiita/Zenn articles
+  code comments, requirements definitions, system designs, technical
+  proposals, RFI/RFP procurement documents, and Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
 - Iterative rubber-duck review after document creation, with fixes and
   re-review until no actionable findings remain; unavailable reviews are
@@ -116,6 +117,7 @@ invoked automatically.
 
 - "Write a README", "Review this design doc", "Write the PR description",
   "Make this how-to guide clearer"
+- "要件定義書を作って", "承認済み要件からシステム設計書を書いて"
 - "Create a PPTX from this proposal", "Plan an executive presentation",
   "Design a technical briefing deck"
 
@@ -134,9 +136,9 @@ works too (standard library only).
 skills/tech-writer/          # the skill itself
   SKILL.md                   # skill definition
   references/                # structure constitution + doctype rules/checklists
-  references/doctypes/       # README, design/API docs, PR/issue, release notes, manual, comments, proposals, RFI/RFP, Qiita/Zenn
+  references/doctypes/       # README, requirements/system design, API docs, PR/issue, release notes, proposals, RFI/RFP, Qiita/Zenn
   scripts/lint.py            # structural lint script
-  assets/templates/          # doctype skeletons plus technical proposal, RFI, and RFP templates
+  assets/templates/          # doctype skeletons including requirements, system design, proposals, RFI, and RFP
 skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   SKILL.md
   references/                # boundary, schema, customization, handoff contract
