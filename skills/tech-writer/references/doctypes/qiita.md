@@ -1,9 +1,8 @@
 # Qiita article type
 
-Like Zenn, the title lives in YAML frontmatter, not an in-body heading.
-Qiita's readership skews toward searching for a specific error message or
-task, so apply rule 3 (order matching how the reader looks for
-information) especially strictly here.
+The article title lives in YAML frontmatter. Qiita's readership skews toward
+searching for a specific error message or task, so apply rule 3 (order
+matching how the reader looks for information) especially strictly here.
 
 ## Target reader
 
@@ -13,8 +12,8 @@ is scanning to confirm this article addresses their exact situation.
 ## Format
 
 Markdown, with Qiita's frontmatter and a few platform-specific extensions
-on top of GFM. No in-body '#' heading for the article title — sections
-start at '##'.
+on top of GFM. The frontmatter `title` is the article title; body sections
+start at `#`, with `##` used for subsections.
 
 ## Recommended frontmatter
 
@@ -36,6 +35,11 @@ organization_url_name: null # only if publishing under an Organization
   automatically on publish/update — don't hand-edit those unless you know
   why.
 
+## Template
+
+Start from `assets/templates/qiita.md`.
+Use `#` for the highest-level body sections and `##` for their subsections.
+
 ## Recommended skeleton
 
 1. **Lead paragraph (right after frontmatter, before any heading)**: the
@@ -45,9 +49,10 @@ organization_url_name: null # only if publishing under an Organization
 2. **Environment / versions**: state the exact versions (language,
    framework, OS) the article was verified against, before any steps —
    Qiita readers frequently hit version-specific breakage.
-3. **Body sections, one concern per `##` heading**: order by how a reader
+3. **Body sections, one concern per `#` heading**: order by how a reader
    arriving via search would scan (rule 3) — put the fix/answer before
-   background explanation if the article is troubleshooting-oriented.
+   background explanation if the article is troubleshooting-oriented. Use
+   `##` only for subsections within one concern.
 4. **Code blocks with both a language tag and, where relevant, a filename**:
    Qiita supports ` ```js:example.js ` — prefer this over a bare language
    tag when the file identity matters to the reader.
@@ -60,6 +65,8 @@ organization_url_name: null # only if publishing under an Organization
       rather than an unconsidered default?
 - [ ] Does the lead paragraph right after frontmatter state the specific
       problem/task addressed, since there's no in-body title to do that?
+- [ ] Do highest-level body sections use `#`, with `##` reserved for
+      subsections?
 - [ ] Are the exact versions/environment stated before the steps?
 - [ ] For troubleshooting-oriented articles, does the fix appear before
       background explanation, matching how a reader arriving via search

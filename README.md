@@ -72,8 +72,8 @@ Japanese prose pass, then rechecks the structure before rubber-duck review.
 Reusable templates are included for README, design decisions, user manuals,
 PR descriptions, requirements definitions, system designs, test plans,
 operations runbooks, migration plans, security designs, technical proposals,
-RFI, and RFP documents. Every supported doctype includes dedicated structure
-guidance and a review checklist under
+RFI, RFP, and Qiita articles. Every supported doctype includes dedicated
+structure guidance and a review checklist under
 `skills/tech-writer/references/doctypes/`.
 
 ## What presentation-planner does

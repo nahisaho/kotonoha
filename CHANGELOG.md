@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add a Qiita article template whose highest-level body sections use `#` and
+  subsections use `##`.
 - Add a guarded Japanese prose-optimization handoff to `natural-japanese` or
   an equivalent registered skill, with invariant preservation, bounded
   convergence, structural revalidation, and explicit completion statuses.

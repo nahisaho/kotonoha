@@ -513,6 +513,7 @@ test("the packed npm artifact installs a usable CLI", () => {
     "technical-proposal.md",
     "rfi.md",
     "rfp.md",
+    "qiita.md",
   ]) {
     assert.ok(
       fs.existsSync(
@@ -577,6 +578,21 @@ test("the packed npm artifact installs a usable CLI", () => {
   assert.match(systemDesignTemplate, /## セキュリティ設計/);
   assert.match(systemDesignTemplate, /シークレット管理/);
   assert.match(systemDesignTemplate, /## テスト方針と要件トレーサビリティ/);
+
+  const qiitaTemplate = fs.readFileSync(
+    path.join(
+      consumerDirectory,
+      ".copilot",
+      "skills",
+      "tech-writer",
+      "assets",
+      "templates",
+      "qiita.md",
+    ),
+    "utf8",
+  );
+  assert.match(qiitaTemplate, /^# 検証した環境$/m);
+  assert.match(qiitaTemplate, /^## <手順の前提または補足>$/m);
 
   const templateMarkers = {
     "test-plan.md": [

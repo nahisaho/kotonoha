@@ -10,11 +10,11 @@ These 8 rules assume a **living, multi-section reference document** —
 README, design doc/ADR, API reference, release notes/CHANGELOG file as a
 whole, user manual, technical proposal, RFI/RFP (including a supplier's RFP
 response), or Zenn/Qiita article. Apply all 8 rules to those doctypes. For
-Zenn/Qiita specifically, rule 1's "title" lives in YAML frontmatter rather
-than an in-body '#' heading — see their doctype reference files for the
-platform-specific frontmatter fields — but every other rule (heading
-hierarchy starting at '##', code examples, disclosed limitations, etc.)
-still applies verbatim.
+Zenn and Qiita, rule 1's article title lives in YAML frontmatter — see their
+doctype reference files for the platform-specific fields. Zenn body sections
+start at `##`; Qiita body sections start at `#` and use `##` for subsections.
+Every other rule (code examples, disclosed limitations, etc.) still applies
+verbatim.
 
 **Atomic, single-purpose artifacts** — commit messages, PR descriptions,
 issue reports, code comments/docstrings, and a single new entry appended

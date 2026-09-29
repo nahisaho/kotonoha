@@ -220,8 +220,8 @@ omissions explicitly; disclose known limitations and unsupported cases
 instead of hiding them; and keep a last-updated date or target version
 where staleness is a real risk. For Zenn/Qiita, rule 1's "first three
 lines" maps to the frontmatter `title` plus the lead paragraph right
-after it — see their doctype reference files for why there's no in-body
-'#' title.
+after it. Zenn body sections start at `##`; Qiita body sections start at
+`#` and use `##` for subsections.
 
 For atomic artifacts (commit messages, PR descriptions, issue reports,
 code comments/docstrings, a single entry appended to an existing
