@@ -27,9 +27,9 @@ description: >-
   question-at-a-time intake before writing. Supports both Japanese and
   English documents, with Japanese as the primary target. Owns document
   structure, information completeness, and reader fit; for living Japanese
-  documents, it invokes the bundled
-  https://github.com/coji/natural-japanese skill for sentence-level
-  naturalness, word choice, rhythm, and "AI smell" removal.
+  documents, it invokes kotonoha's original bundled `japanese-prose` skill,
+  which uses GiNZA for sentence-level naturalness, word choice, rhythm, and
+  repeated AI-like pattern analysis.
 license: MIT
 argument-hint: "[write|review|score] [doctype] <target file or request>"
 ---
@@ -57,11 +57,11 @@ reference files.
 Document quality splits into two layers: "is the structure right" and "is
 the prose natural and readable". This skill owns the first layer (structure,
 document type conventions, completeness, reader fit). The bundled
-[natural-japanese](https://github.com/coji/natural-japanese) skill owns the
-second layer (sentence-level naturalness, removing "AI smell", rhythm).
-Kotonoha packages both layers: tech-writer locks down the structure and
-orchestrates the §5 handoff to natural-japanese during `write` mode before
-the final rubber-duck review.
+`japanese-prose` skill owns the second layer (sentence-level naturalness,
+reading load, terminology, and repeated-pattern analysis). Kotonoha packages
+both layers: tech-writer locks down the structure and orchestrates the §5
+handoff to japanese-prose during `write` mode before the final rubber-duck
+review.
 
 - Rule of thumb: "does removing a heading still make sense?" tests structure
   (this skill's job). "Does rereading a single sentence change its meaning?"
@@ -273,15 +273,15 @@ step 2 as the primary check for those.
 
 For a living, multi-section document whose requested final language is
 Japanese, read `references/japanese-prose-optimization.md` and hand the
-completed draft to kotonoha's bundled `natural-japanese` skill. This pass is
+completed draft to kotonoha's bundled `japanese-prose` skill. This pass is
 mandatory for an in-scope document.
 
-Load `natural-japanese` through the host's skill-loading mechanism. When only
+Load `japanese-prose` through the host's skill-loading mechanism. When only
 installed skill files are exposed, resolve the sibling path
-`<tech-writer-dir>/../natural-japanese/SKILL.md` first, then check
-`.github/skills/natural-japanese/SKILL.md`,
-`.copilot/skills/natural-japanese/SKILL.md`, and
-`$HOME/.copilot/skills/natural-japanese/SKILL.md`. Load the discovered
+`<tech-writer-dir>/../japanese-prose/SKILL.md` first, then check
+`.github/skills/japanese-prose/SKILL.md`,
+`.copilot/skills/japanese-prose/SKILL.md`, and
+`$HOME/.copilot/skills/japanese-prose/SKILL.md`. Load the discovered
 `SKILL.md` and follow its quick or full workflow. A standard
 `npx kotonoha install` installs this sibling skill automatically. Treat the
 pass as unavailable only when someone copied or installed tech-writer without
@@ -391,9 +391,7 @@ of that. Common items to confirm:
 
 ## Acknowledgment
 
-The bundled prose optimizer is vendored from
-[natural-japanese](https://github.com/coji/natural-japanese) (MIT License)
-and retains its design principles: "machines detect, humans (or agents)
-judge" and "prevent at generation time rather than fix afterward".
-Tech-writer extends that separation by owning technical-document structure
-while the bundled skill handles sentence-level naturalness.
+The bundled prose optimizer is an original kotonoha implementation built on
+[GiNZA](https://github.com/megagonlabs/ginza) (MIT License). Tech-writer owns
+technical-document structure while japanese-prose uses GiNZA's morphology,
+dependency, and named-entity analysis for sentence-level review.

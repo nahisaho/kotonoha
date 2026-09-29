@@ -39,11 +39,12 @@ The broader historical meaning of 言の葉 is summarized by
 Technical documents tend to have two separate problems: "is the prose
 natural" and "does the structure have the right amount of information".
 Kotonoha includes both layers. `tech-writer` owns structure and completeness;
-the bundled
-[natural-japanese](https://github.com/coji/natural-japanese) skill checks
-sentence-level naturalness, reading load, terminology, and repeated AI-like
-patterns. Kotonoha locks the structure and technical invariants, runs the
-Japanese prose pass, then rechecks the structure before rubber-duck review.
+the original bundled `japanese-prose` skill uses
+[GiNZA](https://github.com/megagonlabs/ginza) to check sentence-level
+naturalness, reading load, terminology, dependency depth, and repeated
+AI-like patterns. Kotonoha locks the structure and technical invariants, runs
+the Japanese prose pass, then rechecks the structure before rubber-duck
+review.
 
 ## What it does
 
@@ -53,7 +54,7 @@ Japanese prose pass, then rechecks the structure before rubber-duck review.
   operations runbooks, migration plans, security designs, technical proposals,
   RFI/RFP procurement documents, and Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
-- Bundled `natural-japanese` phrase lint, reading-load review, terminology
+- Original GiNZA-based `japanese-prose` lint, reading-load review, terminology
   checks, and iterative prose optimization without changing IDs, facts,
   tables, code, or acceptance criteria
 - Iterative rubber-duck review after document creation, with fixes and
@@ -118,9 +119,9 @@ structure guidance and a review checklist under
 
 - GitHub Copilot CLI installed
 - Python 3.9+ for tech-writer's structural lint
-- Python 3.10+ and `uv` for the bundled natural-japanese diagnostics such as
-  phrase lint, reading-load analysis, outline extraction, and terminology
-  checks; `uv` resolves their Python dependencies on first use
+- Python 3.10+ and `uv` for the bundled GiNZA diagnostics such as prose lint,
+  reading-load analysis, outline extraction, and terminology checks; `uv`
+  resolves GiNZA, `ja_ginza`, and spaCy on first use
 
 ### Install from npm
 
@@ -135,7 +136,7 @@ npx kotonoha install
 ### Install all bundled skills together
 
 `kotonoha install` installs every packaged skill that is not already present.
-The following commands install `tech-writer`, `natural-japanese`, and
+The following commands install `tech-writer`, `japanese-prose`, and
 `presentation-planner` into `.github/skills/`:
 
 ```bash
@@ -148,7 +149,7 @@ Confirm that all three skills were installed:
 
 ```bash
 test -f .github/skills/tech-writer/SKILL.md
-test -f .github/skills/natural-japanese/SKILL.md
+test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -162,16 +163,17 @@ npx kotonoha install --skill all --force
 
 ### Built-in Japanese prose optimization
 
-Kotonoha vendors the MIT-licensed `natural-japanese` skill, so a separate
-`npx skills add coji/natural-japanese` installation is not required.
-`npx kotonoha install` places it beside `tech-writer`, allowing the writing
-workflow to run phrase lint, reading-load checks, terminology extraction,
-outline inspection, and iterative prose review locally. The vendored source
-and license are recorded in `skills/natural-japanese/UPSTREAM.md` and
-`skills/natural-japanese/LICENSE`.
+Kotonoha includes its own `japanese-prose` skill, so no separate prose skill
+installation is required. `npx kotonoha install` places it beside
+`tech-writer`, allowing the writing workflow to run GiNZA-based prose lint,
+reading-load checks, terminology extraction, outline inspection, and
+iterative prose review locally. The implementation was developed from
+scratch for kotonoha and does not include `natural-japanese` source code.
+GiNZA dependency and license information is recorded in
+`skills/japanese-prose/NOTICE.md`.
 
 The default destinations are `.github/skills/tech-writer`,
-`.github/skills/natural-japanese`, and
+`.github/skills/japanese-prose`, and
 `.github/skills/presentation-planner` in the current project. To install only
 one skill, or use another supported skill directory:
 
@@ -196,7 +198,7 @@ installation safe:
 ```bash
 npx kotonoha install
 # Skipped tech-writer (...)
-# Installed natural-japanese (...)
+# Installed japanese-prose (...)
 # Installed presentation-planner (...)
 ```
 
@@ -229,7 +231,7 @@ To update only one skill:
 
 ```bash
 npx kotonoha install --skill tech-writer --force
-npx kotonoha install --skill natural-japanese --force
+npx kotonoha install --skill japanese-prose --force
 npx kotonoha install --skill presentation-planner --force
 ```
 
@@ -262,7 +264,7 @@ into that repository's `.github/skills/`, `.claude/skills/`, or your global
 
 ```bash
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
-cp -r skills/natural-japanese /path/to/your-repo/.github/skills/natural-japanese
+cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -296,18 +298,18 @@ skills/tech-writer/          # the skill itself
   references/doctypes/       # README, requirements/design/test/operations/migration/security, API docs, PR/issue, release notes, proposals, RFI/RFP, Qiita/Zenn
   scripts/lint.py            # structural lint script
   assets/templates/          # doctype skeletons including requirements, design, test, operations, migration, security, and procurement
-skills/natural-japanese/     # bundled Japanese prose optimization skill
+skills/japanese-prose/       # original GiNZA-based prose optimization skill
   SKILL.md                   # writing, lint, review, and convergence workflow
-  references/                # writing constitution, readability rules, and evaluation rubric
-  scripts/                   # phrase lint, reading-load, outline, and terminology diagnostics
-  LICENSE                    # upstream MIT license
+  references/                # writing guidelines, review workflow, and scoring
+  scripts/                   # prose lint, reading-load, outline, and terminology diagnostics
+  NOTICE.md                  # GiNZA dependency and license information
 skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   SKILL.md
   references/                # boundary, scenario/design guidance, customization, handoff contract
   assets/scenario-templates/ # executive, technical, and data-report narrative scenarios
   assets/design-templates/   # executive, technical, and data-report YAML designs
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
-.github/skills/natural-japanese
+.github/skills/japanese-prose
 .github/skills/presentation-planner
 ```
 
@@ -316,7 +318,7 @@ skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
 - `skills/tech-writer/scripts/lint.py` detects structural and Markdown
   rendering issues. Prose naturalness, vocabulary, rhythm, and reading load
   are handled by the separately invoked but bundled
-  `skills/natural-japanese` workflow and diagnostics.
+  `skills/japanese-prose` workflow and GiNZA diagnostics.
 - The doctypes are written mainly with Japanese technical-writing
   conventions in mind; most of the guidance (especially the commit-message
   imperative-mood rule) applies directly to English documents as well.
@@ -327,10 +329,10 @@ skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
 
 ## Acknowledgment
 
-- [natural-japanese](https://github.com/coji/natural-japanese) (MIT
-  License) — vendored as kotonoha's built-in Japanese prose optimization
-  skill. The upstream copyright notice and license are preserved in
-  `skills/natural-japanese/LICENSE`.
+- [GiNZA](https://github.com/megagonlabs/ginza) (MIT License) — provides
+  tokenization, part-of-speech tagging, dependency parsing, lemmatization,
+  sentence boundaries, and named-entity recognition for kotonoha's original
+  Japanese prose diagnostics.
 
 ## License
 

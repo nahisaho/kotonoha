@@ -16,7 +16,8 @@
     "kotonoha": "bin/kotonoha.js"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "test:ginza": "uv run skills/japanese-prose/scripts/test_engine.py"
   },
   "engines": {
     "node": ">=18"
@@ -37,6 +38,8 @@
     "CHANGELOG.md",
     "README-ja.md",
     "bin/",
-    "skills/"
+    "skills/",
+    "!skills/**/__pycache__/",
+    "!skills/**/*.pyc"
   ]
 }

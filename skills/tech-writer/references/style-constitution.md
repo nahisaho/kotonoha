@@ -2,7 +2,7 @@
 
 Constraints to fix a technical document's *structure* before writing.
 Sentence-level naturalness, vocabulary, and rhythm are out of scope here
-(→ the domain of a prose-polishing skill such as natural-japanese).
+(→ the domain of kotonoha's bundled `japanese-prose` skill).
 
 ## Scope: living documents vs. atomic artifacts
 

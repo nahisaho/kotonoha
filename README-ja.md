@@ -1,6 +1,6 @@
 # kotonoha
 
-kotonohaは、技術文書の作成とプレゼンテーション設計を支援するGitHub Copilot CLIスキルを提供します。`tech-writer`は、README、設計書・ADR、APIリファレンス、PR説明・コミットメッセージ・Issue、リリースノート、ユーザーマニュアル、コードコメント、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、RFI・RFP、Qiita・Zenn記事の構成と文章を整えます。`presentation-planner`は、資料から再利用可能なプレゼンテーションシナリオ、スライド構成、デザイン仕様、PPTX作成スキル向けの引き継ぎ情報を生成します。
+kotonohaは、技術文書の作成とプレゼンテーション設計を支援するGitHub Copilot CLIスキルを提供します。`tech-writer`は、開発文書、要件・設計文書、運用・移行文書、調達文書、Qiita・Zenn記事の構成と文章を整えます。対応する文書の一覧は「対応している文書」に掲載しています。`presentation-planner`は、プレゼンテーションシナリオ、スライド構成、デザイン仕様、PPTX作成スキル向けの引き継ぎ情報を生成します。
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -14,7 +14,7 @@ kotonohaは、技術文書の作成とプレゼンテーション設計を支援
 
 ## tech-writerが解決する課題
 
-技術文書には、「文章が自然か」と「必要な情報が適切な構成で含まれているか」という別々の課題があります。kotonohaは両方の機能を同梱しています。`tech-writer`が構成と情報の完全性を担当し、同梱された[natural-japanese](https://github.com/coji/natural-japanese)が文単位の自然さ、読解負荷、用語統一、AIらしい表現を検査します。
+技術文書には、「文章が自然か」と「必要な情報が適切な構成で含まれているか」という別々の課題があります。kotonohaは両方の機能を同梱しています。`tech-writer`が構成と情報の完全性を担当し、独自実装の`japanese-prose`が[GiNZA](https://github.com/megagonlabs/ginza)を使って、文単位の自然さ、読解負荷、用語統一、係り受けの深さ、AIらしい反復表現を検査します。
 
 kotonohaは文書構造と技術的な不変条件を固定してから日本語表現を最適化し、構造を再検証した後にrubber-duck reviewを実施します。
 
@@ -22,9 +22,9 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 
 - README、設計書・ADR、APIリファレンス、PR説明・コミットメッセージ・Issue、リリースノート、ユーザーマニュアル、コードコメント、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、RFI・RFP、Qiita・Zenn記事の作成とレビュー
 - 文書種別ごとの推奨構成とチェックリスト
-- ID、事実、表、コード、受け入れ基準を変更せずに日本語表現を反復的に最適化する、同梱`natural-japanese`の文章診断
+- ID、事実、表、コード、受け入れ基準を変更せずに日本語表現を反復的に最適化する、GiNZAベースの独自`japanese-prose`文章診断
 - 文書作成後のrubber-duck reviewと、対応可能な指摘がなくなるまでの修正・再レビュー
-- 見出しレベルの飛び、言語指定のないコードブロック、未解決のプレースホルダー、不審なリンク、文章に隣接した強調記号などを検出する`scripts/lint.py`
+- `scripts/lint.py`による構造検査。見出しレベルの飛び、言語指定のないコードブロック、未解決のプレースホルダー、不審なリンク、文章に隣接した強調記号を検出
 - コミットメッセージ本文とコードコメント・docstringを除き、すべての文書種別でMarkdownを標準形式として使用
 - 日本語を主な対象言語とし、英語文書にも対応
 
@@ -51,12 +51,13 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 | 技術記事 | Zenn記事 | `zenn` |
 | 技術記事 | Qiita記事 | `qiita` |
 
-README、設計判断、ユーザーマニュアル、PR説明、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、RFI、RFP、Qiita記事には再利用可能なテンプレートが含まれます。すべての文書種別には、`skills/tech-writer/references/doctypes/`配下に専用の構成ガイドとレビューチェックリストがあります。
+再利用可能なテンプレートには、README、設計判断、ユーザーマニュアル、PR説明があります。要件定義、システム設計、テスト、運用、移行、セキュリティの各文書にも対応しています。技術提案、RFI、RFP、Qiita記事のテンプレートも含まれます。すべての文書種別には、`skills/tech-writer/references/doctypes/`配下に専用の構成ガイドとレビューチェックリストがあります。
 
 ## presentation-plannerの機能
 
 - 対象者、意思決定、行動喚起、プレゼンテーションの制約を定義
-- ブリーフ、対象者の理解を導くシナリオ、主張型タイトルを使ったスライド構成、YAMLデザイン仕様、PPTX作成スキル向けの決定的な引き継ぎ情報を生成
+- ブリーフ、対象者の理解を導くシナリオ、主張型タイトルを使ったスライド構成を生成
+- YAMLデザイン仕様とPPTX作成スキル向けの決定的な引き継ぎ情報を生成
 - 経営判断、技術説明、データ報告向けのシナリオテンプレート
 - 経営提案、技術説明、データ報告向けのデザイン仕様
 - `.pptx`の生成、バイナリ編集、レンダリング、視覚的な品質確認は専用PPTXスキルへ委譲
@@ -67,7 +68,7 @@ README、設計判断、ユーザーマニュアル、PR説明、要件定義書
 
 - GitHub Copilot CLIがインストールされていること
 - tech-writerの構造lintを実行する場合はPython 3.9以上
-- 同梱natural-japaneseのフレーズlint、読解負荷分析、アウトライン抽出、用語検査を実行する場合はPython 3.10以上と`uv`。Python依存関係は初回実行時に`uv`が解決
+- 同梱`japanese-prose`の文章lint、読解負荷分析、アウトライン抽出、用語検査を実行する場合はPython 3.10以上と`uv`。GiNZA、`ja_ginza`、spaCyは初回実行時に`uv`が解決
 
 ### npmからインストール
 
@@ -80,7 +81,7 @@ npx kotonoha install
 
 ### 同梱スキルをまとめてインストール
 
-`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`tech-writer`、`natural-japanese`、`presentation-planner`を`.github/skills/`へインストールします。
+`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`tech-writer`、`japanese-prose`、`presentation-planner`を`.github/skills/`へインストールします。
 
 ```bash
 npm install --save-dev kotonoha
@@ -91,7 +92,7 @@ npx kotonoha install --skill all
 
 ```bash
 test -f .github/skills/tech-writer/SKILL.md
-test -f .github/skills/natural-japanese/SKILL.md
+test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -103,9 +104,9 @@ npx kotonoha install --skill all --force
 
 ### 内蔵された日本語表現最適化
 
-kotonohaにはMITライセンスの`natural-japanese`が同梱されるため、`npx skills add coji/natural-japanese`による追加インストールは不要です。`npx kotonoha install`により`tech-writer`と同じスキルルートへ配置され、フレーズlint、読解負荷検査、用語抽出、アウトライン検査、反復的な文章レビューをローカルで実行できます。取り込んだ上流ソースとライセンスは、`skills/natural-japanese/UPSTREAM.md`と`skills/natural-japanese/LICENSE`に記録しています。
+kotonohaには独自開発の`japanese-prose`が同梱されるため、文章最適化スキルを別途インストールする必要はありません。`npx kotonoha install`により`tech-writer`と同じスキルルートへ配置され、GiNZAを使った文章lint、読解負荷検査、用語抽出、アウトライン検査、反復的な文章レビューをローカルで実行できます。この実装はkotonoha向けにゼロから開発しており、`natural-japanese`のソースコードを含みません。GiNZAの依存関係とライセンス情報は`skills/japanese-prose/NOTICE.md`に記録しています。
 
-既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`、`.github/skills/natural-japanese`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、別の対応ディレクトリを使用する場合は、次のように指定します。
+既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`、`.github/skills/japanese-prose`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、別の対応ディレクトリを使用する場合は、次のように指定します。
 
 ```bash
 npx kotonoha install --skill presentation-planner
@@ -124,7 +125,7 @@ npx kotonoha install --force
 ```bash
 npx kotonoha install
 # Skipped tech-writer (...)
-# Installed natural-japanese (...)
+# Installed japanese-prose (...)
 # Installed presentation-planner (...)
 ```
 
@@ -154,7 +155,7 @@ npx kotonoha install --force
 
 ```bash
 npx kotonoha install --skill tech-writer --force
-npx kotonoha install --skill natural-japanese --force
+npx kotonoha install --skill japanese-prose --force
 npx kotonoha install --skill presentation-planner --force
 ```
 
@@ -181,7 +182,7 @@ git diff -- .github/skills
 
 ```bash
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
-cp -r skills/natural-japanese /path/to/your-repo/.github/skills/natural-japanese
+cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -214,31 +215,31 @@ skills/tech-writer/          # tech-writerスキル
   references/doctypes/       # README、要件、設計、テスト、運用、移行、セキュリティ、API、PR・Issue、リリースノート、提案、RFI・RFP、Qiita・Zenn
   scripts/lint.py            # 構造とMarkdown表示のlintスクリプト
   assets/templates/          # 要件、設計、テスト、運用、移行、セキュリティ、調達などの文書テンプレート
-skills/natural-japanese/     # 同梱された日本語表現最適化スキル
+skills/japanese-prose/       # 独自開発のGiNZAベース文章最適化スキル
   SKILL.md                   # 執筆、lint、レビュー、収束のワークフロー
-  references/                # 文体憲法、読みやすさ規則、評価ルーブリック
-  scripts/                   # フレーズlint、読解負荷、アウトライン、用語検査
-  LICENSE                    # 上流のMITライセンス
+  references/                # 執筆規則、レビューワークフロー、採点規則
+  scripts/                   # 文章lint、読解負荷、アウトライン、用語検査
+  NOTICE.md                  # GiNZAの依存関係とライセンス情報
 skills/presentation-planner/ # シナリオ、デザイン仕様、PPTX引き継ぎスキル
   SKILL.md
   references/                # 責任境界、シナリオ・デザインガイド、カスタマイズ、引き継ぎ契約
   assets/scenario-templates/ # 経営判断、技術説明、データ報告向けシナリオ
   assets/design-templates/   # 経営提案、技術説明、データ報告向けYAMLデザイン
 .github/skills/tech-writer   # Copilot CLIが読み込むskills/tech-writerへのシンボリックリンク
-.github/skills/natural-japanese
+.github/skills/japanese-prose
 .github/skills/presentation-planner
 ```
 
 ## 既知の制約
 
-- `skills/tech-writer/scripts/lint.py`は、見出し、コードブロック、プレースホルダー、リンク、Markdown強調記号などの構造・表示上の問題を検出します。文章の自然さ、語彙、リズム、読解負荷は、別工程として呼び出される同梱`skills/natural-japanese`が検査します。
+- `skills/tech-writer/scripts/lint.py`は、見出し、コードブロック、プレースホルダー、リンク、Markdown強調記号などの構造・表示上の問題を検出します。文章の自然さ、語彙、リズム、読解負荷は、別工程として呼び出される同梱`skills/japanese-prose`がGiNZAで検査します。
 - 文書種別は主に日本語の技術文書作成規則を前提としています。コミットメッセージの命令形などを含む多くのガイドは、英語文書にも適用できます。
 - `presentation-planner`だけでは`.pptx`バイナリを生成または検証できません。生成と視覚的な品質確認には専用PPTXスキルが必要です。
 - デザインのカスタマイズ方法は、`skills/presentation-planner/references/customizing-design-templates.md`に記載されています。
 
 ## 謝辞
 
-- [natural-japanese](https://github.com/coji/natural-japanese)（MIT License）— kotonoha内蔵の日本語表現最適化スキルとして同梱しています。上流の著作権表示とライセンスは`skills/natural-japanese/LICENSE`に保持しています。
+- [GiNZA](https://github.com/megagonlabs/ginza)（MIT License）— kotonoha独自の日本語文章診断に、形態素解析、品詞タグ付け、係り受け解析、見出し語化、文境界、固有表現抽出を提供します。
 
 ## ライセンス
 

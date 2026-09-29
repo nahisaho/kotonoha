@@ -5,11 +5,10 @@ are complete. The goal is to remove mechanical or translated-sounding prose
 without changing the document's approved meaning, obligations, evidence, or
 traceability.
 
-The optimizer is kotonoha's bundled
-[natural-japanese prose-polishing skill](https://github.com/coji/natural-japanese).
-Kotonoha owns document structure and completeness; `natural-japanese` owns
-sentence-level clarity, rhythm, word choice, reading load, and detection of
-repeated AI-like phrasing.
+The optimizer is kotonoha's original bundled `japanese-prose` skill.
+Kotonoha owns document structure and completeness; `japanese-prose` owns
+sentence-level clarity, rhythm, word choice, reading load, terminology, and
+detection of repeated AI-like phrasing through GiNZA analysis.
 
 ## Run this pass when
 
@@ -17,7 +16,7 @@ repeated AI-like phrasing.
   whose audience-facing prose is primarily Japanese.
 - The task is `write` mode.
 - The artifact is a living, multi-section document.
-- The bundled `natural-japanese` skill is readable.
+- The bundled `japanese-prose` skill is readable.
 
 Skip it for English documents, generated machine-readable files, and source
 code. Also skip atomic artifacts such as commit messages, PR descriptions,
@@ -46,25 +45,25 @@ Never trade technical precision for conversational phrasing.
 
 ## Optimization loop
 
-1. Invoke kotonoha's bundled `natural-japanese` through the host's
+1. Invoke kotonoha's bundled `japanese-prose` through the host's
    skill-loading mechanism. If the host exposes only skill files, resolve
-   `<tech-writer-dir>/../natural-japanese/SKILL.md` first, then check
-   `.github/skills/natural-japanese/SKILL.md`,
-   `.copilot/skills/natural-japanese/SKILL.md`, and
-   `$HOME/.copilot/skills/natural-japanese/SKILL.md`; expand `$HOME`, load the
+   `<tech-writer-dir>/../japanese-prose/SKILL.md` first, then check
+   `.github/skills/japanese-prose/SKILL.md`,
+   `.copilot/skills/japanese-prose/SKILL.md`, and
+   `$HOME/.copilot/skills/japanese-prose/SKILL.md`; expand `$HOME`, load the
    discovered skill,
    and follow its workflow.
 2. Ask the loaded skill to review and rewrite only the Japanese prose under
    the frozen invariants.
-3. Let `<natural-japanese-dir>` be the directory containing the loaded
+3. Let `<japanese-prose-dir>` be the directory containing the loaded
    optimizer's `SKILL.md`. When its diagnostics are available, run the
    optimizer's scripts with their qualified paths:
 
    ```bash
-   uv run <natural-japanese-dir>/scripts/lint.py <target-file> --genre tech
-   uv run <natural-japanese-dir>/scripts/lint.py <target-file> --reading-load
-   uv run <natural-japanese-dir>/scripts/outline.py <target-file>
-   uv run <natural-japanese-dir>/scripts/terms.py <target-file>
+   uv run <japanese-prose-dir>/scripts/lint.py <target-file> --genre tech --json > <workdir>/prose-baseline.json
+   uv run <japanese-prose-dir>/scripts/lint.py <target-file> --genre tech --reading-load
+   uv run <japanese-prose-dir>/scripts/outline.py <target-file>
+   uv run <japanese-prose-dir>/scripts/terms.py <target-file>
    ```
 
    Do not substitute `skills/tech-writer/scripts/lint.py`; kotonoha's script

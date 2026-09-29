@@ -150,7 +150,7 @@ test("installs all skills into the default project directory", () => {
         workingDirectory,
         ".github",
         "skills",
-        "natural-japanese",
+        "japanese-prose",
         "SKILL.md",
       ),
     ),
@@ -237,7 +237,7 @@ test("default install adds missing skills without replacing existing ones", () =
   assert.ok(
     fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
   );
-  assert.ok(fs.existsSync(path.join(target, "natural-japanese", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(target, "japanese-prose", "SKILL.md")));
 });
 
 test("refuses to replace an explicitly selected skill without --force", () => {
@@ -292,7 +292,7 @@ test("--force replaces an existing installation", () => {
   assert.ok(
     fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
   );
-  assert.ok(fs.existsSync(path.join(target, "natural-japanese", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(target, "japanese-prose", "SKILL.md")));
 });
 
 test("the packed npm artifact installs a usable CLI", () => {
@@ -350,36 +350,63 @@ test("the packed npm artifact installs a usable CLI", () => {
       ),
     ),
   );
-  const installedNaturalJapanese = path.join(
+  const installedJapaneseProse = path.join(
     consumerDirectory,
     ".copilot",
     "skills",
-    "natural-japanese",
+    "japanese-prose",
   );
-  assert.ok(fs.existsSync(path.join(installedNaturalJapanese, "SKILL.md")));
-  assert.ok(fs.existsSync(path.join(installedNaturalJapanese, "LICENSE")));
-  assert.ok(fs.existsSync(path.join(installedNaturalJapanese, "UPSTREAM.md")));
-  assert.ok(
-    fs.existsSync(path.join(installedNaturalJapanese, "scripts", "lint.py")),
+  assert.ok(fs.existsSync(path.join(installedJapaneseProse, "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(installedJapaneseProse, "NOTICE.md")));
+  const installedJapaneseProseSkill = fs.readFileSync(
+    path.join(installedJapaneseProse, "SKILL.md"),
+    "utf8",
+  );
+  const installedJapaneseProseNotice = fs.readFileSync(
+    path.join(installedJapaneseProse, "NOTICE.md"),
+    "utf8",
+  );
+  assert.match(
+    installedJapaneseProseSkill,
+    /original\s+kotonoha implementation/,
+  );
+  assert.match(installedJapaneseProseSkill, /GiNZA/);
+  assert.match(
+    installedJapaneseProseNotice,
+    /does not include source\s+code/,
   );
   assert.equal(
     fs.existsSync(
-      path.join(installedNaturalJapanese, "scripts", "__pycache__"),
+      path.join(
+        consumerDirectory,
+        ".copilot",
+        "skills",
+        "natural-japanese",
+      ),
+    ),
+    false,
+  );
+  assert.ok(
+    fs.existsSync(path.join(installedJapaneseProse, "scripts", "lint.py")),
+  );
+  assert.equal(
+    fs.existsSync(
+      path.join(installedJapaneseProse, "scripts", "__pycache__"),
     ),
     false,
   );
   assert.equal(
     fs.existsSync(
-      path.join(installedNaturalJapanese, "scripts", "calibrate.py"),
+      path.join(installedJapaneseProse, "scripts", "semantic.py"),
     ),
     false,
   );
   assert.ok(
     fs.existsSync(
       path.join(
-        installedNaturalJapanese,
+        installedJapaneseProse,
         "references",
-        "writing-constitution.md",
+        "writing-guidelines.md",
       ),
     ),
   );

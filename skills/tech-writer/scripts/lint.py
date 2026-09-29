@@ -6,7 +6,7 @@
 """tech-writer skill: a lint script that mechanically checks a technical
 document's *structure* and Markdown rendering safety.
 
-Where natural-japanese's lint.py detects sentence-level naturalness
+Where japanese-prose's GiNZA lint detects sentence-level naturalness
 (vocabulary, rhythm), this script detects structural problems specific to
 technical documents plus Markdown syntax patterns that render inconsistently
 (heading hierarchy, code examples, leftover placeholders, suspicious links,
