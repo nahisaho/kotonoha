@@ -1,6 +1,6 @@
 {
   "name": "kotonoha",
-  "version": "0.1.5-dev.1",
+  "version": "0.1.5",
   "description": "GitHub Copilot CLI skills for technical writing and PPTX presentation planning.",
   "license": "MIT",
   "author": "nahisaho",
