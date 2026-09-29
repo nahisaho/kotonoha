@@ -109,6 +109,33 @@ npm install --save-dev kotonoha
 npx kotonoha install
 ```
 
+### Install tech-writer and presentation-planner together
+
+`kotonoha install` installs every packaged skill that is not already present.
+The following commands install both `tech-writer` and
+`presentation-planner` into `.github/skills/`:
+
+```bash
+npm install --save-dev kotonoha
+npx kotonoha install --skill all
+```
+
+`--skill all` is the default, so `npx kotonoha install` has the same behavior.
+Confirm that both skills were installed:
+
+```bash
+test -f .github/skills/tech-writer/SKILL.md
+test -f .github/skills/presentation-planner/SKILL.md
+```
+
+If either directory already exists, the default command preserves it and
+installs only the missing skill. To replace and update both installed skills
+at once, review or back up local customizations first, then run:
+
+```bash
+npx kotonoha install --skill all --force
+```
+
 For Japanese sentence-level optimization, also install
 `natural-japanese` using one of its supported installation methods:
 
