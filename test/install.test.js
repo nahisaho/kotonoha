@@ -12,7 +12,7 @@ function createTemporaryDirectory() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "kotonoha-test-"));
 }
 
-test("installs tech-writer into the default project directory", () => {
+test("installs all skills into the default project directory", () => {
   const workingDirectory = createTemporaryDirectory();
 
   execFileSync(process.execPath, [cli, "install"], {
@@ -31,20 +31,106 @@ test("installs tech-writer into the default project directory", () => {
       ),
     ),
   );
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        workingDirectory,
+        ".github",
+        "skills",
+        "presentation-planner",
+        "SKILL.md",
+      ),
+    ),
+  );
 });
 
-test("refuses to replace an existing installation without --force", () => {
+test("installs one selected skill", () => {
   const workingDirectory = createTemporaryDirectory();
-  const target = path.join(workingDirectory, "custom-skills");
 
-  execFileSync(process.execPath, [cli, "install", "--target", target], {
+  execFileSync(
+    process.execPath,
+    [cli, "install", "--skill", "presentation-planner"],
+    {
+      cwd: workingDirectory,
+      stdio: "pipe",
+    },
+  );
+
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        workingDirectory,
+        ".github",
+        "skills",
+        "presentation-planner",
+        "SKILL.md",
+      ),
+    ),
+  );
+  assert.equal(
+    fs.existsSync(
+      path.join(
+        workingDirectory,
+        ".github",
+        "skills",
+        "tech-writer",
+      ),
+    ),
+    false,
+  );
+});
+
+test("rejects an unknown selected skill", () => {
+  const workingDirectory = createTemporaryDirectory();
+  const result = spawnSync(
+    process.execPath,
+    [cli, "install", "--skill", "unknown-skill"],
+    {
+      cwd: workingDirectory,
+      encoding: "utf8",
+    },
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /unknown skill: unknown-skill/);
+  assert.match(result.stderr, /available skills:/);
+});
+
+test("default install adds missing skills without replacing existing ones", () => {
+  const workingDirectory = createTemporaryDirectory();
+  const target = path.join(workingDirectory, ".github", "skills");
+  const techWriter = path.join(target, "tech-writer");
+
+  fs.mkdirSync(techWriter, { recursive: true });
+  fs.writeFileSync(path.join(techWriter, "custom.txt"), "keep");
+
+  execFileSync(process.execPath, [cli, "install"], {
     cwd: workingDirectory,
     stdio: "pipe",
   });
 
+  assert.equal(fs.readFileSync(path.join(techWriter, "custom.txt"), "utf8"), "keep");
+  assert.ok(
+    fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
+  );
+});
+
+test("refuses to replace an explicitly selected skill without --force", () => {
+  const workingDirectory = createTemporaryDirectory();
+  const target = path.join(workingDirectory, "custom-skills");
+
+  execFileSync(
+    process.execPath,
+    [cli, "install", "--target", target, "--skill", "tech-writer"],
+    {
+      cwd: workingDirectory,
+      stdio: "pipe",
+    },
+  );
+
   const result = spawnSync(
     process.execPath,
-    [cli, "install", "--target", target],
+    [cli, "install", "--target", target, "--skill", "tech-writer"],
     {
       cwd: workingDirectory,
       encoding: "utf8",
@@ -78,6 +164,9 @@ test("--force replaces an existing installation", () => {
 
   assert.equal(fs.existsSync(path.join(destination, "stale-file.txt")), false);
   assert.ok(fs.existsSync(path.join(destination, "SKILL.md")));
+  assert.ok(
+    fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
+  );
 });
 
 test("the packed npm artifact installs a usable CLI", () => {
@@ -154,6 +243,45 @@ test("the packed npm artifact installs a usable CLI", () => {
   );
   assert.match(installedSkill, /\| Request for information \/ RFI \| rfi \|/);
   assert.match(installedSkill, /\| Request for proposal \/ RFP \| rfp \|/);
+
+  const installedPresentationSkill = fs.readFileSync(
+    path.join(
+      consumerDirectory,
+      ".copilot",
+      "skills",
+      "presentation-planner",
+      "SKILL.md",
+    ),
+    "utf8",
+  );
+  assert.match(installedPresentationSkill, /Responsibility boundary/);
+  assert.match(
+    installedPresentationSkill,
+    /Does\s+NOT implement PPTX generation/,
+  );
+  assert.match(installedPresentationSkill, /PPTX generation not performed/);
+  assert.match(installedPresentationSkill, /## 0\. Route direct PPTX operations away/);
+
+  for (const design of [
+    "executive-proposal.yaml",
+    "technical-briefing.yaml",
+    "data-report.yaml",
+  ]) {
+    assert.ok(
+      fs.existsSync(
+        path.join(
+          consumerDirectory,
+          ".copilot",
+          "skills",
+          "presentation-planner",
+          "assets",
+          "design-templates",
+          design,
+        ),
+      ),
+      `${design} should be included in the installed presentation skill`,
+    );
+  }
 
   for (const template of ["technical-proposal.md", "rfi.md", "rfp.md"]) {
     assert.ok(

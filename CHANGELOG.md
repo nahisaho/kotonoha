@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add the `presentation-planner` skill for presentation requirements,
+  storyline, slide outlines, design specifications, and PPTX-skill handoff.
+- Add executive proposal, technical briefing, and data report design
+  specifications in YAML.
+- Add multi-skill installation with `kotonoha install --skill <name|all>`.
 - Add Japanese templates for technical proposals, requests for information
   (RFI), and requests for proposal (RFP).
 - Add doctype routing, writing guidance, and checklists for the three new

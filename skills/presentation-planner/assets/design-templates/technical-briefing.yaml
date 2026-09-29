@@ -1,0 +1,88 @@
+id: technical-briefing
+base_template: null
+intent:
+  - architecture explanation
+  - engineering review
+  - technical proposal
+  - implementation briefing
+canvas:
+  aspect_ratio: "16:9"
+  width_in: 13.333
+  height_in: 7.5
+  safe_area_percent: 5
+  grid_columns: 12
+  max_content_blocks: 5
+colors:
+  background: "#0B1220"
+  surface: "#111C30"
+  text_primary: "#F1F5F9"
+  text_secondary: "#B8C4D6"
+  accent: "#38BDF8"
+  accent_soft: "#123A53"
+  positive: "#34D399"
+  warning: "#FBBF24"
+  critical: "#FB7185"
+  chart_sequence:
+    - "#38BDF8"
+    - "#34D399"
+    - "#A78BFA"
+    - "#FBBF24"
+    - "#94A3B8"
+typography:
+  heading_font: "Aptos Display"
+  body_font: "Aptos"
+  code_font: "Cascadia Mono"
+  title_size_pt: 28
+  section_title_size_pt: 24
+  body_size_pt: 17
+  code_size_pt: 13
+  caption_size_pt: 10
+  title_weight: 700
+  body_line_spacing: 1.12
+spacing:
+  outer_margin_percent: 5
+  content_gap_percent: 1.5
+  card_padding_percent: 1.5
+components:
+  cards:
+    corner_radius: small
+    border: accent_soft
+    shadow: none
+  callouts:
+    use_accent_bar: true
+    maximum_per_slide: 2
+  tables:
+    header_fill: accent_soft
+    header_text: text_primary
+    zebra_rows: false
+    maximum_rows: 8
+  charts:
+    style: technical
+    gridlines: subtle
+    source_note_required: true
+  diagrams:
+    connector_style: orthogonal
+    maximum_nodes: 9
+    boundary_labels_required: true
+slide_patterns:
+  - title
+  - system-context
+  - architecture
+  - sequence-or-flow
+  - component-responsibilities
+  - interface-and-data
+  - security-boundaries
+  - implementation-plan
+  - tradeoffs
+  - decision-request
+accessibility:
+  minimum_body_size_pt: 15
+  minimum_contrast_ratio: 4.5
+  never_use_color_alone: true
+  alt_text_required: true
+constraints:
+  - one primary message per slide
+  - assertion title required
+  - code samples limited to twelve visible lines
+  - diagrams must identify trust or ownership boundaries
+deviations: []

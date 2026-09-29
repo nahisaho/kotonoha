@@ -1,0 +1,84 @@
+id: executive-proposal
+base_template: null
+intent:
+  - executive decision
+  - investment approval
+  - transformation roadmap
+  - technical proposal
+canvas:
+  aspect_ratio: "16:9"
+  width_in: 13.333
+  height_in: 7.5
+  safe_area_percent: 6
+  grid_columns: 12
+  max_content_blocks: 4
+colors:
+  background: "#F7F8FA"
+  surface: "#FFFFFF"
+  text_primary: "#172033"
+  text_secondary: "#526079"
+  accent: "#2563EB"
+  accent_soft: "#DBEAFE"
+  positive: "#117653"
+  warning: "#8A520F"
+  critical: "#C2413B"
+  chart_sequence:
+    - "#2563EB"
+    - "#16835B"
+    - "#7C3AED"
+    - "#D97706"
+    - "#64748B"
+typography:
+  heading_font: "Aptos Display"
+  body_font: "Aptos"
+  title_size_pt: 30
+  section_title_size_pt: 26
+  body_size_pt: 18
+  caption_size_pt: 11
+  title_weight: 700
+  body_line_spacing: 1.15
+spacing:
+  outer_margin_percent: 6
+  content_gap_percent: 2
+  card_padding_percent: 2
+components:
+  cards:
+    corner_radius: medium
+    border: none
+    shadow: subtle
+  callouts:
+    use_accent_bar: true
+    maximum_per_slide: 1
+  tables:
+    header_fill: accent_soft
+    header_text: text_primary
+    zebra_rows: true
+    maximum_rows: 7
+  charts:
+    style: direct-label
+    gridlines: minimal
+    source_note_required: true
+  diagrams:
+    connector_style: orthogonal
+    maximum_nodes: 7
+slide_patterns:
+  - title
+  - executive-summary
+  - problem-evidence
+  - option-comparison
+  - recommendation
+  - roadmap
+  - investment-and-value
+  - risk-and-mitigation
+  - decision-request
+accessibility:
+  minimum_body_size_pt: 16
+  minimum_contrast_ratio: 4.5
+  never_use_color_alone: true
+  alt_text_required: true
+constraints:
+  - one primary message per slide
+  - assertion title required
+  - no more than one chart per slide
+  - no decorative stock imagery without narrative value
+deviations: []

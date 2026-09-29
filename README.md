@@ -1,11 +1,13 @@
 # kotonoha
 
-kotonoha provides `tech-writer`, a GitHub Copilot CLI skill that helps
-structure and polish technical documents. It covers README, design
+kotonoha provides GitHub Copilot CLI skills for technical documents and
+presentation planning. `tech-writer` helps structure and polish README, design
 docs/ADRs, API reference, PR descriptions/commit messages/issue reports,
 release notes, user manuals/how-to guides, code comments, technical
 proposals, RFI/RFP procurement documents, and Qiita/Zenn articles,
-structured so readers never get lost.
+structured so readers never get lost. `presentation-planner` turns source
+material into a storyline, slide outline, design specification, and handoff
+for a dedicated PPTX creation skill.
 
 ## What tech-writer solves
 
@@ -37,6 +39,16 @@ Japanese prose with natural-japanese.
   (the target programming language's own syntax)
 - Japanese as the primary target language, with English document support
 
+## What presentation-planner does
+
+- Defines the audience, decision, call to action, and presentation constraints
+- Produces a brief, assertion-title slide outline, YAML design specification,
+  and deterministic handoff for the host's PPTX creation skill
+- Includes executive proposal, technical briefing, and data report design
+  specifications
+- Delegates `.pptx` generation, binary editing, rendering, and visual QA to
+  the dedicated PPTX skill instead of duplicating it
+
 ## Setup
 
 ### Prerequisites
@@ -47,43 +59,54 @@ Japanese prose with natural-japanese.
 
 ### Install from npm
 
-Install the package, then copy `tech-writer` into a skill directory with
-the included CLI:
+Install the package, then copy all packaged skills into a skill directory
+with the included CLI:
 
 ```bash
 npm install --save-dev kotonoha
 npx kotonoha install
 ```
 
-The default destination is `.github/skills/tech-writer` in the current
-project. To install into another supported skill directory, pass its parent
-directory:
+The default destinations are `.github/skills/tech-writer` and
+`.github/skills/presentation-planner` in the current project. To install
+only one skill, or use another supported skill directory:
 
 ```bash
+npx kotonoha install --skill presentation-planner
 npx kotonoha install --target .claude/skills
 npx kotonoha install --target ~/.copilot/skills
 ```
 
-The command refuses to overwrite an existing `tech-writer` directory. Review
-or back up the existing installation, then pass `--force` only when you
-intend to replace it:
+An explicit `--skill <name>` install refuses to overwrite that existing
+skill directory. Review or back up the existing installation, then pass
+`--force` only when you intend to replace the selected skills:
 
 ```bash
 npx kotonoha install --force
 ```
 
+When installing all skills, existing skill directories are skipped and only
+missing skills are added. This makes upgrading from a tech-writer-only
+installation safe:
+
+```bash
+npx kotonoha install
+# Skipped tech-writer (...)
+# Installed presentation-planner (...)
+```
+
 ### Install from a source checkout
 
-Inside this repository, the skill is already placed at
-`.github/skills/tech-writer`, so no extra setup is needed to use it with
-Copilot CLI here.
+Inside this repository, the skills are linked under `.github/skills/`, so no
+extra setup is needed to use them with Copilot CLI here.
 
-To use it in another project, copy the `skills/tech-writer` directory into
-that repository's `.github/skills/`, `.claude/skills/`, or your global
+To use a skill from a source checkout in another project, copy its directory
+into that repository's `.github/skills/`, `.claude/skills/`, or your global
 `~/.copilot/skills/`.
 
 ```bash
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
+cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
 ## Ask Copilot for the document you need
@@ -93,6 +116,8 @@ invoked automatically.
 
 - "Write a README", "Review this design doc", "Write the PR description",
   "Make this how-to guide clearer"
+- "Create a PPTX from this proposal", "Plan an executive presentation",
+  "Design a technical briefing deck"
 
 To run a quick structure-only diagnostic:
 
@@ -112,7 +137,12 @@ skills/tech-writer/          # the skill itself
   references/doctypes/       # README, design/API docs, PR/issue, release notes, manual, comments, proposals, RFI/RFP, Qiita/Zenn
   scripts/lint.py            # structural lint script
   assets/templates/          # doctype skeletons plus technical proposal, RFI, and RFP templates
+skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
+  SKILL.md
+  references/                # responsibility boundary, schema, handoff contract
+  assets/design-templates/   # executive, technical, and data-report YAML designs
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
+.github/skills/presentation-planner
 ```
 
 ## Known limitations
@@ -123,6 +153,8 @@ skills/tech-writer/          # the skill itself
 - The doctypes are written mainly with Japanese technical-writing
   conventions in mind; most of the guidance (especially the commit-message
   imperative-mood rule) applies directly to English documents as well.
+- `presentation-planner` does not create or validate `.pptx` binaries by
+  itself; a dedicated PPTX skill is required for generation and visual QA.
 
 ## Acknowledgment
 
