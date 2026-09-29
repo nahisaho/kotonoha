@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-29
+
+### Fixed
+
+- Require ASCII half-width spaces immediately before and after Markdown
+  strong emphasis embedded in prose, and flag full-width, non-breaking, or
+  tab spacing such as `これは　**「重要」**　と説明する`.
+
 ## [0.2.0] - 2026-09-29
 
 ### Changed

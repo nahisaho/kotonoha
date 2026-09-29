@@ -26,6 +26,7 @@ test("tech-writer workflow section references stay aligned", () => {
 test("tech-writer lint detects bold delimiters touching prose", () => {
   const workingDirectory = createTemporaryDirectory();
   const badDocument = path.join(workingDirectory, "bad.md");
+  const wideSpaceDocument = path.join(workingDirectory, "wide-space.md");
   const goodDocument = path.join(workingDirectory, "good.md");
   const lint = path.join(
     repositoryRoot,
@@ -40,8 +41,15 @@ test("tech-writer lint detects bold delimiters touching prose", () => {
     "# Test\n\nこれは**強調**にならない。\n",
   );
   fs.writeFileSync(
+    wideSpaceDocument,
+    "# Test\n\n" +
+      "これは　**「AIが賢く先回りして質問責任を持つ」** といった文書。\n" +
+      "これは **「AIが賢く先回りして質問責任を持つ」**　といった文書。\n",
+  );
+  fs.writeFileSync(
     goodDocument,
-    "# Test\n\nこれは **強調** になる。\n",
+    "# Test\n\nこれは **強調** になる。\n\n" +
+      "これは **「AIが賢く先回りして質問責任を持つ」** といった文書。\n",
   );
 
   const badResult = JSON.parse(
@@ -54,6 +62,11 @@ test("tech-writer lint detects bold delimiters touching prose", () => {
       encoding: "utf8",
     }),
   );
+  const wideSpaceResult = JSON.parse(
+    execFileSync("python3", [lint, "--json", wideSpaceDocument], {
+      encoding: "utf8",
+    }),
+  );
 
   assert.ok(
     badResult.findings.some((finding) => finding.category === "bold_spacing"),
@@ -61,6 +74,12 @@ test("tech-writer lint detects bold delimiters touching prose", () => {
   assert.equal(
     goodResult.findings.some((finding) => finding.category === "bold_spacing"),
     false,
+  );
+  assert.equal(
+    wideSpaceResult.findings.filter(
+      (finding) => finding.category === "bold_spacing",
+    ).length,
+    2,
   );
 });
 

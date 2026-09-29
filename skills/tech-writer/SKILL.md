@@ -225,7 +225,10 @@ For every Markdown doctype, surround `**strong emphasis**` with half-width
 spaces when the delimiters would otherwise touch prose. For example, write
 `これは **強調** になる`, not `これは**強調**にならない`. Spaces are not
 required at line boundaries or next to punctuation, and must not be placed
-inside the `**` delimiters.
+inside the `**` delimiters. Use ASCII spaces (`U+0020`), never full-width
+spaces (`U+3000`), tabs, or non-breaking spaces, immediately before and after
+emphasis embedded in prose. Write `これは **「重要」** と説明する`, not
+`これは　**「重要」**　と説明する`.
 
 For atomic artifacts (commit messages, PR descriptions, issue reports,
 code comments/docstrings, a single entry appended to an existing

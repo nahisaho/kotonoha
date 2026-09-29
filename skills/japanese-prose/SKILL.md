@@ -87,7 +87,10 @@ converge and list the unresolved items.
 When strong emphasis touches surrounding prose, put half-width spaces outside
 the delimiters: `これは **重要** です`, not `これは**重要**です`. Spaces are
 unnecessary at line boundaries or next to punctuation, and must not be placed
-inside `**`.
+inside `**`. Use ASCII spaces (`U+0020`), never full-width spaces (`U+3000`),
+tabs, or non-breaking spaces, immediately before and after emphasis embedded
+in prose. Write `これは **「重要」** と説明する`, not
+`これは　**「重要」**　と説明する`.
 
 ## Diagnostic interpretation
 

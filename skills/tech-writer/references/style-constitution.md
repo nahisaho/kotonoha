@@ -34,7 +34,11 @@ In generated Markdown, add half-width spaces outside strong-emphasis
 delimiters when they touch surrounding prose. Write
 `これは **強調** になる` rather than `これは**強調**にならない`.
 The spaces are unnecessary at a line boundary or next to punctuation, for
-example `**重要**: 設定を確認する`. Never put spaces inside the delimiters.
+example `**重要**: 設定を確認する`. Use ASCII spaces (`U+0020`), not
+full-width spaces (`U+3000`), tabs, or non-breaking spaces, immediately before
+and after emphasis embedded in prose. Write `これは **「重要」** と説明する`,
+not `これは　**「重要」**　と説明する`. Never put spaces inside the
+delimiters.
 
 ## 1. Say "what this is" and "the outcome" in the first three lines
 

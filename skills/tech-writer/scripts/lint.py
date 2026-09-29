@@ -246,11 +246,12 @@ def check_links(lines: list, fence_mask: list) -> list:
 
 
 def check_bold_spacing(lines: list, fence_mask: list) -> list:
-    """Flag bold delimiters that directly touch surrounding prose.
+    """Flag bold delimiters with missing or non-ASCII surrounding spaces.
 
     Some Markdown renderers fail to recognize strong emphasis when `**`
     directly adjoins Japanese or other word characters. Punctuation and
-    line boundaries do not need padding.
+    line boundaries do not need padding. When padding is present, it must
+    be an ASCII half-width space rather than a tab or Unicode space.
     """
     findings = []
     for i, line in enumerate(lines):
@@ -262,15 +263,19 @@ def check_bold_spacing(lines: list, fence_mask: list) -> list:
             after = checked[match.end()] if match.end() < len(checked) else ""
             if (before and (before.isalnum() or before == "_")) or (
                 after and (after.isalnum() or after == "_")
+            ) or (
+                before and before.isspace() and before != " "
+            ) or (
+                after and after.isspace() and after != " "
             ):
                 findings.append(
                     Finding(
                         line=i + 1,
                         category="bold_spacing",
                         message=(
-                            "Add half-width spaces outside '**...**' when it "
-                            "touches surrounding prose so strong emphasis "
-                            "renders consistently."
+                            "Use ASCII half-width spaces immediately before "
+                            "and after '**...**' when it is embedded in prose; "
+                            "do not use full-width or other Unicode spaces."
                         ),
                         snippet=line.strip(),
                     )
