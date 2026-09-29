@@ -156,6 +156,56 @@ npx kotonoha install
 # Installed presentation-planner (...)
 ```
 
+### Update kotonoha
+
+First review and commit or back up any local changes under the installed skill
+directories. Updating with `--force` replaces the complete selected
+directories, including local customizations.
+
+Update to the latest stable package:
+
+```bash
+npm install --save-dev kotonoha@latest
+```
+
+To test the current prerelease instead, install the `next` tag:
+
+```bash
+npm install --save-dev kotonoha@next
+```
+
+Installing the npm package does not automatically replace existing copied
+skills. Reinstall all packaged skills after the package update:
+
+```bash
+npx kotonoha install --force
+```
+
+To update only one skill:
+
+```bash
+npx kotonoha install --skill tech-writer --force
+npx kotonoha install --skill presentation-planner --force
+```
+
+If the original installation used another target, pass the same directory
+again:
+
+```bash
+npx kotonoha install --target ~/.copilot/skills --force
+```
+
+Confirm the installed package version and review the replaced files before
+committing them:
+
+```bash
+npx kotonoha --version
+git diff -- .github/skills
+```
+
+Running `npx kotonoha install` without `--force` is safe but does not update
+existing skill directories; it only installs skills that are missing.
+
 ### Install from a source checkout
 
 Inside this repository, the skills are linked under `.github/skills/`, so no
