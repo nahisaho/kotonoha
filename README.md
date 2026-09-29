@@ -13,6 +13,27 @@ specification, and handoff for a dedicated PPTX creation skill.
 
 [English](./README.md) | [日本語](./README-ja.md)
 
+## Why the name kotonoha
+
+`kotonoha` comes from the Japanese expression 言の葉 (*kotonoha*), a
+classical and poetic name for words, language, and verse. The name reflects
+this project's purpose: helping a reader's intent grow into clear,
+well-structured words.
+
+Its connection to the *Man'yoshu* needs one qualification. One traditional
+interpretation reads the anthology's title as "countless words or poems,"
+but the title's etymology is not settled. The famous explicit image,
+"Japanese poetry takes the human heart as its seed and grows into myriad
+leaves of words," is from the
+[*Kokin Wakashu* Kana Preface](https://ja.wikisource.org/wiki/%E5%8F%A4%E4%BB%8A%E5%92%8C%E6%AD%8C%E9%9B%86%E4%BB%AE%E5%90%8D%E5%BA%8F),
+not the *Man'yoshu*. The earlier *Man'yoshu* expresses a related belief in
+the power of language through *kotodama*, including poems
+[894](https://manyo-hyakka.pref.nara.jp/db/detailLink?cls=db_manyo&pkey=894)
+and
+[3254](https://manyo-hyakka.pref.nara.jp/db/detailLink?cls=db_manyo&pkey=3254).
+The broader historical meaning of 言の葉 is summarized by
+[Kotobank](https://kotobank.jp/word/%E8%A8%80%E3%81%AE%E8%91%89-503155).
+
 ## What tech-writer solves
 
 Technical documents tend to have two separate problems: "is the prose

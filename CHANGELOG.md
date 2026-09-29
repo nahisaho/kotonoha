@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `README-ja.md` as a complete Japanese guide and link it from the
   English README.
+- Explain the meaning of the name `kotonoha` in both READMEs, distinguishing
+  the *Kokin Wakashu*'s explicit "leaves of words" image from the related
+  *kotodama* tradition in the earlier *Man'yoshu*.
 
 ## [0.1.5] - 2026-09-29
 
