@@ -12,6 +12,41 @@ function createTemporaryDirectory() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "kotonoha-test-"));
 }
 
+function contrastRatio(foreground, background) {
+  function luminance(hex) {
+    const channels = [1, 3, 5].map(
+      (index) => Number.parseInt(hex.slice(index, index + 2), 16) / 255,
+    );
+    const linear = channels.map((value) =>
+      value <= 0.04045
+        ? value / 12.92
+        : ((value + 0.055) / 1.055) ** 2.4,
+    );
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  }
+
+  const values = [luminance(foreground), luminance(background)].sort(
+    (left, right) => right - left,
+  );
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+function yamlColor(content, key) {
+  const match = content.match(new RegExp(`^  ${key}: "(#[0-9A-F]{6})"$`, "m"));
+  assert.ok(match, `missing color token ${key}`);
+  return match[1];
+}
+
+function yamlChartSequence(content) {
+  const match = content.match(
+    /^  chart_sequence:\n((?:    - "#[0-9A-F]{6}"\n?)+)/m,
+  );
+  assert.ok(match, "missing chart_sequence");
+  return [...match[1].matchAll(/"(#[0-9A-F]{6})"/g)].map(
+    (entry) => entry[1],
+  );
+}
+
 test("installs all skills into the default project directory", () => {
   const workingDirectory = createTemporaryDirectory();
 
@@ -281,7 +316,65 @@ test("the packed npm artifact installs a usable CLI", () => {
       ),
       `${design} should be included in the installed presentation skill`,
     );
+    const designContent = fs.readFileSync(
+      path.join(
+        consumerDirectory,
+        ".copilot",
+        "skills",
+        "presentation-planner",
+        "assets",
+        "design-templates",
+        design,
+      ),
+      "utf8",
+    );
+    assert.equal(yamlColor(designContent, "background"), "#FFFFFF");
+    assert.equal(yamlColor(designContent, "brand_red"), "#F25022");
+    assert.equal(yamlColor(designContent, "brand_green"), "#7FBA00");
+    assert.equal(yamlColor(designContent, "brand_blue"), "#00A4EF");
+    assert.equal(yamlColor(designContent, "brand_yellow"), "#FFB900");
+    assert.ok(
+      contrastRatio(
+        yamlColor(designContent, "accent"),
+        yamlColor(designContent, "surface"),
+      ) >= 4.5,
+    );
+    for (const token of [
+      "text_primary",
+      "text_secondary",
+      "accent",
+      "positive",
+      "warning",
+      "critical",
+    ]) {
+      for (const surface of ["background", "surface"]) {
+        assert.ok(
+          contrastRatio(
+            yamlColor(designContent, token),
+            yamlColor(designContent, surface),
+          ) >= 4.5,
+          `${design}: ${token} must meet contrast on ${surface}`,
+        );
+      }
+    }
+    assert.deepEqual(yamlChartSequence(designContent), [
+      "#005A9E",
+      "#F25022",
+      "#767676",
+    ]);
   }
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        consumerDirectory,
+        ".copilot",
+        "skills",
+        "presentation-planner",
+        "references",
+        "customizing-design-templates.md",
+      ),
+    ),
+  );
 
   for (const template of ["technical-proposal.md", "rfi.md", "rfp.md"]) {
     assert.ok(

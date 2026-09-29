@@ -100,6 +100,9 @@ Read `references/design-spec-schema.md` and adapt the selected design into
 the presentation's `design-spec.yaml`. Preserve the schema keys so the PPTX
 skill can consume it predictably.
 
+For project-specific changes or new reusable templates, follow
+`references/customizing-design-templates.md`.
+
 ## 3. Build the storyline before slide content
 
 Use the shortest storyline that gets the audience to the intended outcome:

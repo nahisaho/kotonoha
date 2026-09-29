@@ -13,21 +13,24 @@ canvas:
   grid_columns: 12
   max_content_blocks: 5
 colors:
-  background: "#0B1220"
-  surface: "#111C30"
-  text_primary: "#F1F5F9"
-  text_secondary: "#B8C4D6"
-  accent: "#38BDF8"
-  accent_soft: "#123A53"
-  positive: "#34D399"
-  warning: "#FBBF24"
-  critical: "#FB7185"
+  background: "#FFFFFF"
+  surface: "#F3F3F3"
+  text_primary: "#1B1B1B"
+  text_secondary: "#505050"
+  accent: "#005A9E"
+  accent_soft: "#E5F1FB"
+  border_neutral: "#8A8886"
+  positive: "#107C10"
+  warning: "#8A5A00"
+  critical: "#A4262C"
+  brand_red: "#F25022"
+  brand_green: "#7FBA00"
+  brand_blue: "#00A4EF"
+  brand_yellow: "#FFB900"
   chart_sequence:
-    - "#38BDF8"
-    - "#34D399"
-    - "#A78BFA"
-    - "#FBBF24"
-    - "#94A3B8"
+    - "#005A9E"
+    - "#F25022"
+    - "#767676"
 typography:
   heading_font: "Aptos Display"
   body_font: "Aptos"
@@ -46,7 +49,7 @@ spacing:
 components:
   cards:
     corner_radius: small
-    border: accent_soft
+    border: border_neutral
     shadow: none
   callouts:
     use_accent_bar: true
@@ -59,6 +62,8 @@ components:
   charts:
     style: technical
     gridlines: subtle
+    direct_labels_required: true
+    series_outline: background
     source_note_required: true
   diagrams:
     connector_style: orthogonal
@@ -85,4 +90,7 @@ constraints:
   - assertion title required
   - code samples limited to twelve visible lines
   - diagrams must identify trust or ownership boundaries
+  - Microsoft logo colors are not used for small text on white
+  - brand_yellow uses a direct label and pattern or marker encoding
+  - charts with more than three series add pattern or shape encoding
 deviations: []

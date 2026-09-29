@@ -14,20 +14,23 @@ canvas:
   max_content_blocks: 4
 colors:
   background: "#FFFFFF"
-  surface: "#F4F7FA"
-  text_primary: "#152238"
-  text_secondary: "#5D6B82"
-  accent: "#006C8F"
-  accent_soft: "#D9F0F7"
-  positive: "#2E7D32"
-  warning: "#8C5200"
-  critical: "#B3261E"
+  surface: "#F3F3F3"
+  text_primary: "#1B1B1B"
+  text_secondary: "#505050"
+  accent: "#005A9E"
+  accent_soft: "#E5F1FB"
+  border_neutral: "#8A8886"
+  positive: "#107C10"
+  warning: "#8A5A00"
+  critical: "#A4262C"
+  brand_red: "#F25022"
+  brand_green: "#7FBA00"
+  brand_blue: "#00A4EF"
+  brand_yellow: "#FFB900"
   chart_sequence:
-    - "#006C8F"
-    - "#7A5AF8"
-    - "#2E7D32"
-    - "#D97706"
-    - "#78909C"
+    - "#005A9E"
+    - "#F25022"
+    - "#767676"
 typography:
   heading_font: "Aptos Display"
   body_font: "Aptos"
@@ -59,7 +62,8 @@ components:
   charts:
     style: analytical
     gridlines: minimal
-    direct_labels_preferred: true
+    direct_labels_required: true
+    series_outline: background
     source_note_required: true
     zero_baseline_required_for_bars: true
   diagrams:
@@ -87,4 +91,7 @@ constraints:
   - chart axes and units must be visible
   - uncertainty and sample size must be disclosed
   - three-dimensional charts are prohibited
+  - Microsoft logo colors are not used for small text on white
+  - brand_yellow uses a direct label and pattern or marker encoding
+  - charts with more than three series add pattern or shape encoding
 deviations: []

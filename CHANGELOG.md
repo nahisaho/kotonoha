@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   storyline, slide outlines, design specifications, and PPTX-skill handoff.
 - Add executive proposal, technical briefing, and data report design
   specifications in YAML.
+- Standardize presentation designs on white backgrounds with Microsoft
+  corporate colors and accessible dark semantic text colors.
+- Add a guide for adapting design specifications and adding reusable
+  presentation templates.
 - Add multi-skill installation with `kotonoha install --skill <name|all>`.
 - Add Japanese templates for technical proposals, requests for information
   (RFI), and requests for proposal (RFP).

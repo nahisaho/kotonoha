@@ -28,6 +28,8 @@ fallback:
 | `shadow` | `none`, `subtle`, `medium` |
 | `charts.style` | `direct-label`, `technical`, `analytical` |
 | `charts.gridlines` | `none`, `subtle`, `minimal` |
+| `charts.series_outline` | `none` or an exact key under `colors` |
+| `charts.direct_labels_required` | `true` or `false` |
 | `connector_style` | `simple`, `orthogonal`, `curved` |
 | `cards.border` | `none` or an exact key under `colors` |
 | `tables.header_fill` | `none` or an exact key under `colors` |
@@ -37,6 +39,22 @@ Values that reference a color token must exactly match a key under `colors`,
 for example `accent_soft`, not a display label such as `accent-soft`.
 Do not assume that `accent` text is readable on `accent_soft`; validate the
 actual foreground/background pair against `minimum_contrast_ratio`.
+
+The packaged designs expose Microsoft's four corporate logo colors as
+`brand_red`, `brand_green`, `brand_blue`, and `brand_yellow`. Treat them as
+brand or decorative tokens, not as an automatic categorical chart palette.
+Do not use them for small text on white unless the actual pair passes the
+contrast threshold; `brand_yellow` requires a direct label plus pattern or
+marker encoding on a white canvas.
+
+The packaged categorical `chart_sequence` is intentionally capped at three
+well-separated series: dark Microsoft blue, Microsoft red, and neutral gray.
+When a chart needs more than three series, add pattern, marker, or shape
+encoding instead of appending the remaining logo colors.
+
+`charts.series_outline: background` separates adjacent stacked, pie, or area
+segments; it does not make a light fill visible against the canvas. Use
+direct labels and pattern or marker encoding for light series.
 
 Nested typography and component keys may be omitted when irrelevant. A
 renderer must use its documented defaults for missing optional keys rather

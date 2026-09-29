@@ -139,7 +139,7 @@ skills/tech-writer/          # the skill itself
   assets/templates/          # doctype skeletons plus technical proposal, RFI, and RFP templates
 skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   SKILL.md
-  references/                # responsibility boundary, schema, handoff contract
+  references/                # boundary, schema, customization, handoff contract
   assets/design-templates/   # executive, technical, and data-report YAML designs
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
 .github/skills/presentation-planner
@@ -155,6 +155,8 @@ skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   imperative-mood rule) applies directly to English documents as well.
 - `presentation-planner` does not create or validate `.pptx` binaries by
   itself; a dedicated PPTX skill is required for generation and visual QA.
+- Design customization is documented in
+  `skills/presentation-planner/references/customizing-design-templates.md`.
 
 ## Acknowledgment
 

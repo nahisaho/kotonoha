@@ -13,21 +13,24 @@ canvas:
   grid_columns: 12
   max_content_blocks: 4
 colors:
-  background: "#F7F8FA"
-  surface: "#FFFFFF"
-  text_primary: "#172033"
-  text_secondary: "#526079"
-  accent: "#2563EB"
-  accent_soft: "#DBEAFE"
-  positive: "#117653"
-  warning: "#8A520F"
-  critical: "#C2413B"
+  background: "#FFFFFF"
+  surface: "#F3F3F3"
+  text_primary: "#1B1B1B"
+  text_secondary: "#505050"
+  accent: "#005A9E"
+  accent_soft: "#E5F1FB"
+  border_neutral: "#8A8886"
+  positive: "#107C10"
+  warning: "#8A5A00"
+  critical: "#A4262C"
+  brand_red: "#F25022"
+  brand_green: "#7FBA00"
+  brand_blue: "#00A4EF"
+  brand_yellow: "#FFB900"
   chart_sequence:
-    - "#2563EB"
-    - "#16835B"
-    - "#7C3AED"
-    - "#D97706"
-    - "#64748B"
+    - "#005A9E"
+    - "#F25022"
+    - "#767676"
 typography:
   heading_font: "Aptos Display"
   body_font: "Aptos"
@@ -57,6 +60,8 @@ components:
   charts:
     style: direct-label
     gridlines: minimal
+    direct_labels_required: true
+    series_outline: background
     source_note_required: true
   diagrams:
     connector_style: orthogonal
@@ -81,4 +86,7 @@ constraints:
   - assertion title required
   - no more than one chart per slide
   - no decorative stock imagery without narrative value
+  - Microsoft logo colors are not used for small text on white
+  - brand_yellow uses a direct label and pattern or marker encoding
+  - charts with more than three series add pattern or shape encoding
 deviations: []
