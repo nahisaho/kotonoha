@@ -15,11 +15,12 @@ specification, and handoff for a dedicated PPTX creation skill.
 
 Technical documents tend to have two separate problems: "is the prose
 natural" and "does the structure have the right amount of information".
-`tech-writer` specializes in the latter, leaving the former (sentence-level
-naturalness, removing "AI smell") to a prose-polishing skill such as
+`tech-writer` specializes in the latter and delegates the former
+(sentence-level naturalness, reading load, terminology, and removing
+"AI smell") to a prose-polishing skill such as
 [natural-japanese](https://github.com/coji/natural-japanese). With both
-installed, lock down the structure with `tech-writer` first, then polish
-Japanese prose with natural-japanese.
+installed, kotonoha locks the structure and technical invariants, invokes the
+Japanese prose pass, then rechecks the structure before rubber-duck review.
 
 ## What it does
 
@@ -29,6 +30,9 @@ Japanese prose with natural-japanese.
   operations runbooks, migration plans, security designs, technical proposals,
   RFI/RFP procurement documents, and Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
+- Optional `natural-japanese` integration for Japanese phrase lint,
+  reading-load review, terminology checks, and iterative prose optimization
+  without changing IDs, facts, tables, code, or acceptance criteria
 - Iterative rubber-duck review after document creation, with fixes and
   re-review until no actionable findings remain; unavailable reviews are
   reported as `review not performed`, while unresolved review loops are
@@ -92,6 +96,8 @@ guidance and a review checklist under
 - GitHub Copilot CLI installed
 - Python 3.9+ if you want to run the lint script (standard library only,
   no extra install needed)
+- `uv` when using `natural-japanese` diagnostics such as phrase lint,
+  reading-load analysis, outline extraction, and terminology checks
 
 ### Install from npm
 
@@ -102,6 +108,25 @@ with the included CLI:
 npm install --save-dev kotonoha
 npx kotonoha install
 ```
+
+For Japanese sentence-level optimization, also install
+`natural-japanese` using one of its supported installation methods:
+
+```bash
+npx skills add coji/natural-japanese
+```
+
+Ensure the installed skill is visible to Copilot CLI in the same registered
+skill root used by this project, such as
+`.github/skills/natural-japanese` or
+`~/.copilot/skills/natural-japanese`. If the command installs it for a
+different host, follow the upstream alternative installation instructions
+and place or link the skill into a Copilot-visible skill directory.
+
+If no compatible Japanese prose-polishing skill is registered, kotonoha
+finishes the structural workflow and reports
+`Japanese prose optimization not performed` instead of claiming that the
+prose was optimized.
 
 The default destinations are `.github/skills/tech-writer` and
 `.github/skills/presentation-planner` in the current project. To install
@@ -188,7 +213,8 @@ skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
 
 - `scripts/lint.py` only detects structural issues (headings, code blocks,
   placeholders, links); it does not detect prose naturalness, vocabulary,
-  or rhythm.
+  or rhythm by itself. Those checks require a registered prose-polishing
+  skill such as `natural-japanese`.
 - The doctypes are written mainly with Japanese technical-writing
   conventions in mind; most of the guidance (especially the commit-message
   imperative-mood rule) applies directly to English documents as well.

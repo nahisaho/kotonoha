@@ -271,7 +271,36 @@ test("the packed npm artifact installs a usable CLI", () => {
   assert.match(installedSkill, /run one[\s\S]*round and finish immediately/);
   assert.match(installedSkill, /review not performed/);
   assert.match(installedSkill, /review did not converge/);
-  assert.match(installedSkill, /## 6\. Doctype checklist summary/);
+  assert.match(installedSkill, /## 5\. Optimize Japanese prose/);
+  assert.match(installedSkill, /Japanese prose optimization completed/);
+  assert.match(installedSkill, /Japanese prose optimization not performed/);
+  assert.match(installedSkill, /Japanese prose optimization did not converge/);
+  assert.match(installedSkill, /## 7\. Doctype checklist summary/);
+  const japaneseOptimizationReference = fs.readFileSync(
+    path.join(
+      consumerDirectory,
+      ".copilot",
+      "skills",
+      "tech-writer",
+      "references",
+      "japanese-prose-optimization.md",
+    ),
+    "utf8",
+  );
+  assert.match(japaneseOptimizationReference, /Freeze these invariants/);
+  assert.match(japaneseOptimizationReference, /at most\s+three rounds/);
+  assert.match(
+    japaneseOptimizationReference,
+    /Japanese prose optimization completed/,
+  );
+  assert.match(
+    japaneseOptimizationReference,
+    /Japanese prose optimization not performed/,
+  );
+  assert.match(
+    japaneseOptimizationReference,
+    /Japanese prose optimization did not converge/,
+  );
   assert.match(
     installedSkill,
     /\| Internal technical proposal \| technical-proposal \|/,

@@ -61,8 +61,9 @@ the prose natural and readable". This skill owns the first layer (structure,
 document type conventions, completeness, reader fit). The second layer
 (sentence-level naturalness, removing "AI smell", rhythm) is out of scope and
 belongs to a prose-polishing skill such as [natural-japanese](https://github.com/coji/natural-japanese).
-When both skills are installed, use this skill to lock down the structure
-first, then hand Japanese prose to natural-japanese for polish.
+When both skills are installed, this skill locks down the structure and
+orchestrates the §5 handoff to natural-japanese during `write` mode before
+the final rubber-duck review.
 
 - Rule of thumb: "does removing a heading still make sense?" tests structure
   (this skill's job). "Does rereading a single sentence change its meaning?"
@@ -75,12 +76,14 @@ first, then hand Japanese prose to natural-japanese for polish.
 Infer the mode from the argument or the request:
 
 - `write` (default): new document, or restructuring a draft. Runs the full
-  §1–§5 workflow, starting with the intake loop in §1 and ending only after
+  §1–§6 workflow, starting with the intake loop in §1 and ending only after
   the rubber-duck review loop has no remaining actionable findings. If an
   independent review cannot run or cannot converge, returns the explicit
-  review status required by §5 instead of claiming a clean review.
+  review status required by §6 instead of claiming a clean review. For a
+  primarily Japanese document, also return the §5 Japanese prose optimization
+  status.
 - `review`: structural review of an existing document. Does not rewrite;
-  reports the gap against the doctype checklist (§6).
+  reports the gap against the doctype checklist (§7).
 - `score`: structure-only quick diagnostic. Runs
   `scripts/lint.py --json <file>` and summarizes the findings (no rewrite).
 
@@ -137,7 +140,7 @@ hand the user a checklist to fill in. Instead:
    one-line note) and move on.
 6. **Once complete, do not ask the user to compose anything.** Synthesize
    the gathered answers into the best possible generation approach yourself
-   and immediately continue into §2–§5 in the same turn to produce the
+   and immediately continue into §2–§6 in the same turn to produce the
    document. Skip further confirmation unless the doctype is release-facing
    and consequential (e.g. a public release note with breaking changes) or
    the user explicitly asked to see a plan first.
@@ -229,11 +232,11 @@ or `references/doctypes/release-notes.md` instead — see the scope note in
 verbatim there.
 
 Sentence-level concerns — keeping individual sentences concise, avoiding
-double negatives, not dropping the subject, and general naturalness — are
-out of this skill's scope regardless of doctype. When natural-japanese (or
-an equivalent prose-polishing skill) is available, hand Japanese prose to
-it for that pass; otherwise apply ordinary careful-writing judgment, but
-don't treat it as this skill's responsibility to enforce.
+double negatives, not dropping the subject, and general naturalness — belong
+to a prose-polishing skill. In `write` mode for a Japanese document, perform
+the explicit handoff in §5 after the structure is complete. If no compatible
+optimizer is available, still apply ordinary careful-writing judgment and
+report the missing optimization pass explicitly.
 
 
 ## 4. Review — structural check
@@ -262,9 +265,49 @@ step 2 as the primary check for those.
 4. **Reader-goal recheck**: confirm the "what the reader can do after
    reading" outcome from §1 is actually achievable from this document alone.
 
-## 5. Rubber-duck review loop — write mode only
+## 5. Optimize Japanese prose without changing the structure — write mode only
 
-After the structural review in §4, use the host's subagent mechanism to
+For a primarily Japanese document, read
+`references/japanese-prose-optimization.md` and hand the completed draft to a
+registered `natural-japanese` or equivalent Japanese prose-polishing skill.
+This pass is mandatory when such a skill is available.
+
+Treat the optimizer as available when the host's registered skill list
+contains `natural-japanese` or a compatible Japanese prose-polishing skill.
+Invoke it through the host's skill-loading mechanism; when only installed
+skill files are exposed, load its `SKILL.md` and follow that workflow. Treat
+the pass as unavailable only when no compatible registration or readable
+skill installation exists, or when the optimizer cannot start.
+
+Freeze heading hierarchy, section order, identifiers, numeric facts,
+citations, normative language, tables, code, commands, acceptance criteria,
+and explicit risks before handoff. Require sentence-level optimization and
+request AI-pattern diagnostics, reading-load review, and terminology checks
+when their scripts are runnable, without changing those invariants. Missing
+optional diagnostics are a reported limitation, not proof that the prose pass
+did not run. After the prose pass, repeat the doctype checklist and structural
+lint from §4.
+
+For a primarily Japanese document in `write` mode, report one explicit
+status:
+
+- `Japanese prose optimization completed`
+- `Japanese prose optimization not performed`
+- `Japanese prose optimization did not converge`
+
+If no compatible optimizer can be loaded, use
+`Japanese prose optimization not performed` and state the reason. If the
+optimizer starts but fails, or an edit violates a frozen invariant, revert
+the invalid edit and retry within the three-round limit; unresolved failures
+or invariant violations use
+`Japanese prose optimization did not converge`. Do not claim this
+optimization from kotonoha's structural lint alone. Documents that are not
+primarily Japanese require no optimization status.
+
+## 6. Rubber-duck review loop — write mode only
+
+After the structural review in §4 and any Japanese prose optimization in §5,
+use the host's subagent mechanism to
 launch an independent reviewer in the `rubber-duck` role to challenge the
 completed document for meaningful problems that the authoring pass may have
 missed. Prefer a registered `rubber-duck` agent when the host provides one;
@@ -282,9 +325,12 @@ for `write` mode; do not run it for `review` or `score` mode.
 2. **Resolve every valid finding**: edit the document rather than merely
    listing proposed fixes. If a finding conflicts with a stated requirement
    or is factually inapplicable, record a one-line reason for declining it.
-3. **Re-run the relevant checks after each edit round**: repeat the doctype
-   checklist and structural lint from §4 before asking for another
-   rubber-duck review. A fix must not introduce a new structural defect.
+3. **Re-run the relevant checks after each edit round**: if a fix changed
+   Japanese prose, repeat the §5 optimization over the changed prose before
+   reporting its final status. Then repeat the doctype checklist and
+   structural lint from §4 before asking for another rubber-duck review. A
+   fix must not introduce a new structural defect or leave the final Japanese
+   prose outside the completed optimization pass.
 4. **Review again with the prior decisions**: reuse the same reviewer context
    when supported. Otherwise, include the previous findings, applied fixes,
    and declined findings with their reasons in every new review prompt. Ask
@@ -306,7 +352,7 @@ for `write` mode; do not run it for `review` or `score` mode.
    contradictory requirements, label it `review did not converge` and
    include the latest unresolved findings and fixes already attempted.
 
-## 6. Doctype checklist summary
+## 7. Doctype checklist summary
 
 See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
@@ -333,5 +379,6 @@ The idea of separating structure from prose comes from
 [natural-japanese](https://github.com/coji/natural-japanese) (MIT License)
 and its design principle "machines detect, humans (or agents) judge" and
 "prevent at generation time rather than fix afterward". This skill extends
-that separation to the structural side of technical documents, deliberately
-leaving prose naturalness out of scope.
+that separation by owning technical-document structure while orchestrating,
+but not reimplementing, the registered prose-polishing skill responsible for
+sentence-level naturalness.

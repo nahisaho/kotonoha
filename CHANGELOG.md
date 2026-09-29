@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add a guarded Japanese prose-optimization handoff to `natural-japanese` or
+  an equivalent registered skill, with invariant preservation, bounded
+  convergence, structural revalidation, and explicit completion statuses.
+
 ## [0.1.4] - 2026-09-29
 
 ### Added
