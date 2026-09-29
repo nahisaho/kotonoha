@@ -38,6 +38,8 @@ outcome. Require it to preserve:
 - Normative force such as Must / Should / May, approval states, and
   acceptance criteria
 - Tables, code blocks, commands, schemas, frontmatter keys, and placeholders
+- Markdown emphasis spacing: keep half-width spaces between surrounding prose
+  and `**strong emphasis**` delimiters
 - Explicit assumptions, limitations, residual risks, and unresolved items
 
 Heading wording may improve only when its meaning and hierarchy stay intact.

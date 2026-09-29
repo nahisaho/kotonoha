@@ -28,6 +28,14 @@ a title-plus-paragraph). Follow that doctype's own skeleton for those
 instead of applying the heading-hierarchy and document-metadata rules
 below verbatim; where the two disagree, the doctype reference wins.
 
+## Markdown emphasis spacing
+
+In generated Markdown, add half-width spaces outside strong-emphasis
+delimiters when they touch surrounding prose. Write
+`これは **強調** になる` rather than `これは**強調**にならない`.
+The spaces are unnecessary at a line boundary or next to punctuation, for
+example `**重要**: 設定を確認する`. Never put spaces inside the delimiters.
+
 ## 1. Say "what this is" and "the outcome" in the first three lines
 
 Readers decide "is this relevant to me" within the first three lines. Don't

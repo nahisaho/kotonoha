@@ -223,6 +223,12 @@ lines" maps to the frontmatter `title` plus the lead paragraph right
 after it. Zenn body sections start at `##`; Qiita body sections start at
 `#` and use `##` for subsections.
 
+For every Markdown doctype, surround `**strong emphasis**` with half-width
+spaces when the delimiters would otherwise touch prose. For example, write
+`これは **強調** になる`, not `これは**強調**にならない`. Spaces are not
+required at line boundaries or next to punctuation, and must not be placed
+inside the `**` delimiters.
+
 For atomic artifacts (commit messages, PR descriptions, issue reports,
 code comments/docstrings, a single entry appended to an existing
 release-notes/CHANGELOG file), follow their own skeleton in
@@ -259,9 +265,9 @@ step 2 as the primary check for those.
    (add `--atomic` for a commit message, PR description, issue report,
    code comment/docstring, or a single release-notes entry) to
    mechanically catch heading-level skips, code blocks missing a
-   language tag, leftover placeholders, and suspicious links. Findings
-   are flags, not mandates — deliberate exceptions can stay; note the reason
-   briefly.
+   language tag, leftover placeholders, suspicious links, and strong-emphasis
+   delimiters that directly touch prose. Findings are flags, not mandates —
+   deliberate exceptions can stay; note the reason briefly.
 4. **Reader-goal recheck**: confirm the "what the reader can do after
    reading" outcome from §1 is actually achievable from this document alone.
 

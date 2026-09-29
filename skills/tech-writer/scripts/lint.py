@@ -4,12 +4,13 @@
 # dependencies = []
 # ///
 """tech-writer skill: a lint script that mechanically checks a technical
-document's *structure*.
+document's *structure* and Markdown rendering safety.
 
 Where natural-japanese's lint.py detects sentence-level naturalness
-(vocabulary, rhythm), this script only detects structural problems specific
-to technical documents (heading hierarchy, code examples, leftover
-placeholders, suspicious links). The two scripts intentionally don't
+(vocabulary, rhythm), this script detects structural problems specific to
+technical documents plus Markdown syntax patterns that render inconsistently
+(heading hierarchy, code examples, leftover placeholders, suspicious links,
+and bold delimiters touching prose). The two scripts intentionally don't
 overlap in scope.
 
 Findings are flags, not mandates: exit code is always 0 regardless of the
@@ -73,6 +74,7 @@ FENCE_RE = re.compile(r"^(`{3,}|~{3,})(.*)$")
 PLACEHOLDER_RE = re.compile(r"\b(TODO|FIXME|TBD|XXX)\b", re.IGNORECASE)
 MD_LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
+BOLD_RE = re.compile(r"(?<![\\*])\*\*(?!\s)(.+?)(?<!\s)\*\*(?!\*)")
 NON_PARAGRAPH_RE = re.compile(
     r"^(?:[-*+]\s|\d+[.)]\s|>|<!--|\|)|^(?:-{3,}|\*{3,}|_{3,})$"
 )
@@ -243,6 +245,39 @@ def check_links(lines: list, fence_mask: list) -> list:
     return findings
 
 
+def check_bold_spacing(lines: list, fence_mask: list) -> list:
+    """Flag bold delimiters that directly touch surrounding prose.
+
+    Some Markdown renderers fail to recognize strong emphasis when `**`
+    directly adjoins Japanese or other word characters. Punctuation and
+    line boundaries do not need padding.
+    """
+    findings = []
+    for i, line in enumerate(lines):
+        if fence_mask[i]:
+            continue
+        checked = strip_inline_code(line)
+        for match in BOLD_RE.finditer(checked):
+            before = checked[match.start() - 1] if match.start() else ""
+            after = checked[match.end()] if match.end() < len(checked) else ""
+            if (before and (before.isalnum() or before == "_")) or (
+                after and (after.isalnum() or after == "_")
+            ):
+                findings.append(
+                    Finding(
+                        line=i + 1,
+                        category="bold_spacing",
+                        message=(
+                            "Add half-width spaces outside '**...**' when it "
+                            "touches surrounding prose so strong emphasis "
+                            "renders consistently."
+                        ),
+                        snippet=line.strip(),
+                    )
+                )
+    return findings
+
+
 def check_intro_paragraph(lines: list, fence_mask: list) -> list:
     """Check that the document opens with a non-empty H1 title immediately
     followed by a genuine body paragraph.
@@ -315,6 +350,7 @@ def run_lint(path: Path, atomic: bool = False) -> LintResult:
     result.findings.extend(check_heading_hierarchy(lines, fence_mask))
     result.findings.extend(check_placeholders(lines, fence_mask))
     result.findings.extend(check_links(lines, fence_mask))
+    result.findings.extend(check_bold_spacing(lines, fence_mask))
     if not atomic:
         # check_intro_paragraph assumes a living, multi-section document
         # (H1 title + opening paragraph); atomic artifacts like a PR

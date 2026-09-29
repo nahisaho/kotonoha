@@ -23,6 +23,47 @@ test("tech-writer workflow section references stay aligned", () => {
   assert.match(skill, /doctype checklist \(§7\)/);
 });
 
+test("tech-writer lint detects bold delimiters touching prose", () => {
+  const workingDirectory = createTemporaryDirectory();
+  const badDocument = path.join(workingDirectory, "bad.md");
+  const goodDocument = path.join(workingDirectory, "good.md");
+  const lint = path.join(
+    repositoryRoot,
+    "skills",
+    "tech-writer",
+    "scripts",
+    "lint.py",
+  );
+
+  fs.writeFileSync(
+    badDocument,
+    "# Test\n\nこれは**強調**にならない。\n",
+  );
+  fs.writeFileSync(
+    goodDocument,
+    "# Test\n\nこれは **強調** になる。\n",
+  );
+
+  const badResult = JSON.parse(
+    execFileSync("python3", [lint, "--json", badDocument], {
+      encoding: "utf8",
+    }),
+  );
+  const goodResult = JSON.parse(
+    execFileSync("python3", [lint, "--json", goodDocument], {
+      encoding: "utf8",
+    }),
+  );
+
+  assert.ok(
+    badResult.findings.some((finding) => finding.category === "bold_spacing"),
+  );
+  assert.equal(
+    goodResult.findings.some((finding) => finding.category === "bold_spacing"),
+    false,
+  );
+});
+
 test("npm publishing routes prereleases away from latest", () => {
   const packageVersion = require("../package.json").version;
   const workflow = fs.readFileSync(
