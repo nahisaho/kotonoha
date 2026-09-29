@@ -284,6 +284,22 @@ test("the packed npm artifact installs a usable CLI", () => {
     installedSkill,
     /\| System design \/ システム設計書 \| system-design \|/,
   );
+  assert.match(
+    installedSkill,
+    /\| Test plan \/ テスト計画書 \| test-plan \|/,
+  );
+  assert.match(
+    installedSkill,
+    /\| Operations design \/ Runbook \/ 運用設計書 \| operations-runbook \|/,
+  );
+  assert.match(
+    installedSkill,
+    /\| Migration plan \/ 移行計画書 \| migration-plan \|/,
+  );
+  assert.match(
+    installedSkill,
+    /\| Security design \/ Threat model \/ セキュリティ設計書 \| security-design \|/,
+  );
   assert.match(installedSkill, /\| Request for information \/ RFI \| rfi \|/);
   assert.match(installedSkill, /\| Request for proposal \/ RFP \| rfp \|/);
 
@@ -387,6 +403,10 @@ test("the packed npm artifact installs a usable CLI", () => {
   for (const template of [
     "requirements-definition.md",
     "system-design.md",
+    "test-plan.md",
+    "operations-runbook.md",
+    "migration-plan.md",
+    "security-design.md",
     "technical-proposal.md",
     "rfi.md",
     "rfp.md",
@@ -454,4 +474,44 @@ test("the packed npm artifact installs a usable CLI", () => {
   assert.match(systemDesignTemplate, /## セキュリティ設計/);
   assert.match(systemDesignTemplate, /シークレット管理/);
   assert.match(systemDesignTemplate, /## テスト方針と要件トレーサビリティ/);
+
+  const templateMarkers = {
+    "test-plan.md": [
+      "## テスト戦略",
+      "## 開始条件と終了条件",
+      "## テストケースと要件トレーサビリティ",
+    ],
+    "operations-runbook.md": [
+      "## 監視・ログ・アラート",
+      "## 症状別Runbook",
+      "## バックアップとリストア",
+    ],
+    "migration-plan.md": [
+      "## リハーサル計画",
+      "## Go / No-Go判定",
+      "## ロールバック計画",
+    ],
+    "security-design.md": [
+      "## アーキテクチャと信頼境界",
+      "## 脅威モデル",
+      "## セキュリティトレーサビリティ",
+    ],
+  };
+  for (const [template, markers] of Object.entries(templateMarkers)) {
+    const content = fs.readFileSync(
+      path.join(
+        consumerDirectory,
+        ".copilot",
+        "skills",
+        "tech-writer",
+        "assets",
+        "templates",
+        template,
+      ),
+      "utf8",
+    );
+    for (const marker of markers) {
+      assert.ok(content.includes(marker), `${template} should include ${marker}`);
+    }
+  }
 });

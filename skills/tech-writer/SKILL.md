@@ -4,17 +4,21 @@ description: >-
   Helps structure and polish technical documents: README, design docs/ADRs,
   API reference, PR descriptions/commit messages/issue reports, release
   notes/CHANGELOG, user manuals/how-to guides, code comments/docstrings,
-  requirements definitions, system designs, technical proposals, RFI/RFP
-  procurement documents, and Qiita/Zenn articles. Use for requests like
-  "write a README", "draft a design doc", "define system requirements",
-  "write a system design", "write a technical proposal", "draft an RFI",
-  "create an RFP", "write this PR description", "clean up my commit
+  requirements definitions, system designs, test plans, operations runbooks,
+  migration plans, security designs/threat models, technical proposals,
+  RFI/RFP procurement documents, and Qiita/Zenn articles. Use for requests
+  like "write a README", "draft a design doc", "define system requirements",
+  "write a system design", "create a test plan", "write an operations
+  runbook", "plan a migration", "create a threat model", "write a technical
+  proposal", "draft an RFI", "create an RFP", "write this PR description",
+  "clean up my commit
   message", "make this how-to guide clearer", "write API docs", "summarize
   the release notes", "write a Zenn article", "write this up for Qiita", as
   well as
   Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
-  「要件定義書を作って」「システム設計書を書いて」「技術提案書を書いて」
-  「RFIを作って」「RFPを作って」「PRの説明文を書いて」
+  「要件定義書を作って」「システム設計書を書いて」「テスト計画書を作って」
+  「運用設計書を書いて」「移行計画を作って」「脅威モデルを作って」
+  「技術提案書を書いて」「RFIを作って」「RFPを作って」「PRの説明文を書いて」
   「コミットメッセージを整えて」「手順書を分かりやすくして」
   「APIドキュメントを整備して」「リリースノートをまとめて」
   「Zennの記事を書いて」「Qiitaに投稿する記事を書いて」). Especially useful when
@@ -38,8 +42,9 @@ Structures technical documents so readers reach the information they need
 with the shortest path. Covers README, design docs/ADRs, API reference, PR
 descriptions/commit messages/issue reports, release notes/CHANGELOG, user
 manuals/how-to guides, code comments/docstrings, requirements definitions,
-system designs, technical proposals, RFI/RFP procurement documents, and
-Qiita/Zenn articles.
+system designs, test plans, operations runbooks, migration plans, security
+designs/threat models, technical proposals, RFI/RFP procurement documents,
+and Qiita/Zenn articles.
 
 Default format: Markdown for every doctype in this skill, except a git
 commit message body (plain text by convention — light "-" bullets are
@@ -120,8 +125,10 @@ hand the user a checklist to fill in. Instead:
    prior-knowledge floor for a user manual, breaking-change status for
    release notes, the related issue for a PR description or bug report,
    measurable acceptance conditions for a requirements definition, the
-   approved requirements baseline for a system design, market unknowns for
-   an RFI, or evaluation rules for an RFP).
+   approved requirements baseline for a system design, exit criteria for a
+   test plan, RTO/RPO for an operations runbook, rollback conditions for a
+   migration plan, assets and trust boundaries for a threat model, market
+   unknowns for an RFI, or evaluation rules for an RFP).
 5. **A "don't know" / "not applicable" / "no ticket for this" answer
    satisfies a must — it is not a reason to keep asking.** Ask that must
    at most once; if the answer is a non-answer, record it as a stated
@@ -149,6 +156,10 @@ hand the user a checklist to fill in. Instead:
 | Code comments / docstrings | code-comments | `references/doctypes/code-comments.md` |
 | Requirements definition / 要件定義書 | requirements-definition | `references/doctypes/requirements-definition.md` |
 | System design / システム設計書 | system-design | `references/doctypes/system-design.md` |
+| Test plan / テスト計画書 | test-plan | `references/doctypes/test-plan.md` |
+| Operations design / Runbook / 運用設計書 | operations-runbook | `references/doctypes/operations-runbook.md` |
+| Migration plan / 移行計画書 | migration-plan | `references/doctypes/migration-plan.md` |
+| Security design / Threat model / セキュリティ設計書 | security-design | `references/doctypes/security-design.md` |
 | Internal technical proposal | technical-proposal | `references/doctypes/technical-proposal.md` |
 | Request for information / RFI | rfi | `references/doctypes/rfi.md` |
 | Request for proposal / RFP | rfp | `references/doctypes/rfp.md` |
@@ -163,8 +174,9 @@ one-question-at-a-time intake for reader and outcome.
 
 For documents likely to run long — design docs/ADRs, user manuals with
 multiple steps, API references covering several endpoints, requirements
-definitions, system designs, technical proposals, RFI/RFP documents, or
-anything the user calls
+definitions, system designs, test plans, operations runbooks, migration
+plans, security designs, technical proposals, RFI/RFP documents, or anything
+the user calls
 "long"/"detailed"/"comprehensive" — draft a table of contents (heading
 outline) before writing any body prose.
 
@@ -192,8 +204,9 @@ document and needs the outline step below.
 ## 3. Write — under the structure constitution
 
 For living, multi-section documents (README, design doc, API reference,
-release notes, user manual, requirements definition, system design,
-technical proposal, RFI/RFP, Zenn/Qiita article), write under the 8 rules
+release notes, user manual, requirements definition, system design, test
+plan, operations runbook, migration plan, security design, technical
+proposal, RFI/RFP, Zenn/Qiita article), write under the 8 rules
 in `references/style-constitution.md`. Summary: state "what this is" and
 "the outcome for the reader" in the first three lines; make headings
 labels that preview content (not "Overview", but "Overview of what");
@@ -297,8 +310,9 @@ for `write` mode; do not run it for `review` or `score` mode.
 
 See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
-user manual, requirements definition, system design, technical proposal,
-RFI/RFP, Zenn/Qiita article). Atomic
+user manual, requirements definition, system design, test plan, operations
+runbook, migration plan, security design, technical proposal, RFI/RFP,
+Zenn/Qiita article). Atomic
 artifacts (commit message, PR
 description, issue report, code comment/docstring, a single appended
 release-notes entry) are already covered by their own doctype checklist

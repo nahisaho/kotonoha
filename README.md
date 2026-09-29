@@ -48,6 +48,10 @@ Japanese prose with natural-japanese.
 | Design decision | Design doc, ADR, RFC | `design-doc` |
 | Requirements definition | 要件定義書, functional and non-functional requirements | `requirements-definition` |
 | System design | システム設計書, architecture and detailed system design | `system-design` |
+| Test planning | テスト計画書, test strategy and acceptance evidence | `test-plan` |
+| Operations | 運用設計書, operations runbook, incident procedures | `operations-runbook` |
+| Migration | 移行計画書, data and system cutover plan | `migration-plan` |
+| Security | セキュリティ設計書, threat model | `security-design` |
 | API reference | REST API, events, SDK reference | `api-docs` |
 | Development workflow text | PR description, commit message, bug report, feature request | `pr-commit` |
 | Release documentation | Release notes, CHANGELOG | `release-notes` |
@@ -60,9 +64,10 @@ Japanese prose with natural-japanese.
 | Technical article | Qiita article | `qiita` |
 
 Reusable templates are included for README, design decisions, user manuals,
-PR descriptions, requirements definitions, system designs, technical
-proposals, RFI, and RFP documents. Every supported doctype includes dedicated
-structure guidance and a review checklist under
+PR descriptions, requirements definitions, system designs, test plans,
+operations runbooks, migration plans, security designs, technical proposals,
+RFI, and RFP documents. Every supported doctype includes dedicated structure
+guidance and a review checklist under
 `skills/tech-writer/references/doctypes/`.
 
 ## What presentation-planner does
@@ -142,7 +147,8 @@ invoked automatically.
 
 - "Write a README", "Review this design doc", "Write the PR description",
   "Make this how-to guide clearer"
-- "要件定義書を作って", "承認済み要件からシステム設計書を書いて"
+- "要件定義書を作って", "承認済み要件からシステム設計書を書いて",
+  "移行計画とRunbookを作って"
 - "Create a PPTX from this proposal", "Plan an executive presentation",
   "Design a technical briefing deck"
 
@@ -161,9 +167,9 @@ works too (standard library only).
 skills/tech-writer/          # the skill itself
   SKILL.md                   # skill definition
   references/                # structure constitution + doctype rules/checklists
-  references/doctypes/       # README, requirements/system design, API docs, PR/issue, release notes, proposals, RFI/RFP, Qiita/Zenn
+  references/doctypes/       # README, requirements/design/test/operations/migration/security, API docs, proposals, RFI/RFP, Qiita/Zenn
   scripts/lint.py            # structural lint script
-  assets/templates/          # doctype skeletons including requirements, system design, proposals, RFI, and RFP
+  assets/templates/          # doctype skeletons including requirements, design, test, operations, migration, security, and procurement
 skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   SKILL.md
   references/                # boundary, schema, customization, handoff contract

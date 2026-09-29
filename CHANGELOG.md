@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Japanese requirements-definition and system-design templates with
   doctype routing, responsibility boundaries, traceability, and review
   checklists.
+- Add Japanese test-plan, operations-runbook, migration-plan, and
+  security-design/threat-model templates with dedicated doctype guidance
+  and review checklists.
 - Add the `presentation-planner` skill for presentation requirements,
   storyline, slide outlines, design specifications, and PPTX-skill handoff.
 - Add executive proposal, technical briefing, and data report design
