@@ -6,19 +6,21 @@ description: >-
   notes/CHANGELOG, user manuals/how-to guides, code comments/docstrings,
   requirements definitions, system designs, test plans, operations runbooks,
   migration plans, security designs/threat models, technical proposals,
-  RFI/RFP procurement documents, and Qiita/Zenn articles. Use for requests
+  Blueprints, White Papers, RFI/RFP procurement documents, and Qiita/Zenn
+  articles. Use for requests
   like "write a README", "draft a design doc", "define system requirements",
   "write a system design", "create a test plan", "write an operations
   runbook", "plan a migration", "create a threat model", "write a technical
-  proposal", "draft an RFI", "create an RFP", "write this PR description",
-  "clean up my commit
+  proposal", "create a Blueprint", "write a White Paper", "draft an RFI",
+  "create an RFP", "write this PR description", "clean up my commit
   message", "make this how-to guide clearer", "write API docs", "summarize
   the release notes", "write a Zenn article", "write this up for Qiita", as
   well as
   Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
   「要件定義書を作って」「システム設計書を書いて」「テスト計画書を作って」
   「運用設計書を書いて」「移行計画を作って」「脅威モデルを作って」
-  「技術提案書を書いて」「RFIを作って」「RFPを作って」「PRの説明文を書いて」
+  「技術提案書を書いて」「Blueprintを作って」「ホワイトペーパーを書いて」
+  「RFIを作って」「RFPを作って」「PRの説明文を書いて」
   「コミットメッセージを整えて」「手順書を分かりやすくして」
   「APIドキュメントを整備して」「リリースノートをまとめて」
   「Zennの記事を書いて」「Qiitaに投稿する記事を書いて」). Especially useful when
@@ -41,8 +43,8 @@ with the shortest path. Covers README, design docs/ADRs, API reference, PR
 descriptions/commit messages/issue reports, release notes/CHANGELOG, user
 manuals/how-to guides, code comments/docstrings, requirements definitions,
 system designs, test plans, operations runbooks, migration plans, security
-designs/threat models, technical proposals, RFI/RFP procurement documents,
-and Qiita/Zenn articles.
+designs/threat models, technical proposals, Blueprints, White Papers,
+RFI/RFP procurement documents, and Qiita/Zenn articles.
 
 Default format: Markdown for every doctype in this skill, except a git
 commit message body (plain text by convention — light "-" bullets are
@@ -54,18 +56,35 @@ reference files.
 
 ## Division of labor
 
-Document quality splits into two layers: "is the structure right" and "is
-the prose natural and readable". This skill owns the first layer (structure,
-document type conventions, completeness, reader fit). The bundled
-`japanese-prose` skill owns the second layer (sentence-level naturalness,
-reading load, terminology, and repeated-pattern analysis). Kotonoha packages
-both layers: tech-writer locks down the structure and orchestrates the §5
-handoff to japanese-prose during `write` mode before the final rubber-duck
-review.
+Document creation can span three layers: "is the reasoning defensible", "is
+the structure right", and "is the prose natural and readable". The bundled
+`consulting-analyst` skill owns problem decomposition, hypotheses, evidence,
+option evaluation, and synthesis when those are not yet settled. This skill
+owns structure, document type conventions, completeness, and reader fit. The
+bundled `japanese-prose` skill owns sentence-level naturalness, reading load,
+terminology, and repeated-pattern analysis.
+
+When a request for a Blueprint, White Paper, proposal, or decision document
+still lacks a defensible analysis, load the sibling `consulting-analyst`
+skill first and consume its `synthesis-handoff.md`. Do not silently invent
+the missing analysis inside document prose. If the sibling skill is absent,
+ask for the decision question and evidence or label analytical conclusions as
+unverified. Preserve issue, hypothesis, source, evidence, criterion, weight,
+score, confidence, counterevidence, and uncertainty records. Return the work
+to analysis when new evidence, a new decision question, changed criteria, or
+a contradictory conclusion requires analytical judgment.
+
+If the handoff status is `Incomplete`, either return the decision-critical
+gaps to `consulting-analyst` or preserve that status, the evidence gaps, the
+confidence, and conditional wording visibly in the document. Never turn an
+incomplete handoff into an unqualified recommendation. Tech-writer then locks
+down the document structure and orchestrates the §5 handoff to
+japanese-prose during `write` mode before the final rubber-duck review.
 
 - Rule of thumb: "does removing a heading still make sense?" tests structure
-  (this skill's job). "Does rereading a single sentence change its meaning?"
-  tests prose (not this skill's job).
+  (this skill's job). "Does the recommendation follow from evidence?" tests
+  analysis (`consulting-analyst`). "Does rereading a single sentence change
+  its meaning?" tests prose (`japanese-prose`).
 - Code comments/docstrings document code itself, but the same
   structure-and-completeness framing still applies.
 
@@ -110,7 +129,13 @@ hand the user a checklist to fill in. Instead:
    For a supplier response, structure the document against the supplied
    RFP's requirement IDs, requested proposal contents, pricing format, and
    contract deviations, then apply the general principles in
-   `references/style-constitution.md`.
+   `references/style-constitution.md`. For a bare "Blueprint" request, ask
+   whether the reader needs an integrated future state and transformation
+   path (`blueprint`), implementation-level system detail (`system-design`),
+   or approval for one investment (`technical-proposal`). For a bare "White
+   Paper" request, ask whether the goal is an evidence-led publication
+   (`white-paper`) or an internal approval request (`technical-proposal`);
+   do not treat a sales brochure as an evidence-led White Paper.
 2. Open the matching reference file and note its target reader and any
    "settle before writing" items. Combined with the general musts below,
    this is your information checklist — but never show it to the user as a
@@ -129,7 +154,10 @@ hand the user a checklist to fill in. Instead:
    approved requirements baseline for a system design, exit criteria for a
    test plan, RTO/RPO for an operations runbook, rollback conditions for a
    migration plan, assets and trust boundaries for a threat model, market
-   unknowns for an RFI, or evaluation rules for an RFP).
+   unknowns for an RFI, evaluation rules for an RFP, planning horizon,
+   approval authority, and baseline evidence for a Blueprint, or the central
+   claim, evidence standard, and publisher or sponsor conflicts for a White
+   Paper).
 5. **A "don't know" / "not applicable" / "no ticket for this" answer
    satisfies a must — it is not a reason to keep asking.** Ask that must
    at most once; if the answer is a non-answer, record it as a stated
@@ -162,6 +190,8 @@ hand the user a checklist to fill in. Instead:
 | Migration plan / 移行計画書 | migration-plan | `references/doctypes/migration-plan.md` |
 | Security design / Threat model / セキュリティ設計書 | security-design | `references/doctypes/security-design.md` |
 | Internal technical proposal | technical-proposal | `references/doctypes/technical-proposal.md` |
+| Blueprint / 将来構想・変革設計図 | blueprint | `references/doctypes/blueprint.md` |
+| White Paper / ホワイトペーパー | white-paper | `references/doctypes/white-paper.md` |
 | Request for information / RFI | rfi | `references/doctypes/rfi.md` |
 | Request for proposal / RFP | rfp | `references/doctypes/rfp.md` |
 | Zenn article | zenn | `references/doctypes/zenn.md` |
@@ -176,8 +206,8 @@ one-question-at-a-time intake for reader and outcome.
 For documents likely to run long — design docs/ADRs, user manuals with
 multiple steps, API references covering several endpoints, requirements
 definitions, system designs, test plans, operations runbooks, migration
-plans, security designs, technical proposals, RFI/RFP documents, or anything
-the user calls
+plans, security designs, technical proposals, Blueprints, White Papers,
+RFI/RFP documents, or anything the user calls
 "long"/"detailed"/"comprehensive" — draft a table of contents (heading
 outline) before writing any body prose.
 
@@ -207,7 +237,8 @@ document and needs the outline step below.
 For living, multi-section documents (README, design doc, API reference,
 release notes, user manual, requirements definition, system design, test
 plan, operations runbook, migration plan, security design, technical
-proposal, RFI/RFP, Zenn/Qiita article), write under the 8 rules
+proposal, Blueprint, White Paper, RFI/RFP, Zenn/Qiita article), write under
+the 8 rules
 in `references/style-constitution.md`. Summary: state "what this is" and
 "the outcome for the reader" in the first three lines; make headings
 labels that preview content (not "Overview", but "Overview of what");
@@ -376,8 +407,8 @@ for `write` mode; do not run it for `review` or `score` mode.
 See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
 user manual, requirements definition, system design, test plan, operations
-runbook, migration plan, security design, technical proposal, RFI/RFP,
-Zenn/Qiita article). Atomic
+runbook, migration plan, security design, technical proposal, Blueprint,
+White Paper, RFI/RFP, Zenn/Qiita article). Atomic
 artifacts (commit message, PR
 description, issue report, code comment/docstring, a single appended
 release-notes entry) are already covered by their own doctype checklist

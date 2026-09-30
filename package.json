@@ -1,7 +1,7 @@
 {
   "name": "kotonoha",
-  "version": "0.2.1",
-  "description": "GitHub Copilot CLI skills for technical writing and PPTX presentation planning.",
+  "version": "0.3.0",
+  "description": "GitHub Copilot CLI skills for consulting analysis, technical writing, Japanese prose, and PPTX planning.",
   "license": "MIT",
   "author": "nahisaho",
   "repository": {
@@ -27,6 +27,9 @@
     "github-copilot",
     "skill",
     "technical-writing",
+    "consulting",
+    "analysis",
+    "strategy",
     "documentation",
     "markdown",
     "presentation",

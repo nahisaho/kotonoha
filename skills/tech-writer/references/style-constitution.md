@@ -8,9 +8,11 @@ Sentence-level naturalness, vocabulary, and rhythm are out of scope here
 
 These 8 rules assume a **living, multi-section reference document** —
 README, design doc/ADR, API reference, release notes/CHANGELOG file as a
-whole, user manual, technical proposal, RFI/RFP (including a supplier's RFP
-response), or Zenn/Qiita article. Apply all 8 rules to those doctypes. For
-Zenn and Qiita, rule 1's article title lives in YAML frontmatter — see their
+whole, user manual, requirements definition, system design, test plan,
+operations runbook, migration plan, security design, technical proposal,
+Blueprint, White Paper, RFI/RFP (including a supplier's RFP response), or
+Zenn/Qiita article. Apply all 8 rules to those doctypes. For Zenn and Qiita,
+rule 1's article title lives in YAML frontmatter — see their
 doctype reference files for the platform-specific fields. Zenn body sections
 start at `##`; Qiita body sections start at `#` and use `##` for subsections.
 Every other rule (code examples, disclosed limitations, etc.) still applies

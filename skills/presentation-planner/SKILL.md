@@ -36,6 +36,20 @@ Read `references/responsibility-boundary.md` before acting. This skill owns:
 - Selection and adaptation of a packaged design specification
 - A deterministic handoff contract for the host's PPTX skill
 
+When a presentation request still lacks a defined decision question,
+evidence-backed findings, or option analysis, load kotonoha's sibling
+`consulting-analyst` skill first. Consume its `synthesis-handoff.md` rather
+than inventing business conclusions during storyline design. Preserve its
+evidence IDs, confidence, counterevidence, decision criteria, and conditions
+that would change the recommendation. If the sibling skill is absent, ask for
+the decision question and evidence or label conclusions as unverified.
+
+If the handoff status is `Incomplete`, either return decision-critical gaps
+for further analysis or show the incomplete status, evidence gaps, confidence,
+and conditional wording in the presentation plan. Return to analysis when
+new evidence, a different audience decision, changed criteria, or a
+contradiction would change the conclusion.
+
 This skill must not:
 
 - Create, edit, unzip, or inspect `.pptx` binaries

@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.1] - 2026-09-29
+## [0.3.0] - 2026-09-30
+
+### Added
+
+- Add the `consulting-analyst` skill for issue trees, testable hypotheses,
+  evidence discipline, Current–Target–Gap analysis, transparent option
+  comparison, Pyramid Principle synthesis, and traceable handoff to writing
+  and presentation skills.
+- Add general-purpose Blueprint and White Paper doctypes with Japanese
+  templates, intake guidance, responsibility boundaries, traceability,
+  evidence controls, and review checklists.
 
 ### Fixed
 

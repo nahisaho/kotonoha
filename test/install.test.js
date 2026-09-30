@@ -23,6 +23,241 @@ test("tech-writer workflow section references stay aligned", () => {
   assert.match(skill, /doctype checklist \(§7\)/);
 });
 
+test("consulting-analyst defines framework safeguards and handoff artifacts", () => {
+  const skillRoot = path.join(
+    repositoryRoot,
+    "skills",
+    "consulting-analyst",
+  );
+  const skill = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
+
+  assert.match(skill, /Use no more than three primary\s+frameworks/);
+  assert.match(skill, /Never upgrade an assumption to a finding/);
+  assert.match(skill, /Supported` cites at least one `Fact` or `Estimate`/);
+  assert.match(skill, /decision-analysis\.md` only when/);
+  assert.match(skill, /analysis incomplete/);
+  for (const template of [
+    "analysis-brief.md",
+    "issue-tree.md",
+    "hypothesis-evidence-ledger.md",
+    "decision-analysis.md",
+    "synthesis-handoff.md",
+  ]) {
+    assert.ok(
+      fs.existsSync(path.join(skillRoot, "assets", "templates", template)),
+      `missing consulting template ${template}`,
+    );
+  }
+  for (const reference of [
+    "framework-selection.md",
+    "evidence-and-hypotheses.md",
+    "handoff-contract.md",
+  ]) {
+    assert.ok(
+      fs.existsSync(path.join(skillRoot, "references", reference)),
+      `missing consulting reference ${reference}`,
+    );
+  }
+  const brief = fs.readFileSync(
+    path.join(skillRoot, "assets", "templates", "analysis-brief.md"),
+    "utf8",
+  );
+  const ledger = fs.readFileSync(
+    path.join(
+      skillRoot,
+      "assets",
+      "templates",
+      "hypothesis-evidence-ledger.md",
+    ),
+    "utf8",
+  );
+  const decision = fs.readFileSync(
+    path.join(skillRoot, "assets", "templates", "decision-analysis.md"),
+    "utf8",
+  );
+  const handoff = fs.readFileSync(
+    path.join(skillRoot, "assets", "templates", "synthesis-handoff.md"),
+    "utf8",
+  );
+  assert.match(brief, /SRC-001/);
+  assert.doesNotMatch(brief, /EVD-001/);
+  assert.match(ledger, /SRC-001/);
+  assert.match(ledger, /Assumptions may guide analysis but do not count/);
+  assert.match(decision, /weights must sum to 100%/);
+  assert.match(decision, /Use one row per option and criterion/);
+  assert.match(decision, /Equal weights/);
+  assert.match(handoff, /Issue IDs/);
+  assert.match(handoff, /Hypothesis IDs/);
+  assert.match(handoff, /Analysis status` is `Incomplete/);
+  const techWriter = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "tech-writer", "SKILL.md"),
+    "utf8",
+  );
+  const presentationPlanner = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "presentation-planner", "SKILL.md"),
+    "utf8",
+  );
+  assert.match(techWriter, /Never turn an\s+incomplete handoff/);
+  assert.match(presentationPlanner, /If the handoff status is `Incomplete`/);
+});
+
+test("Blueprint and White Paper doctypes include templates and routing", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "tech-writer", "SKILL.md"),
+    "utf8",
+  );
+  const expectedFiles = [
+    ["references", "doctypes", "blueprint.md"],
+    ["references", "doctypes", "white-paper.md"],
+    ["assets", "templates", "blueprint.md"],
+    ["assets", "templates", "white-paper.md"],
+  ];
+
+  assert.match(skill, /\| Blueprint .* \| blueprint \|/);
+  assert.match(skill, /\| White Paper .* \| white-paper \|/);
+  assert.match(skill, /planning horizon,\n   approval authority, and baseline evidence for a Blueprint/);
+  assert.match(skill, /central\n   claim, evidence standard, and publisher or sponsor conflicts/);
+  for (const segments of expectedFiles) {
+    assert.ok(
+      fs.existsSync(
+        path.join(repositoryRoot, "skills", "tech-writer", ...segments),
+      ),
+      `missing ${segments.join("/")}`,
+    );
+  }
+
+  const lint = path.join(
+    repositoryRoot,
+    "skills",
+    "tech-writer",
+    "scripts",
+    "lint.py",
+  );
+  for (const template of ["blueprint.md", "white-paper.md"]) {
+    const templatePath = path.join(
+      repositoryRoot,
+      "skills",
+      "tech-writer",
+      "assets",
+      "templates",
+      template,
+    );
+    const result = JSON.parse(
+      execFileSync("python3", [lint, "--json", templatePath], {
+        encoding: "utf8",
+      }),
+    );
+    assert.equal(result.finding_count, 0, `${template} should pass lint`);
+  }
+});
+
+function assertAnalysisContracts(skillsRoot) {
+  function read(skill, ...segments) {
+    return fs.readFileSync(path.join(skillsRoot, skill, ...segments), "utf8");
+  }
+  function assertMarkers(content, markers, label) {
+    const normalized = content.replace(/\s+/g, " ");
+    for (const marker of markers) {
+      assert.ok(normalized.includes(marker), `${label} should include ${marker}`);
+    }
+  }
+
+  const decision = read(
+    "consulting-analyst", "assets", "templates", "decision-analysis.md",
+  );
+  assert.match(decision, /\| Gap ID \| Intervention ID \| Required intervention \|/);
+  assert.match(decision, /\| GAP-001 \| INT-001 \|/);
+  assert.match(decision, /\| RSK-001 \| GAP-001 \/ INT-001 \|/);
+  const handoff = read(
+    "consulting-analyst", "assets", "templates", "synthesis-handoff.md",
+  );
+  assertMarkers(handoff, [
+    "Issue IDs", "Hypothesis IDs", "Related Gap, Intervention, or Criterion IDs",
+    "Supporting Finding IDs", "Related Issue and Hypothesis IDs",
+    "Q / HYP → FND / EVD → GAP / INT / CRT → ACT",
+    "`N/A` with a reason",
+  ], "synthesis handoff");
+  const contract = read(
+    "consulting-analyst", "references", "handoff-contract.md",
+  );
+  assertMarkers(contract, [
+    "`SRC` identifies a source record; `EVD` an analysis evidence record",
+    "`INT` an intervention defined in Current–Target–Gap",
+    "Actions link to supporting FND IDs, related Q / HYP IDs",
+    "Transition risks reference the affected GAP / INT IDs",
+    "do not require consulting IDs when no consulting handoff exists",
+  ], "handoff contract");
+  const ledger = read(
+    "consulting-analyst", "assets", "templates", "hypothesis-evidence-ledger.md",
+  );
+  assertMarkers(ledger, [
+    "one evidence row per hypothesis pairing", "explicitly list multiple HYP IDs",
+    "separate rows with the same EVD ID",
+    "repeated evidence is not independent corroboration",
+    "Fact / Estimate / Interpretation",
+    "Interpretations do not count as supporting evidence",
+    "A `Supported` hypothesis must cite at least one `Fact` or `Estimate` EVD row",
+    "whose direction is `Supports` for that hypothesis",
+  ], "hypothesis evidence ledger");
+  const evidenceRules = read(
+    "consulting-analyst", "references", "evidence-and-hypotheses.md",
+  );
+  assertMarkers(evidenceRules, [
+    "one evidence row per hypothesis pairing", "explicitly list multiple HYP IDs",
+    "Interpretations do not count as supporting evidence",
+    "`Supported` hypothesis requires at least one `Fact` or `Estimate`",
+    "marked `Supports` for that hypothesis",
+  ], "evidence discipline");
+
+  for (const doctype of ["blueprint", "white-paper"]) {
+    const template = read(
+      "tech-writer", "assets", "templates", `${doctype}.md`,
+    );
+    const checklist = read(
+      "tech-writer", "references", "doctypes", `${doctype}.md`,
+    );
+    assertMarkers(template, [
+      "Analysis status: Completed / Incomplete / Not performed",
+      "Evidence gaps:", "分析ハンドオフ:",
+      "`Incomplete`の場合", "不足する証拠と確からしさ",
+      "影響する結論・推奨事項を条件付きで記載する",
+      "`Not performed`の場合", "分析未実施の範囲と理由",
+      "該当しないリンクは理由付き`N/A`",
+    ], `${doctype} template`);
+    assertMarkers(checklist, [
+      "Analysis status: Completed / Incomplete / Not performed",
+      "`Evidence gaps`", "For `Incomplete`", "confidence visible",
+      "conditional wording", "For `Not performed`",
+      "without forcing consulting IDs when no consulting handoff exists",
+    ], `${doctype} checklist`);
+  }
+  const blueprint = read("tech-writer", "assets", "templates", "blueprint.md");
+  assert.match(blueprint, /\| 論点 Q IDs \| 仮説 HYP IDs \| 発見 FND IDs \| 証拠 EVD IDs \| ドライバー \| 設計原則 \| 目標能力 \| Gap \| 介入 INT IDs \| 評価基準 CRT IDs \| ワークストリーム \| 指標 \|/);
+  assert.match(blueprint, /DRV-001 \| PRN-001 \| CAP-001 \| GAP-001/);
+  assert.match(blueprint, /WS-001 \| KPI-001/);
+  const whitePaper = read("tech-writer", "assets", "templates", "white-paper.md");
+  assert.match(whitePaper, /\| 関連仮説 HYP IDs \|/);
+  assert.match(whitePaper, /\| 分析上の発見 FND IDs \|/);
+  assert.match(whitePaper, /\| 根拠 \| EVD-001、EVD-002 \|/);
+  assert.match(whitePaper, /\| SRC-001 \| <著者、資料名、URL> \|/);
+  assert.doesNotMatch(whitePaper, /\| EVD-\d+ \| <著者、資料名、URL> \|/);
+  assert.match(whitePaper, /\| EVD-001 \| SRC-001 \| Fact \/ Estimate \/ Interpretation \|/);
+  assert.match(whitePaper, /解釈として保持し、仮説を支持する証拠には数えない/);
+  assertMarkers(read("tech-writer", "references", "doctypes", "blueprint.md"), [
+    "Q / HYP / FND / EVD and GAP / INT / CRT",
+  ], "Blueprint checklist");
+  assertMarkers(read("tech-writer", "references", "doctypes", "white-paper.md"), [
+    "SRC source records separate from EVD analysis evidence",
+    "claims and findings link relevant HYP / FND / EVD IDs",
+    "interpretations preserved without counting as supporting evidence",
+    "`Supported` hypotheses backed by relevant Fact / Estimate evidence",
+  ], "White Paper checklist");
+}
+
+test("analysis contracts preserve IDs, evidence rules, and incomplete status", () => {
+  assertAnalysisContracts(path.join(repositoryRoot, "skills"));
+});
+
 test("tech-writer lint detects bold delimiters touching prose", () => {
   const workingDirectory = createTemporaryDirectory();
   const badDocument = path.join(workingDirectory, "bad.md");
@@ -151,7 +386,19 @@ test("installs all skills into the default project directory", () => {
     cwd: workingDirectory,
     stdio: "pipe",
   });
+  assertAnalysisContracts(path.join(workingDirectory, ".github", "skills"));
 
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        workingDirectory,
+        ".github",
+        "skills",
+        "consulting-analyst",
+        "SKILL.md",
+      ),
+    ),
+  );
   assert.ok(
     fs.existsSync(
       path.join(
@@ -256,6 +503,7 @@ test("default install adds missing skills without replacing existing ones", () =
   assert.ok(
     fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
   );
+  assert.ok(fs.existsSync(path.join(target, "consulting-analyst", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(target, "japanese-prose", "SKILL.md")));
 });
 
@@ -311,6 +559,7 @@ test("--force replaces an existing installation", () => {
   assert.ok(
     fs.existsSync(path.join(target, "presentation-planner", "SKILL.md")),
   );
+  assert.ok(fs.existsSync(path.join(target, "consulting-analyst", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(target, "japanese-prose", "SKILL.md")));
 });
 
@@ -369,6 +618,45 @@ test("the packed npm artifact installs a usable CLI", () => {
       ),
     ),
   );
+  const installedConsultingAnalyst = path.join(
+    consumerDirectory,
+    ".copilot",
+    "skills",
+    "consulting-analyst",
+  );
+  assert.ok(fs.existsSync(path.join(installedConsultingAnalyst, "SKILL.md")));
+  const installedConsultingSkill = fs.readFileSync(
+    path.join(installedConsultingAnalyst, "SKILL.md"),
+    "utf8",
+  );
+  assert.match(installedConsultingSkill, /Issue Tree \/ logic tree/);
+  assert.match(installedConsultingSkill, /analysis incomplete/);
+  for (const template of [
+    "analysis-brief.md",
+    "issue-tree.md",
+    "hypothesis-evidence-ledger.md",
+    "decision-analysis.md",
+    "synthesis-handoff.md",
+  ]) {
+    assert.ok(
+      fs.existsSync(
+        path.join(installedConsultingAnalyst, "assets", "templates", template),
+      ),
+      `${template} should be included in consulting-analyst`,
+    );
+  }
+  for (const reference of [
+    "framework-selection.md",
+    "evidence-and-hypotheses.md",
+    "handoff-contract.md",
+  ]) {
+    assert.ok(
+      fs.existsSync(
+        path.join(installedConsultingAnalyst, "references", reference),
+      ),
+      `${reference} should be included in consulting-analyst`,
+    );
+  }
   const installedJapaneseProse = path.join(
     consumerDirectory,
     ".copilot",
@@ -649,6 +937,8 @@ test("the packed npm artifact installs a usable CLI", () => {
     "migration-plan.md",
     "security-design.md",
     "technical-proposal.md",
+    "blueprint.md",
+    "white-paper.md",
     "rfi.md",
     "rfp.md",
     "qiita.md",
@@ -754,6 +1044,24 @@ test("the packed npm artifact installs a usable CLI", () => {
       "## 脅威モデル",
       "## セキュリティトレーサビリティ",
     ],
+    "blueprint.md": [
+      "## 目標とする能力と将来像",
+      "## 移行段階とロードマップ",
+      "## トレーサビリティ",
+      "Draft / In Review / Approved / Rejected / Deferred / Superseded",
+      "承認結果が`Rejected`または`Deferred`の場合",
+    ],
+    "white-paper.md": [
+      "## 調査・分析方法",
+      "## 反対意見・代替解釈・限界",
+      "## 利害関係と開示",
+      "## 証拠台帳",
+      "## 公開承認とレビュー記録",
+      "Approved for Publication",
+      "法務・コンプライアンス・主張レビュー",
+      "必須レビューの`Approved`または理由付き`N/A`",
+      "顧客名・数値・事例の掲載許諾",
+    ],
   };
   for (const [template, markers] of Object.entries(templateMarkers)) {
     const content = fs.readFileSync(
@@ -779,6 +1087,7 @@ test("the packed npm artifact installs a usable CLI", () => {
     "skills",
     "tech-writer",
   );
+  assertAnalysisContracts(path.dirname(installedTechWriterDirectory));
   const installedDoctypeDirectory = path.join(
     installedTechWriterDirectory,
     "references",

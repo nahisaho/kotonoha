@@ -1,14 +1,13 @@
 # kotonoha
 
-kotonoha provides GitHub Copilot CLI skills for technical documents and
-presentation planning. `tech-writer` helps structure and polish README, design
-docs/ADRs, API reference, PR descriptions/commit messages/issue reports,
-release notes, user manuals/how-to guides, code comments, requirements
-definitions, system designs, test plans, operations runbooks, migration plans,
-security designs, technical proposals, RFI/RFP procurement documents, and
-Qiita/Zenn articles,
-structured so readers never get lost. `presentation-planner` turns source
-material into a reusable presentation scenario, slide outline, design
+kotonoha provides GitHub Copilot CLI skills for consulting analysis, technical
+documents, Japanese prose, and presentation planning. `consulting-analyst`
+structures ambiguous problems into issue trees, hypotheses, evidence, option
+comparisons, and recommendations. `tech-writer` turns that reasoning into
+README, design documents, Blueprints, White Papers, proposals, and other
+technical documents without losing the reader. `japanese-prose` improves
+Japanese wording with GiNZA-based diagnostics. `presentation-planner` turns
+source material into a reusable presentation scenario, slide outline, design
 specification, and handoff for a dedicated PPTX creation skill.
 
 [English](./README.md) | [日本語](./README-ja.md)
@@ -48,11 +47,15 @@ review.
 
 ## What it does
 
+- Structure ambiguous business and technical problems with issue trees,
+  hypotheses, evidence ledgers, Current–Target–Gap analysis, transparent
+  decision matrices, and Pyramid Principle synthesis
 - Create/review README, design docs/ADRs, API reference, PR
   descriptions/commit messages/issue reports, release notes, user manuals,
   code comments, requirements definitions, system designs, test plans,
   operations runbooks, migration plans, security designs, technical proposals,
-  RFI/RFP procurement documents, and Qiita/Zenn articles
+  Blueprints, White Papers, RFI/RFP procurement documents, and Qiita/Zenn
+  articles
 - Doctype-specific structure and checklists to guide writing
 - Original GiNZA-based `japanese-prose` lint, reading-load review, terminology
   checks, and iterative prose optimization without changing IDs, facts,
@@ -88,6 +91,8 @@ review.
 | User guidance | User manual, how-to guide, tutorial | `user-manual` |
 | Source documentation | Code comments, docstrings | `code-comments` |
 | Internal technical proposal | Architecture, investment, and delivery proposal | `technical-proposal` |
+| Future-state blueprint | Business, operating-model, data, and technology transformation blueprint | `blueprint` |
+| Evidence-led publication | Technical or business White Paper | `white-paper` |
 | Request for information | RFI | `rfi` |
 | Request for proposal | RFP | `rfp` |
 | Technical article | Zenn article | `zenn` |
@@ -96,9 +101,40 @@ review.
 Reusable templates are included for README, design decisions, user manuals,
 PR descriptions, requirements definitions, system designs, test plans,
 operations runbooks, migration plans, security designs, technical proposals,
-RFI, RFP, and Qiita articles. Every supported doctype includes dedicated
-structure guidance and a review checklist under
+Blueprints, White Papers, RFI, RFP, and Qiita articles. Every supported
+doctype includes dedicated structure guidance and a review checklist under
 `skills/tech-writer/references/doctypes/`.
+
+## What consulting-analyst does
+
+- Defines the decision-maker, decision question, outcome, scope, and evidence
+  gaps before a document or presentation is written
+- Selects the smallest useful framework set instead of filling frameworks
+  mechanically
+- Builds an issue tree and testable hypothesis/evidence ledger
+- Supports Current–Target–Gap analysis and weighted option comparison with
+  scoring anchors and sensitivity analysis
+- Separates facts, estimates, assumptions, interpretations, and
+  recommendations
+- Produces a traceable synthesis handoff for `tech-writer` and
+  `presentation-planner`
+
+Example requests:
+
+```text
+Structure this business problem as an issue tree and identify the evidence
+needed to answer each priority issue.
+```
+
+```text
+Analyze the current and target states, identify the gaps, and prepare the
+analysis for a Blueprint.
+```
+
+```text
+Compare these alternatives using explicit criteria and prepare a White Paper
+handoff without inventing missing evidence.
+```
 
 ## What presentation-planner does
 
@@ -136,8 +172,8 @@ npx kotonoha install
 ### Install all bundled skills together
 
 `kotonoha install` installs every packaged skill that is not already present.
-The following commands install `tech-writer`, `japanese-prose`, and
-`presentation-planner` into `.github/skills/`:
+The following commands install `consulting-analyst`, `tech-writer`,
+`japanese-prose`, and `presentation-planner` into `.github/skills/`:
 
 ```bash
 npm install --save-dev kotonoha
@@ -145,9 +181,10 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-Confirm that all three skills were installed:
+Confirm that all four skills were installed:
 
 ```bash
+test -f .github/skills/consulting-analyst/SKILL.md
 test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
@@ -199,12 +236,13 @@ then run the GiNZA-based prose pass before rubber-duck review. To require the
 pass unambiguously, ask: `Create or revise <file> as a technical document and
 run GiNZA-based Japanese prose optimization.`
 
-The default destinations are `.github/skills/tech-writer`,
-`.github/skills/japanese-prose`, and
+The default destinations are `.github/skills/consulting-analyst`,
+`.github/skills/tech-writer`, `.github/skills/japanese-prose`, and
 `.github/skills/presentation-planner` in the current project. To install only
 one skill, or use another supported skill directory:
 
 ```bash
+npx kotonoha install --skill consulting-analyst
 npx kotonoha install --skill presentation-planner
 npx kotonoha install --target .claude/skills
 npx kotonoha install --target ~/.copilot/skills
@@ -225,6 +263,7 @@ installation safe:
 ```bash
 npx kotonoha install
 # Skipped tech-writer (...)
+# Installed consulting-analyst (...)
 # Installed japanese-prose (...)
 # Installed presentation-planner (...)
 ```
@@ -257,6 +296,7 @@ npx kotonoha install --force
 To update only one skill:
 
 ```bash
+npx kotonoha install --skill consulting-analyst --force
 npx kotonoha install --skill tech-writer --force
 npx kotonoha install --skill japanese-prose --force
 npx kotonoha install --skill presentation-planner --force
@@ -290,6 +330,7 @@ into that repository's `.github/skills/`, `.claude/skills/`, or your global
 `~/.copilot/skills/`.
 
 ```bash
+cp -r skills/consulting-analyst /path/to/your-repo/.github/skills/consulting-analyst
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
@@ -319,12 +360,16 @@ works too (standard library only).
 ## Repository layout
 
 ```text
+skills/consulting-analyst/   # problem structuring and evidence-led analysis skill
+  SKILL.md                   # analysis workflow, safeguards, and handoff
+  references/                # framework selection, evidence discipline, handoff contract
+  assets/templates/          # brief, issue tree, evidence, decision, and synthesis artifacts
 skills/tech-writer/          # the skill itself
   SKILL.md                   # skill definition
   references/                # structure constitution + doctype rules/checklists
-  references/doctypes/       # README, requirements/design/test/operations/migration/security, API docs, PR/issue, release notes, proposals, RFI/RFP, Qiita/Zenn
+  references/doctypes/       # README, requirements/design/test/operations/migration/security, API docs, PR/issue, release notes, proposals, Blueprints, White Papers, RFI/RFP, Qiita/Zenn
   scripts/lint.py            # structural lint script
-  assets/templates/          # doctype skeletons including requirements, design, test, operations, migration, security, and procurement
+  assets/templates/          # doctype skeletons including requirements, design, test, operations, migration, security, strategy, evidence-led publications, and procurement
 skills/japanese-prose/       # original GiNZA-based prose optimization skill
   SKILL.md                   # writing, lint, review, and convergence workflow
   references/                # writing guidelines, review workflow, and scoring
@@ -336,12 +381,15 @@ skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   assets/scenario-templates/ # executive, technical, and data-report narrative scenarios
   assets/design-templates/   # executive, technical, and data-report YAML designs
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
+.github/skills/consulting-analyst
 .github/skills/japanese-prose
 .github/skills/presentation-planner
 ```
 
 ## Known limitations
 
+- `consulting-analyst` structures supplied or verified evidence but does not
+  manufacture market data, customer facts, estimates, or citations.
 - `skills/tech-writer/scripts/lint.py` detects structural and Markdown
   rendering issues. Prose naturalness, vocabulary, rhythm, and reading load
   are handled by the separately invoked but bundled

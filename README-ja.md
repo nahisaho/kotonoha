@@ -1,6 +1,8 @@
 # kotonoha
 
-kotonohaは、技術文書の作成とプレゼンテーション設計を支援するGitHub Copilot CLIスキルを提供します。`tech-writer`は、開発文書、要件・設計文書、運用・移行文書、調達文書、Qiita・Zenn記事の構成と文章を整えます。対応する文書の一覧は「対応している文書」に掲載しています。`presentation-planner`は、プレゼンテーションシナリオ、スライド構成、デザイン仕様、PPTX作成スキル向けの引き継ぎ情報を生成します。
+kotonohaは、コンサルティング分析、技術文書、日本語表現、プレゼンテーション設計を支援するGitHub Copilot CLIスキルを提供します。曖昧な課題の構造化から、文書化、日本語表現の改善、プレゼンテーション設計までを一連の流れとして支援します。
+
+`consulting-analyst`は、課題を論点、仮説、証拠、選択肢、提言へ構造化します。分析結果を受け取った`tech-writer`は、README、設計文書、Blueprint、White Paper、提案書などへ内容を落とし込みます。日本語の表現品質は`japanese-prose`がGiNZAベースの診断で改善します。プレゼンテーションが必要な場合は、`presentation-planner`がシナリオ、スライド構成、デザイン仕様、PPTX作成スキル向けの引き継ぎ情報を生成します。
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -20,7 +22,8 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 
 ## 主な機能
 
-- README、設計書・ADR、APIリファレンス、PR説明、コミットメッセージ、Issue本文、リリースノート、ユーザーマニュアル、コードコメント、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、RFI・RFP、Qiita・Zenn記事の作成とレビュー
+- Issue Tree、仮説・証拠台帳、Current–Target–Gap、意思決定マトリクス、ピラミッド原則を使った事業・技術課題の構造化
+- README、設計書・ADR、APIリファレンス、PR説明、コミットメッセージ、Issue本文、リリースノート、ユーザーマニュアル、コードコメント、要件定義書、システム設計書、テスト計画書、運用設計書・Runbook、移行計画書、セキュリティ設計書、技術提案書、Blueprint、White Paper、RFI・RFP、Qiita・Zenn記事の作成とレビュー
 - 文書種別ごとの推奨構成とチェックリスト
 - ID、事実、表、コード、受け入れ基準を変更せずに日本語表現を反復的に最適化する、GiNZAベースの独自`japanese-prose`文章診断
 - 文書作成後のrubber-duck reviewと、対応可能な指摘がなくなるまでの修正・再レビュー
@@ -46,12 +49,38 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 | 利用者向け文書 | ユーザーマニュアル、手順書、チュートリアル | `user-manual` |
 | ソースコード文書 | コードコメント、docstring | `code-comments` |
 | 社内向け技術提案 | アーキテクチャ、投資、デリバリー提案 | `technical-proposal` |
+| 将来構想・変革設計図 | 事業、Operating Model、データ、技術のBlueprint | `blueprint` |
+| 証拠に基づく解説・提言 | 技術・事業White Paper | `white-paper` |
 | 情報提供依頼 | RFI | `rfi` |
 | 提案依頼 | RFP | `rfp` |
 | 技術記事 | Zenn記事 | `zenn` |
 | 技術記事 | Qiita記事 | `qiita` |
 
-再利用可能なテンプレートには、README、設計判断、ユーザーマニュアル、PR説明があります。要件定義、システム設計、テスト、運用、移行、セキュリティの各文書にも対応しています。技術提案、RFI、RFP、Qiita記事のテンプレートも含まれます。すべての文書種別には、`skills/tech-writer/references/doctypes/`配下に専用の構成ガイドとレビューチェックリストがあります。
+再利用可能なテンプレートには、README、設計判断、ユーザーマニュアル、PR説明があります。要件定義、システム設計、テスト、運用、移行、セキュリティの各文書にも対応しています。技術提案、Blueprint、White Paper、RFI、RFP、Qiita記事のテンプレートも含まれます。すべての文書種別には、`skills/tech-writer/references/doctypes/`配下に専用の構成ガイドとレビューチェックリストがあります。
+
+## consulting-analystの機能
+
+- 文書やプレゼンテーションを作る前に、意思決定者、意思決定の問い、成果、範囲、証拠不足を定義
+- フレームワークを機械的に埋めず、意思決定に必要な最小構成を選択
+- Issue Treeと検証可能な仮説・証拠台帳を作成
+- Current–Target–Gap分析と、採点基準・感度分析を伴う選択肢比較を実施
+- 事実、推定、前提、解釈、提言を区別
+- `tech-writer`と`presentation-planner`へ、証拠を追跡できる分析結果を引き継ぐ
+
+自然言語では、次のように依頼できます。
+
+```text
+この事業課題をIssue Treeで構造化し、優先論点ごとに必要な証拠を整理して
+```
+
+```text
+現状と目標状態を比較してGapを特定し、Blueprint向けの分析を準備して
+```
+
+```text
+複数案を明示的な評価基準で比較し、不足する証拠を捏造せずに
+White Paper向けの分析を作成して
+```
 
 ## presentation-plannerの機能
 
@@ -81,16 +110,17 @@ npx kotonoha install
 
 ### 同梱スキルをまとめてインストール
 
-`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`tech-writer`、`japanese-prose`、`presentation-planner`を`.github/skills/`へインストールします。
+`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`consulting-analyst`、`tech-writer`、`japanese-prose`、`presentation-planner`を`.github/skills/`へインストールします。
 
 ```bash
 npm install --save-dev kotonoha
 npx kotonoha install --skill all
 ```
 
-`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。3つのスキルがインストールされたことを確認します。
+`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。4つのスキルがインストールされたことを確認します。
 
 ```bash
+test -f .github/skills/consulting-analyst/SKILL.md
 test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
@@ -127,9 +157,10 @@ README-ja.mdの日本語を自然で読みやすい表現に修正して
 
 新しい日本語文書では、`このリポジトリの日本語READMEを作成して`のように依頼すると、`tech-writer`が下書きと構造レビューを行い、rubber-duck reviewの前にGiNZAベースの文章最適化を実行します。文章最適化を確実に指定する場合は、`<ファイル名>を技術文書として作成または修正し、GiNZAによる日本語表現最適化まで実施して`と指示します。
 
-既定のインストール先は、現在のプロジェクトの`.github/skills/tech-writer`、`.github/skills/japanese-prose`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、対応している別のディレクトリを使用する場合は、次のように指定します。
+既定のインストール先は、現在のプロジェクトの`.github/skills/consulting-analyst`、`.github/skills/tech-writer`、`.github/skills/japanese-prose`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、対応している別のディレクトリを使用する場合は、次のように指定します。
 
 ```bash
+npx kotonoha install --skill consulting-analyst
 npx kotonoha install --skill presentation-planner
 npx kotonoha install --target .claude/skills
 npx kotonoha install --target ~/.copilot/skills
@@ -146,6 +177,7 @@ npx kotonoha install --force
 ```bash
 npx kotonoha install
 # Skipped tech-writer (...)
+# Installed consulting-analyst (...)
 # Installed japanese-prose (...)
 # Installed presentation-planner (...)
 ```
@@ -175,6 +207,7 @@ npx kotonoha install --force
 スキルを1つだけ更新する場合は、次のように実行します。
 
 ```bash
+npx kotonoha install --skill consulting-analyst --force
 npx kotonoha install --skill tech-writer --force
 npx kotonoha install --skill japanese-prose --force
 npx kotonoha install --skill presentation-planner --force
@@ -202,6 +235,7 @@ git diff -- .github/skills
 別のプロジェクトでソースチェックアウトに含まれるスキルを使用する場合は、各スキルのディレクトリを対象リポジトリの`.github/skills/`、`.claude/skills/`、またはグローバルの`~/.copilot/skills/`へコピーします。
 
 ```bash
+cp -r skills/consulting-analyst /path/to/your-repo/.github/skills/consulting-analyst
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
@@ -230,12 +264,16 @@ python3 skills/tech-writer/scripts/lint.py path/to/document.md
 ## リポジトリ構成
 
 ```text
+skills/consulting-analyst/   # 課題構造化と証拠に基づく分析スキル
+  SKILL.md                   # 分析ワークフロー、制約、引き継ぎ
+  references/                # フレームワーク選択、証拠規律、引き継ぎ契約
+  assets/templates/          # ブリーフ、Issue Tree、証拠、意思決定、統合artifact
 skills/tech-writer/          # tech-writerスキル
   SKILL.md                   # スキル定義
   references/                # 構成原則、文書種別ごとの規則とチェックリスト
-  references/doctypes/       # README、要件、設計、テスト、運用、移行、セキュリティ、API、PR・Issue、リリースノート、提案、RFI・RFP、Qiita・Zenn
+  references/doctypes/       # README、要件、設計、テスト、運用、移行、セキュリティ、API、PR・Issue、リリースノート、提案、Blueprint、White Paper、RFI・RFP、Qiita・Zenn
   scripts/lint.py            # 構造とMarkdown表示のlintスクリプト
-  assets/templates/          # 要件、設計、テスト、運用、移行、セキュリティ、調達などの文書テンプレート
+  assets/templates/          # 要件、設計、テスト、運用、移行、セキュリティ、将来構想、調査・提言、調達などの文書テンプレート
 skills/japanese-prose/       # 独自開発のGiNZAベース文章最適化スキル
   SKILL.md                   # 執筆、lint、レビュー、収束のワークフロー
   references/                # 執筆規則、レビューワークフロー、採点規則
@@ -247,12 +285,14 @@ skills/presentation-planner/ # シナリオ、デザイン仕様、PPTX引き継
   assets/scenario-templates/ # 経営判断、技術説明、データ報告向けシナリオ
   assets/design-templates/   # 経営提案、技術説明、データ報告向けYAMLデザイン
 .github/skills/tech-writer   # Copilot CLIが読み込むskills/tech-writerへのシンボリックリンク
+.github/skills/consulting-analyst
 .github/skills/japanese-prose
 .github/skills/presentation-planner
 ```
 
 ## 既知の制約
 
+- `consulting-analyst`は、提供済みまたは検証済みの証拠を構造化します。市場データ、顧客情報、見積もり、引用を捏造しません。
 - `skills/tech-writer/scripts/lint.py`は、見出し、コードブロック、プレースホルダー、リンク、Markdown強調記号などの構造・表示上の問題を検出します。文章の自然さ、語彙、リズム、読解負荷は、別工程として呼び出される同梱`skills/japanese-prose`がGiNZAで検査します。
 - 文書種別は主に日本語の技術文書作成規則を前提としています。コミットメッセージの命令形などを含む多くのガイドは、英語文書にも適用できます。
 - `presentation-planner`だけでは`.pptx`バイナリを生成または検証できません。生成と視覚的な品質確認には専用PPTXスキルが必要です。
