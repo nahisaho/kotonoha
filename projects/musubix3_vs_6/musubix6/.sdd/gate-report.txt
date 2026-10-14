@@ -1,0 +1,9 @@
+SDD GATE PASS
+✓ lock catalog: ok [ai, review summary]
+✓ lock shopping: ok [ai, review summary]
+✓ trace: 12 REQ, 0 errors
+✓ ledger: 60 entries, chain intact
+✓ tdd evidence: 12/12 tests Red→Green
+✓ prepare: up to date (cached, inputs unchanged)
+✓ cmd build (0.6s)
+✓ cmd test (4.3s)

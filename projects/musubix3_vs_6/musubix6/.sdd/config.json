@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "testCmd": [
+    "npm",
+    "test",
+    "--",
+    "{file}",
+    "-t",
+    "{id}(?![0-9A-Za-z])"
+  ],
+  "prepare": {
+    "cmd": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "outputs": ["dist"],
+    "timeoutMs": 1800000
+  },
+  "checks": [
+    {
+      "name": "build",
+      "cmd": ["npm", "run", "build"]
+    },
+    {
+      "name": "test",
+      "cmd": [
+        "npm",
+        "run",
+        "test"
+      ]
+    }
+  ],
+  "timeoutMs": 120000,
+  "scopePolicy": "strict"
+}

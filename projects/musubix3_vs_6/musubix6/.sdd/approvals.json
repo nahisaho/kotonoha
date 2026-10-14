@@ -1,0 +1,24 @@
+{
+  "catalog": {
+    "by": "ai:spec-delta",
+    "kind": "ai",
+    "review": "Independent spec review: clarified validation precedence and pagination; SQLite rollback spike passed; no open blockers",
+    "at": "2026-10-14T13:03:26.971Z",
+    "artifacts": {
+      ".sdd/specs/catalog.md": "736ce9a8341462aa7e69196a42e79a8ba3c395e653286500653eb35e38d59c81"
+    },
+    "tier": "T2",
+    "requireHuman": false
+  },
+  "shopping": {
+    "by": "ai:spec-delta",
+    "kind": "ai",
+    "review": "Independent spec review: explicit checkout id validation and separate arithmetic requirement; no open blockers",
+    "at": "2026-10-14T13:03:27.220Z",
+    "artifacts": {
+      ".sdd/specs/shopping.md": "df3786412682d396ea50660d4330d1fbe554b36e0cc88979b05de54211f6f373"
+    },
+    "tier": "T2",
+    "requireHuman": false
+  }
+}

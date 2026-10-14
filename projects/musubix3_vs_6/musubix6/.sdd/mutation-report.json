@@ -1,0 +1,141 @@
+{
+  "command": "node .sdd/mutate.mjs --record",
+  "evidence": [
+    {
+      "requirement": "REQ-CAT-001",
+      "test": "TEST-CAT-001",
+      "mechanism": "price validation",
+      "replacement": {
+        "from": "integer(body.price, 1, 'price')",
+        "to": "integer(body.price, 0, 'price')"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-CAT-001",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-CAT-002",
+      "test": "TEST-CAT-002",
+      "mechanism": "case-insensitive filtering",
+      "replacement": {
+        "from": "p.name.toLowerCase().includes(q)",
+        "to": "p.name.includes(q)"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-CAT-002",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-CAT-003",
+      "test": "TEST-CAT-003",
+      "mechanism": "missing product status",
+      "replacement": {
+        "from": "throw new HttpError(404, 'Product not found')",
+        "to": "throw new HttpError(400, 'Product not found')"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-CAT-003",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-CAT-004",
+      "test": "TEST-CAT-004",
+      "mechanism": "internal error masking",
+      "replacement": {
+        "from": "error: 'Internal server error'",
+        "to": "error: 'products table internal details'"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-CAT-004",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-CAT-005",
+      "test": "TEST-CAT-005",
+      "mechanism": "PORT validation",
+      "replacement": {
+        "from": "!/^\\d+$/.test(rawPort) || Number(rawPort) > 65535",
+        "to": "Number(rawPort) > 65535"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-CAT-005",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-SHOP-001",
+      "test": "TEST-SHOP-001",
+      "mechanism": "cart totals",
+      "replacement": {
+        "from": "return { id, ...totals(rows) };",
+        "to": "return { id, ...totals(rows), total: 0 };"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-SHOP-001",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-SHOP-002",
+      "test": "TEST-SHOP-002",
+      "mechanism": "cumulative stock check",
+      "replacement": {
+        "from": "added > p.stock - existing",
+        "to": "added > p.stock"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-SHOP-002",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-SHOP-003",
+      "test": "TEST-SHOP-003",
+      "mechanism": "cart-scoped removal",
+      "replacement": {
+        "from": "DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?",
+        "to": "DELETE FROM cart_items WHERE (? IS NOT NULL) AND product_id = ?"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-SHOP-003",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-SHOP-004",
+      "test": "TEST-SHOP-004",
+      "mechanism": "cart clearing",
+      "replacement": {
+        "from": "DELETE FROM cart_items WHERE cart_id = ?'",
+        "to": "DELETE FROM cart_items WHERE cart_id = ? AND 0'"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-SHOP-004",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-SHOP-005",
+      "test": "TEST-SHOP-005",
+      "mechanism": "snapshot retrieval",
+      "replacement": {
+        "from": "SELECT product_id AS productId, name, price, quantity, total",
+        "to": "SELECT product_id AS productId, 'Wrong name' AS name, price, quantity, total"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-SHOP-005",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-SHOP-006",
+      "test": "TEST-SHOP-006",
+      "mechanism": "transaction rollback",
+      "replacement": {
+        "from": "atomicCheckout.immediate(cartId)",
+        "to": "checkout(cartId)"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-SHOP-006",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    },
+    {
+      "requirement": "REQ-SHOP-007",
+      "test": "TEST-SHOP-007",
+      "mechanism": "safe arithmetic",
+      "replacement": {
+        "from": "!Number.isSafeInteger(lineTotal) || !Number.isSafeInteger(total)",
+        "to": "false"
+      },
+      "command": "npm run build && npx musubix6 sdd tdd red TEST-SHOP-007",
+      "outcome": "Assertion Red recorded; original restored and Green recorded"
+    }
+  ],
+  "restored": {
+    "command": "npm run build && npm test",
+    "outcome": "PASS: 12 tests; build exit 0"
+  }
+}

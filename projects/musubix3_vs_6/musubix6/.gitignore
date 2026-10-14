@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.sdd/prepare-cache.json
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
