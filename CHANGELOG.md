@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-19
+
+### Added
+
+- Add duplicate-particle/word, Japanese bracket, and paragraph style-mixing
+  diagnostics, plus a minimal-edit `proofread` skill mode.
+- Add a Markdown-aware invariant gate with protected-content checks and
+  required hash-bound semantic review of edits.
+
+### Fixed
+
+- Avoid treating obligation expressions as double-negative errors and
+  conclusion questions as formulaic assertions.
+- Keep shorter fence markers and fence-like info strings inside code blocks
+  out of prose diagnostics.
+- Require the invariant gate and current semantic review to pass before
+  claiming Japanese prose optimization completed.
+
 ## [0.3.0] - 2026-09-30
 
 ### Added

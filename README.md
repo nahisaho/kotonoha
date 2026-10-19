@@ -155,7 +155,8 @@ handoff without inventing missing evidence.
 
 - GitHub Copilot CLI installed
 - Python 3.9+ for tech-writer's structural lint
-- Python 3.10+ and `uv` for the bundled GiNZA diagnostics such as prose lint,
+- Python 3.10+ and `uv` for the edit-invariant gate and bundled GiNZA
+  diagnostics such as prose lint,
   reading-load analysis, outline extraction, and terminology checks; `uv`
   resolves GiNZA, `ja_ginza`, and spaCy on first use
 
@@ -209,6 +210,20 @@ scratch for kotonoha and does not include `natural-japanese` source code.
 GiNZA dependency and license information is recorded in
 `skills/japanese-prose/NOTICE.md`.
 
+The lint also flags adjacent duplicate particles/words, Japanese bracket
+mismatches, and polite/plain style mixing within a paragraph. Findings are
+review targets, not automatic replacements. Use `proofread` mode for minimal
+typo/grammar corrections without optional stylistic rewriting. The 0–100
+score is a triage aid, not correction accuracy or a quality certificate.
+
+Before editing, the workflow saves an immutable original. The bundled
+`scripts/invariants.py` checks protected content and requires a hash-bound
+semantic review of changed prose. Numbers, identifiers, code, tables, links,
+and caller-supplied proper names/domain terms cannot be silently changed.
+Mechanical equality alone does not establish preserved meaning. See
+[`review-workflow.md`](skills/japanese-prose/references/review-workflow.md)
+for the review format and gate exit codes.
+
 You do not need to name GiNZA explicitly in a natural-language request.
 Requests to make a Japanese document more natural, readable, concise, or less
 formulaic invoke the bundled prose-optimization workflow. For example:
@@ -225,6 +240,7 @@ and repetitive AI-like phrasing, then fix the findings.
 You can specify the intended mode more precisely:
 
 - Edit the file: `Optimize the Japanese prose in README-ja.md.`
+- Correct errors only: `Proofread README-ja.md; make minimal typo/grammar corrections without stylistic rewrites.`
 - Review without editing: `Review the Japanese in README-ja.md, but do not modify the file.`
 - Score only: `Score the Japanese prose in README-ja.md out of 100.`
 - Run every diagnostic: `Run the full Japanese prose optimization workflow on README-ja.md.`
