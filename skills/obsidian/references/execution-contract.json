@@ -1,0 +1,479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/Request",
+  "title": "kotonoha Obsidian execution contract",
+  "x-contract-version": 1,
+  "x-commands": {
+    "inspect": {
+      "required": ["--request"],
+      "optional": [],
+      "result": "InspectResult",
+      "vault_write": false
+    },
+    "read": {
+      "required": ["--request", "--path"],
+      "optional": [],
+      "result": "ReadResult",
+      "vault_write": false
+    },
+    "plan": {
+      "required": ["--request", "--candidate"],
+      "optional": ["--review"],
+      "result": "PlanResult",
+      "context_schema": "PlanRequest",
+      "preconditions": [
+        "intent is create or proofread; write_target is an authorized .md path",
+        "proofread requires a non-null base_sha256 matching the original source used for candidate generation and the current target bytes",
+        "unchanged proofread returns no_changes before requiring semantic review; it never creates an applyable Plan"
+      ],
+      "vault_write": false
+    },
+    "apply": {
+      "required": ["--request", "--plan", "--approve-plan-sha256"],
+      "optional": [],
+      "result": "ApplyResult",
+      "vault_write": true
+    }
+  },
+  "x-exit-codes": {
+    "0": "completed",
+    "1": "input_or_runtime_failure",
+    "2": "authorization_conflict_or_gate_block",
+    "3": "partial",
+    "4": "missing_capability_or_dependency"
+  },
+  "x-exit-policy": [
+    {"priority": 1, "condition": "current_invocation_commit_outcome_uncertain", "status": "failed", "exit_code": 1, "write_status_allowed": ["unknown"]},
+    {"priority": 2, "condition": "control_input_or_precommit_runtime_error", "status": "failed", "exit_code": 1, "write_status_allowed": ["unsaved", "not_requested"]},
+    {"priority": 3, "condition": "operation_authorization_conflict_or_gate_denial", "status": "not_performed", "exit_code": 2, "write_status_allowed": ["unsaved", "not_requested"]},
+    {"priority": 4, "condition": "missing_dependency_or_capability", "status": "not_performed", "exit_code": 4, "write_status_allowed": ["unsaved", "not_requested"]},
+    {"priority": 5, "condition": "link_limitation_or_unprocessed_input", "status": "partial", "exit_code": 3, "write_status_allowed": ["unsaved", "not_requested"]},
+    {"priority": 6, "condition": "complete", "status": "completed", "exit_code": 0, "write_status_allowed": ["unsaved", "not_requested", "saved"]}
+  ],
+  "x-reason-context": [
+    {"command": "inspect", "reasons": ["excluded_management_directory", "excluded_example", "external_url"], "effect": "informational_only; does not reduce coverage or status"},
+    {"command": "inspect", "reasons": ["read_failed"], "effect": "partial, exit 3, reads_complete false; no definitive absence or uniqueness in the affected necessary domain"},
+    {"command": "inspect", "reasons": ["target_parse_incomplete"], "effect": "partial, exit 3; a single parse-failed candidate is indeterminate with or without a heading fragment"},
+    {"command": "inspect", "reasons": ["source_parse_incomplete"], "effect": "partial, exit 3, parses_complete false; no confirmed links from that source; unsupported YAML additionally emits a separate unsupported_format Issue"},
+    {"command": "read", "reasons": ["read_failed"], "effect": "failed, exit 1, not_requested; includes missing authorized target"},
+    {"command": "apply", "reasons": ["commit_outcome_uncertain"], "effect": "current attempt committed or may have committed: failed/1/unknown; prior attempt uncertain with no current write: not_performed/2/unsaved"},
+    {"command": "apply", "reasons": ["already_applied"], "effect": "completed/0/saved, changed false, verified true; no current write"},
+    {"command": "apply", "reasons": ["target_exists"], "effect": "not_performed/2/unsaved; includes preexisting stage_target"},
+    {"command": "*", "reasons": ["consent_missing"], "effect": "not_performed/2; deny all Vault content processing without model_context, and plan/apply workspace artifacts without workspace_copies"}
+  ],
+  "$defs": {
+    "Nonempty": {"type": "string", "minLength": 1},
+    "Hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "NullableHash": {"oneOf": [{"$ref": "#/$defs/Hash"}, {"type": "null"}]},
+    "NullableString": {"type": ["string", "null"], "minLength": 1},
+    "Paths": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/Nonempty"},
+      "uniqueItems": true
+    },
+    "OperationState": {"enum": ["scoped", "proposed", "validated", "approved", "saved", "blocked"]},
+    "LinkClassification": {"enum": ["resolved", "unresolved", "ambiguous", "indeterminate"]},
+    "Reason": {
+      "enum": [
+        "note_found", "heading_found", "note_missing", "heading_missing",
+        "multiple_notes", "multiple_headings", "scope_incomplete", "outside_scope",
+        "unsupported_syntax", "unsupported_heading", "invalid_encoding",
+        "excluded_example", "external_url", "excluded_management_directory",
+        "invalid_request", "invalid_path", "symlink_not_followed", "read_failed",
+        "unsupported_format", "limit_reached", "dependency_missing",
+        "capability_missing", "consent_missing", "candidate_changed",
+        "request_changed", "implementation_changed", "gate_blocked",
+        "semantic_review_required", "plan_not_approved", "target_exists",
+        "target_changed", "parent_changed", "write_failed_before_commit",
+        "commit_outcome_uncertain", "already_applied", "saved", "no_changes",
+        "runtime_error", "source_parse_incomplete", "target_parse_incomplete"
+      ]
+    },
+    "Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path"],
+      "properties": {
+        "kind": {"enum": ["file", "directory"]},
+        "path": {"$ref": "#/$defs/Nonempty"}
+      }
+    },
+    "Request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "vault_root", "read_scopes", "purpose", "intent",
+        "write_target", "base_sha256", "deliverable", "declared_rules", "protected_terms",
+        "workspace", "consent", "limits"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "vault_root": {"$ref": "#/$defs/Nonempty"},
+        "read_scopes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/Scope"}
+        },
+        "purpose": {"$ref": "#/$defs/Nonempty"},
+        "intent": {"enum": ["conventions", "related", "links", "create", "proofread"]},
+        "write_target": {"$ref": "#/$defs/NullableString"},
+        "base_sha256": {"$ref": "#/$defs/NullableHash"},
+        "deliverable": {"enum": ["note", "template", null]},
+        "declared_rules": {"$ref": "#/$defs/Paths"},
+        "protected_terms": {"$ref": "#/$defs/Paths"},
+        "workspace": {"$ref": "#/$defs/NullableString"},
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["model_context", "workspace_copies"],
+          "properties": {
+            "model_context": {"type": "boolean"},
+            "workspace_copies": {"type": "boolean"}
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_files", "max_file_bytes", "max_total_bytes"],
+          "properties": {
+            "max_files": {"type": ["integer", "null"], "minimum": 1},
+            "max_file_bytes": {"type": ["integer", "null"], "minimum": 1},
+            "max_total_bytes": {"type": ["integer", "null"], "minimum": 1}
+          }
+        }
+      }
+    },
+    "PlanRequest": {
+      "description": "Contextual safety preconditions for plan, checked after Request syntax validation. Rejection is not_performed/2, not a malformed JSON error. Request itself also serves read before a base hash exists.",
+      "allOf": [
+        {"$ref": "#/$defs/Request"},
+        {
+          "properties": {
+            "intent": {"enum": ["create", "proofread"]},
+            "write_target": {"$ref": "#/$defs/Nonempty"},
+            "workspace": {"$ref": "#/$defs/Nonempty"}
+          },
+          "if": {"properties": {"intent": {"const": "proofread"}}},
+          "then": {"properties": {"base_sha256": {"$ref": "#/$defs/Hash"}, "deliverable": {"type": "null"}}},
+          "else": {"properties": {"base_sha256": {"type": "null"}, "deliverable": {"enum": ["note", "template"]}}}
+        }
+      ]
+    },
+    "Issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "path", "message"],
+      "properties": {
+        "code": {"$ref": "#/$defs/Reason"},
+        "path": {"$ref": "#/$defs/NullableString"},
+        "message": {"$ref": "#/$defs/Nonempty"}
+      }
+    },
+    "Link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_path", "block_start_line", "occurrence", "raw",
+        "classification", "reason", "candidates"
+      ],
+      "properties": {
+        "source_path": {"$ref": "#/$defs/Nonempty"},
+        "block_start_line": {"type": "integer", "minimum": 1},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "raw": {"$ref": "#/$defs/Nonempty"},
+        "classification": {"$ref": "#/$defs/LinkClassification"},
+        "reason": {"$ref": "#/$defs/Reason"},
+        "candidates": {"$ref": "#/$defs/Paths"}
+      }
+    },
+    "Observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "paths", "count", "label"],
+      "properties": {
+        "kind": {"enum": ["name", "folder", "property_name", "property_type", "tag"]},
+        "value": {"$ref": "#/$defs/Nonempty"},
+        "paths": {"$ref": "#/$defs/Paths"},
+        "count": {"type": "integer", "minimum": 1},
+        "label": {"const": "observation"}
+      }
+    },
+    "Note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes", "heading_texts"],
+      "properties": {
+        "path": {"$ref": "#/$defs/Nonempty"},
+        "sha256": {"$ref": "#/$defs/Hash"},
+        "bytes": {"type": "integer", "minimum": 0},
+        "heading_texts": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "InspectResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["notes", "observations", "declarations", "links", "external_url_count"],
+      "properties": {
+        "notes": {"type": "array", "items": {"$ref": "#/$defs/Note"}},
+        "observations": {"type": "array", "items": {"$ref": "#/$defs/Observation"}},
+        "declarations": {"type": "array", "items": {"$ref": "#/$defs/Note"}},
+        "links": {"type": "array", "items": {"$ref": "#/$defs/Link"}},
+        "external_url_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "ReadResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes", "content"],
+      "properties": {
+        "path": {"$ref": "#/$defs/Nonempty"},
+        "sha256": {"$ref": "#/$defs/Hash"},
+        "bytes": {"type": "integer", "minimum": 0},
+        "content": {"type": "string"}
+      }
+    },
+    "PlanResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_path", "plan_sha256", "operation_id", "gate_status", "no_changes"],
+      "properties": {
+        "plan_path": {"$ref": "#/$defs/NullableString"},
+        "plan_sha256": {"$ref": "#/$defs/NullableHash"},
+        "operation_id": {"$ref": "#/$defs/NullableHash"},
+        "gate_status": {"enum": ["passed", "blocked", "review_required", "not_applicable"]},
+        "no_changes": {"type": "boolean"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"no_changes": {"const": true}}},
+          "then": {"properties": {"plan_path": {"type": "null"}, "plan_sha256": {"type": "null"}, "operation_id": {"type": "null"}, "gate_status": {"const": "passed"}}},
+          "else": {"properties": {"plan_path": {"$ref": "#/$defs/Nonempty"}, "plan_sha256": {"$ref": "#/$defs/Hash"}, "operation_id": {"$ref": "#/$defs/Hash"}}}
+        }
+      ]
+    },
+    "ApplyResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "after_sha256", "operation_id", "changed", "verified"],
+      "properties": {
+        "target": {"$ref": "#/$defs/Nonempty"},
+        "after_sha256": {"$ref": "#/$defs/NullableHash"},
+        "operation_id": {"$ref": "#/$defs/Hash"},
+        "changed": {"type": ["boolean", "null"]},
+        "verified": {"type": "boolean"}
+      }
+    },
+    "Coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["whole_vault", "enumeration_complete", "reads_complete", "parses_complete", "processed", "unprocessed"],
+      "properties": {
+        "whole_vault": {"type": "boolean"},
+        "enumeration_complete": {"type": "boolean"},
+        "reads_complete": {"type": "boolean"},
+        "parses_complete": {"type": "boolean"},
+        "processed": {"$ref": "#/$defs/Paths"},
+        "unprocessed": {"$ref": "#/$defs/Paths"}
+      }
+    },
+    "Report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "command", "status", "exit_code", "write_status",
+        "operation_state", "request_sha256", "coverage", "issues", "data"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "command": {"enum": ["inspect", "read", "plan", "apply"]},
+        "status": {"enum": ["completed", "partial", "not_performed", "failed"]},
+        "exit_code": {"type": "integer", "minimum": 0, "maximum": 4},
+        "write_status": {"enum": ["not_requested", "unsaved", "saved", "unknown"]},
+        "operation_state": {"$ref": "#/$defs/OperationState"},
+        "request_sha256": {"$ref": "#/$defs/NullableHash"},
+        "coverage": {"$ref": "#/$defs/Coverage"},
+        "issues": {"type": "array", "items": {"$ref": "#/$defs/Issue"}},
+        "data": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/InspectResult"},
+            {"$ref": "#/$defs/ReadResult"},
+            {"$ref": "#/$defs/PlanResult"},
+            {"$ref": "#/$defs/ApplyResult"}
+          ]
+        }
+      },
+      "allOf": [
+          {
+            "if": {"properties": {"command": {"const": "inspect"}}},
+            "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/InspectResult"}]}}}
+          },
+          {
+            "if": {"properties": {"command": {"const": "read"}}},
+            "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/ReadResult"}]}}}
+          },
+          {
+            "if": {"properties": {"command": {"const": "plan"}}},
+            "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/PlanResult"}]}}}
+          },
+          {
+            "if": {"properties": {"command": {"const": "apply"}}},
+            "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/ApplyResult"}]}}}
+          },
+          {
+            "if": {"properties": {"status": {"const": "completed"}}},
+            "then": {"properties": {"data": {"not": {"type": "null"}}, "exit_code": {"const": 0}}}
+          },
+          {
+            "if": {"properties": {"status": {"const": "failed"}}},
+            "then": {"properties": {"exit_code": {"const": 1}}}
+          },
+          {
+            "if": {"properties": {"status": {"const": "partial"}}},
+            "then": {"properties": {"exit_code": {"const": 3}}}
+          },
+          {
+            "if": {"properties": {"status": {"const": "not_performed"}}},
+            "then": {"properties": {"exit_code": {"enum": [2, 4]}, "write_status": {"enum": ["unsaved", "not_requested"]}}}
+          },
+          {
+            "if": {"properties": {"write_status": {"enum": ["saved", "unknown"]}}},
+            "then": {"properties": {"command": {"const": "apply"}}}
+          },
+          {
+            "if": {"properties": {"write_status": {"const": "saved"}}},
+            "then": {"properties": {"status": {"const": "completed"}, "operation_state": {"const": "saved"}}}
+          },
+          {
+            "if": {"properties": {"write_status": {"const": "unknown"}}},
+            "then": {"properties": {"status": {"const": "failed"}}}
+          },
+          {
+            "if": {"properties": {"command": {"enum": ["inspect", "read"]}}},
+            "then": {"properties": {"write_status": {"const": "not_requested"}}}
+          },
+          {
+            "if": {"properties": {"command": {"const": "plan"}}},
+            "then": {"properties": {"write_status": {"const": "unsaved"}}}
+          },
+          {
+            "if": {"properties": {"command": {"const": "plan"}, "status": {"const": "completed"}}},
+            "then": {
+              "properties": {"data": {"properties": {"gate_status": {"enum": ["passed", "not_applicable"]}}}},
+              "allOf": [{
+                "if": {"properties": {"data": {"properties": {"no_changes": {"const": true}}}}},
+                "then": {"properties": {"operation_state": {"const": "scoped"}}},
+                "else": {"properties": {"operation_state": {"const": "validated"}}}
+              }]
+            }
+          },
+          {
+            "if": {"properties": {"status": {"const": "completed"}, "command": {"const": "apply"}}},
+            "then": {
+              "properties": {
+                "write_status": {"const": "saved"},
+                "operation_state": {"const": "saved"},
+                "data": {
+                  "properties": {
+                    "verified": {"const": true},
+                    "changed": {"type": "boolean"},
+                    "after_sha256": {"$ref": "#/$defs/Hash"}
+                  }
+                }
+              }
+            }
+          }
+      ]
+    },
+    "Plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "operation_id", "request_sha256", "contract_sha256",
+        "implementation_sha256", "vault_identity", "target", "stage_target", "kind",
+        "before_sha256", "after_sha256", "diff_sha256", "review_sha256", "state",
+        "artifacts", "protected_terms"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "operation_id": {"$ref": "#/$defs/Hash"},
+        "request_sha256": {"$ref": "#/$defs/Hash"},
+        "contract_sha256": {"$ref": "#/$defs/Hash"},
+        "implementation_sha256": {"$ref": "#/$defs/Hash"},
+        "vault_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["device", "inode"],
+          "properties": {
+            "device": {"type": "integer", "minimum": 0},
+            "inode": {"type": "integer", "minimum": 0}
+          }
+        },
+        "target": {"$ref": "#/$defs/Nonempty"},
+        "stage_target": {"$ref": "#/$defs/Nonempty"},
+        "kind": {"enum": ["create", "edit"]},
+        "before_sha256": {"$ref": "#/$defs/NullableHash"},
+        "after_sha256": {"$ref": "#/$defs/Hash"},
+        "diff_sha256": {"$ref": "#/$defs/Hash"},
+        "review_sha256": {"$ref": "#/$defs/NullableHash"},
+        "state": {"enum": ["proposed", "validated"]},
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["before", "candidate", "diff", "review"],
+          "properties": {
+            "before": {"$ref": "#/$defs/NullableString"},
+            "candidate": {"$ref": "#/$defs/Nonempty"},
+            "diff": {"$ref": "#/$defs/Nonempty"},
+            "review": {"$ref": "#/$defs/NullableString"}
+          }
+        },
+        "protected_terms": {"$ref": "#/$defs/Paths"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "create"}}},
+          "then": {
+            "properties": {
+              "before_sha256": {"type": "null"},
+              "artifacts": {"properties": {"before": {"type": "null"}}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "edit"}}},
+          "then": {
+            "properties": {
+              "before_sha256": {"$ref": "#/$defs/Hash"},
+              "artifacts": {"properties": {"before": {"$ref": "#/$defs/Nonempty"}}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "edit"}, "state": {"const": "validated"}}},
+          "then": {
+            "properties": {
+              "review_sha256": {"$ref": "#/$defs/Hash"},
+              "artifacts": {"properties": {"review": {"$ref": "#/$defs/Nonempty"}}}
+            }
+          }
+        }
+      ]
+    },
+    "Receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "operation_id", "plan_sha256", "request_sha256", "target", "after_sha256", "verified"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "operation_id": {"$ref": "#/$defs/Hash"},
+        "plan_sha256": {"$ref": "#/$defs/Hash"},
+        "request_sha256": {"$ref": "#/$defs/Hash"},
+        "target": {"$ref": "#/$defs/Nonempty"},
+        "after_sha256": {"$ref": "#/$defs/Hash"},
+        "verified": {"const": true}
+      }
+    }
+  }
+}

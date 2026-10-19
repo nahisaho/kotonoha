@@ -94,11 +94,30 @@ def check(
     protected_terms: list[str] | None = None,
     review_path: Path | None = None,
 ) -> dict:
+    review = (
+        json.loads(review_path.read_text(encoding="utf-8"))
+        if review_path is not None else None
+    )
+    if review_path is not None and not isinstance(review, dict):
+        raise ValueError("Semantic review must be a JSON object")
+    return check_bytes(
+        before.read_bytes(), after.read_bytes(), protected_terms, review,
+        before_name=str(before), after_name=str(after),
+    )
+
+
+def check_bytes(
+    original: bytes,
+    edited: bytes,
+    protected_terms: list[str] | None = None,
+    review: dict | None = None,
+    *,
+    before_name: str = "<before>",
+    after_name: str = "<after>",
+) -> dict:
     terms = protected_terms or []
     if any(not term.strip() for term in terms):
         raise ValueError("Protected terms must not be empty")
-    original = before.read_bytes()
-    edited = after.read_bytes()
     before_hash = hashlib.sha256(original).hexdigest()
     after_hash = hashlib.sha256(edited).hexdigest()
     initial = snapshot(original.decode("utf-8"), terms)
@@ -115,8 +134,7 @@ def check(
     review_errors = []
     review_required = original != edited
     reviewer = None
-    if review_path is not None:
-        review = json.loads(review_path.read_text(encoding="utf-8"))
+    if review is not None:
         if not isinstance(review, dict):
             raise ValueError("Semantic review must be a JSON object")
         reviewer = review.get("reviewer")
@@ -136,8 +154,8 @@ def check(
         review_errors.append("changed text requires a hash-bound semantic review")
     status = "blocked" if violations else "review_required" if review_errors else "passed"
     return {
-        "before": str(before),
-        "after": str(after),
+        "before": before_name,
+        "after": after_name,
         "before_sha256": before_hash,
         "after_sha256": after_hash,
         "status": status,

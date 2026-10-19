@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add an Obsidian knowledge-note template and doctype guide with core
+  Templates variables, YAML properties, wikilinks, a callout, and tasks.
+- Add an independent Obsidian skill for scoped convention discovery, note
+  creation, related-note suggestions, link diagnosis and approval-gated
+  Japanese proofreading saves on Linux local files.
+- Add a locked offline launcher, content-bound plans and success receipts,
+  protected Obsidian syntax, and an independent 100-note acceptance fixture.
+
 ## [0.4.0] - 2026-10-19
 
 ### Added

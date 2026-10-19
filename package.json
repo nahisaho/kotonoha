@@ -1,7 +1,7 @@
 {
   "name": "kotonoha",
-  "version": "0.4.0",
-  "description": "GitHub Copilot CLI skills for consulting analysis, technical writing, Japanese prose, and PPTX planning.",
+  "version": "0.4.1-dev.0",
+  "description": "GitHub Copilot CLI skills for consulting analysis, technical writing, Japanese prose, Obsidian vaults, and PPTX planning.",
   "license": "MIT",
   "author": "nahisaho",
   "repository": {
@@ -17,7 +17,8 @@
   },
   "scripts": {
     "test": "node --test",
-    "test:ginza": "uv run skills/japanese-prose/scripts/test_engine.py"
+    "test:ginza": "uv run skills/japanese-prose/scripts/test_engine.py",
+    "test:obsidian": "uv run --offline --locked --python 3.12 skills/obsidian/scripts/test_vault.py"
   },
   "engines": {
     "node": ">=18"
@@ -32,6 +33,7 @@
     "strategy",
     "documentation",
     "markdown",
+    "obsidian",
     "presentation",
     "pptx",
     "powerpoint",

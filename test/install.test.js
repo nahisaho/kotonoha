@@ -254,6 +254,54 @@ function assertAnalysisContracts(skillsRoot) {
   ], "White Paper checklist");
 }
 
+function assertObsidianAssets(skillsRoot) {
+  const relativePaths = [
+    "tech-writer/assets/templates/obsidian.md",
+    "tech-writer/references/doctypes/obsidian.md",
+    "obsidian/SKILL.md",
+    "obsidian/references/workflow.md",
+    "obsidian/references/execution-contract.json",
+    "obsidian/scripts/vault.py",
+    "obsidian/scripts/vault.py.lock",
+  ];
+  for (const relativePath of relativePaths) {
+    assert.equal(
+      fs.readFileSync(path.join(skillsRoot, relativePath), "utf8"),
+      fs.readFileSync(path.join(repositoryRoot, "skills", relativePath), "utf8"),
+      `${relativePath} should be installed without changing template syntax`,
+    );
+  }
+}
+
+test("Obsidian requests route to a core-compatible template that passes structural lint", () => {
+  const skillRoot = path.join(repositoryRoot, "skills", "tech-writer");
+  const skill = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
+  assert.match(
+    skill,
+    /\| Obsidian note \/ vault template \| obsidian \| `references\/doctypes\/obsidian\.md` \|/,
+  );
+  const reference = fs.readFileSync(
+    path.join(skillRoot, "references", "doctypes", "obsidian.md"),
+    "utf8",
+  );
+  const templatePath = path.join(skillRoot, "assets", "templates", "obsidian.md");
+  const template = fs.readFileSync(templatePath, "utf8");
+  assert.match(reference, /`assets\/templates\/obsidian\.md`/);
+  assert.match(template, /^---\naliases: \[\]\ntags: \[\]\ncreated: "\{\{date:YYYY-MM-DD\}\}"/);
+  assert.match(template, /^# \{\{title\}\}$/m);
+  assert.deepEqual(
+    [...template.matchAll(/\{\{([^}]+)\}\}/g)].map((match) => match[1]).sort(),
+    ["date:YYYY-MM-DD", "title"],
+  );
+  assert.doesNotMatch(template, /<%|```(?:dataview|dataviewjs|templater)/);
+  const result = JSON.parse(
+    execFileSync("python3", [
+      path.join(skillRoot, "scripts", "lint.py"), "--json", templatePath,
+    ], { encoding: "utf8" }),
+  );
+  assert.equal(result.finding_count, 0);
+});
+
 test("analysis contracts preserve IDs, evidence rules, and incomplete status", () => {
   assertAnalysisContracts(path.join(repositoryRoot, "skills"));
 });
@@ -387,6 +435,7 @@ test("installs all skills into the default project directory", () => {
     stdio: "pipe",
   });
   assertAnalysisContracts(path.join(workingDirectory, ".github", "skills"));
+  assertObsidianAssets(path.join(workingDirectory, ".github", "skills"));
 
   assert.ok(
     fs.existsSync(
@@ -468,6 +517,30 @@ test("installs one selected skill", () => {
     ),
     false,
   );
+});
+
+test("installs Obsidian alone without silently adding sibling skills", () => {
+  const workingDirectory = createTemporaryDirectory();
+  execFileSync(
+    process.execPath,
+    [cli, "install", "--skill", "obsidian"],
+    { cwd: workingDirectory, stdio: "pipe" },
+  );
+  const root = path.join(workingDirectory, ".github", "skills");
+  for (const relativePath of [
+    "obsidian/SKILL.md",
+    "obsidian/scripts/vault.py",
+    "obsidian/scripts/vault.py.lock",
+    "obsidian/references/execution-contract.json",
+    "obsidian/references/workflow.md",
+  ]) {
+    assert.equal(
+      fs.readFileSync(path.join(root, relativePath), "utf8"),
+      fs.readFileSync(path.join(repositoryRoot, "skills", relativePath), "utf8"),
+    );
+  }
+  assert.equal(fs.existsSync(path.join(root, "japanese-prose")), false);
+  assert.equal(fs.existsSync(path.join(root, "tech-writer")), false);
 });
 
 test("rejects an unknown selected skill", () => {
@@ -606,6 +679,7 @@ test("the packed npm artifact installs a usable CLI", () => {
       stdio: "pipe",
     },
   );
+  assertObsidianAssets(path.join(consumerDirectory, ".copilot", "skills"));
 
   assert.ok(
     fs.existsSync(

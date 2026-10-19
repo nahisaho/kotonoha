@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "stage": "requirements",
+      "artifact": "docs/obsidian/requirements.md",
+      "sha256": "5ef92024fda15e785cf1db8d9c54a1e9462627a613fffd6e750f0b9383c2118b",
+      "document_version": "0.2",
+      "decision": "approved",
+      "actor": "user",
+      "recorded_by": "GitHub Copilot",
+      "user_message": "承認。",
+      "user_message_timestamp": "2026-10-19T20:02:17.318+09:00"
+    },
+    {
+      "stage": "design",
+      "document_version": "0.4",
+      "decision": "approved",
+      "actor": "user",
+      "recorded_by": "GitHub Copilot",
+      "user_message": "承認して実装へ進む",
+      "artifacts": [
+        {"path": "docs/obsidian/design.md", "sha256": "cba6fd7d5a60c9cd10476f60c6e0a7be5ec9c4f04c374faa61bb314cf5678e96"},
+        {"path": "skills/obsidian/references/execution-contract.json", "sha256": "761c203bfe9811fb07ef5e1abfa00bb195b7a916a71ceea3bb4d881a60d409c4"},
+        {"path": "docs/obsidian/acceptance-cases.json", "sha256": "ad65af71bd653cfad5e8ad3b2cf84ba1f813ed3f0bef9cf3baf548bdf0abb09d"},
+        {"path": "docs/obsidian/approvals.json", "sha256": "875229f62dc41b3b4a91ad2f7ca5f0b3c12535ebe247956027461b600a768337"}
+      ],
+      "approval_record_note": "The approvals.json hash identifies the record before this approval was appended."
+    }
+  ]
+}

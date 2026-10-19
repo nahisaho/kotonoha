@@ -53,10 +53,29 @@ kotonohaは文書構造と技術的な不変条件を固定してから日本語
 | 証拠に基づく解説・提言 | 技術・事業White Paper | `white-paper` |
 | 情報提供依頼 | RFI | `rfi` |
 | 提案依頼 | RFP | `rfp` |
+| ナレッジノート | Obsidianのノート、再利用可能なテンプレート | `obsidian` |
 | 技術記事 | Zenn記事 | `zenn` |
 | 技術記事 | Qiita記事 | `qiita` |
 
-再利用可能なテンプレートには、README、設計判断、ユーザーマニュアル、PR説明があります。要件定義、システム設計、テスト、運用、移行、セキュリティの各文書にも対応しています。技術提案、Blueprint、White Paper、RFI、RFP、Qiita記事のテンプレートも含まれます。すべての文書種別には、`skills/tech-writer/references/doctypes/`配下に専用の構成ガイドとレビューチェックリストがあります。
+再利用可能なテンプレートには、README、設計判断、ユーザーマニュアル、PR説明があります。要件定義、システム設計、テスト、運用、移行、セキュリティの各文書にも対応しています。技術提案、Blueprint、White Paper、RFI、RFP、Obsidianノート、Qiita記事のテンプレートも含まれます。すべての文書種別には、`skills/tech-writer/references/doctypes/`配下に専用の構成ガイドとレビューチェックリストがあります。
+
+Obsidianでは、[`obsidian.md`](skills/tech-writer/assets/templates/obsidian.md)をVault内のテンプレートフォルダーにコピーし、標準のTemplatesプラグインでそのフォルダーを指定します。名前を付けた空のノートで **Templates: Insert template** を実行すると、タイトルと挿入日が展開されます。プロパティ、内部リンク、コールアウト、タスクを含み、コミュニティプラグインは不要です。kotonohaはVaultの設定を変更しません。詳しい設定方法と制約は、[Obsidianガイド](skills/tech-writer/references/doctypes/obsidian.md)を参照してください。
+
+## Obsidian Vaultの操作
+
+専用の`obsidian`は、Vaultの規約確認、ノート新規作成、関連ノート候補、内部リンク診断、日本語添削を担当します。
+文書構成はtech-writer、日本語表現はjapanese-proseを利用するため、3つのSkillを同じ場所へ導入してください。
+初期対応はLinux、CPython 3.12、uvです。Obsidianアプリ、MCP、プラグインには依存しません。
+
+Vault、読み取り範囲、モデルに渡す情報を利用者が明示し、保存する場合は正確な差分と計画を承認します。
+保存は専用CLIのapplyだけで行い、添削時の記法保護とハッシュ付き意味レビューを迂回しません。
+未解決リンクを誤りと断定せず、自動修復もしません。
+処理はオフライン・lock付きで起動します。依存関係の初回準備は別途の許可が必要です。
+依頼例、コマンド、コピーの保持と復旧は[操作ガイド](skills/obsidian/references/workflow.md)を参照してください。
+
+保存は確認できたローカルFSに限定し、シンボリックリンク、維持できない属性、複数ハードリンクを拒否します。
+拡張属性付きファイルも保存非対応であり、SELinuxラベルなどの削除を回避策にしません。
+最終照合直後の外部編集やLLMの誤判断は完全には防げず、ホストを隔離する機能でもありません。
 
 ## consulting-analystの機能
 
@@ -110,19 +129,20 @@ npx kotonoha install
 
 ### 同梱スキルをまとめてインストール
 
-`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`consulting-analyst`、`tech-writer`、`japanese-prose`、`presentation-planner`を`.github/skills/`へインストールします。
+`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`consulting-analyst`、`tech-writer`、`japanese-prose`、`obsidian`、`presentation-planner`を`.github/skills/`へインストールします。
 
 ```bash
 npm install --save-dev kotonoha
 npx kotonoha install --skill all
 ```
 
-`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。4つのスキルがインストールされたことを確認します。
+`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。5つのスキルがインストールされたことを確認します。
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md
 test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
+test -f .github/skills/obsidian/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -162,7 +182,9 @@ README-ja.mdの日本語を自然で読みやすい表現に修正して
 
 新しい日本語文書では、`このリポジトリの日本語READMEを作成して`のように依頼すると、`tech-writer`が下書きと構造レビューを行い、rubber-duck reviewの前にGiNZAベースの文章最適化を実行します。文章最適化を確実に指定する場合は、`<ファイル名>を技術文書として作成または修正し、GiNZAによる日本語表現最適化まで実施して`と指示します。
 
-既定のインストール先は、現在のプロジェクトの`.github/skills/consulting-analyst`、`.github/skills/tech-writer`、`.github/skills/japanese-prose`、`.github/skills/presentation-planner`です。スキルを1つだけインストールする場合や、対応している別のディレクトリを使用する場合は、次のように指定します。
+既定のインストール先は、現在のプロジェクトの`.github/skills/`です。
+consulting-analyst、tech-writer、japanese-prose、obsidian、presentation-plannerをそれぞれのサブディレクトリに配置します。
+スキルを1つだけインストールする場合や、対応している別のディレクトリを使用する場合は、次のように指定します。
 
 ```bash
 npx kotonoha install --skill consulting-analyst

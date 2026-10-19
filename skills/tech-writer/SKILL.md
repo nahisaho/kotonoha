@@ -6,15 +6,16 @@ description: >-
   notes/CHANGELOG, user manuals/how-to guides, code comments/docstrings,
   requirements definitions, system designs, test plans, operations runbooks,
   migration plans, security designs/threat models, technical proposals,
-  Blueprints, White Papers, RFI/RFP procurement documents, and Qiita/Zenn
-  articles. Use for requests
+  Blueprints, White Papers, RFI/RFP procurement documents, Obsidian notes
+  and templates, and Qiita/Zenn articles. Use for requests
   like "write a README", "draft a design doc", "define system requirements",
   "write a system design", "create a test plan", "write an operations
   runbook", "plan a migration", "create a threat model", "write a technical
   proposal", "create a Blueprint", "write a White Paper", "draft an RFI",
   "create an RFP", "write this PR description", "clean up my commit
   message", "make this how-to guide clearer", "write API docs", "summarize
-  the release notes", "write a Zenn article", "write this up for Qiita", as
+  the release notes", "create an Obsidian note", "write a Zenn article",
+  "write this up for Qiita", as
   well as
   Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
   「要件定義書を作って」「システム設計書を書いて」「テスト計画書を作って」
@@ -23,6 +24,7 @@ description: >-
   「RFIを作って」「RFPを作って」「PRの説明文を書いて」
   「コミットメッセージを整えて」「手順書を分かりやすくして」
   「APIドキュメントを整備して」「リリースノートをまとめて」
+  「Obsidian用のノートを作って」「Obsidianのテンプレートを作って」
   「Zennの記事を書いて」「Qiitaに投稿する記事を書いて」). Especially useful when
   the request is a bare goal without enough context to start (e.g. "I want
   to write a README" / "○○を書きたい"), since this skill drives a one
@@ -44,7 +46,8 @@ descriptions/commit messages/issue reports, release notes/CHANGELOG, user
 manuals/how-to guides, code comments/docstrings, requirements definitions,
 system designs, test plans, operations runbooks, migration plans, security
 designs/threat models, technical proposals, Blueprints, White Papers,
-RFI/RFP procurement documents, and Qiita/Zenn articles.
+RFI/RFP procurement documents, Obsidian notes and templates, and Qiita/Zenn
+articles.
 
 Default format: Markdown for every doctype in this skill, except a git
 commit message body (plain text by convention — light "-" bullets are
@@ -52,7 +55,12 @@ fine, but don't add Markdown headings or fenced code there) and code
 comments/docstrings (the target programming language's own comment/
 docstring syntax). Qiita and Zenn use Markdown with a platform-specific
 YAML frontmatter and a few platform extensions on top — see their doctype
-reference files.
+reference files. Obsidian uses YAML properties, wikilinks, and callouts;
+see `references/doctypes/obsidian.md` for core Templates compatibility.
+For an existing Vault's conventions, related-note suggestions, link diagnosis,
+or approval-gated saves, use the sibling `obsidian` skill when available.
+Tech-writer still owns document structure and the reusable template; it must
+not bypass that skill's scope checks or save directly into the Vault.
 
 ## Division of labor
 
@@ -194,6 +202,7 @@ hand the user a checklist to fill in. Instead:
 | White Paper / ホワイトペーパー | white-paper | `references/doctypes/white-paper.md` |
 | Request for information / RFI | rfi | `references/doctypes/rfi.md` |
 | Request for proposal / RFP | rfp | `references/doctypes/rfp.md` |
+| Obsidian note / vault template | obsidian | `references/doctypes/obsidian.md` |
 | Zenn article | zenn | `references/doctypes/zenn.md` |
 | Qiita article | qiita | `references/doctypes/qiita.md` |
 
@@ -237,7 +246,7 @@ document and needs the outline step below.
 For living, multi-section documents (README, design doc, API reference,
 release notes, user manual, requirements definition, system design, test
 plan, operations runbook, migration plan, security design, technical
-proposal, Blueprint, White Paper, RFI/RFP, Zenn/Qiita article), write under
+proposal, Blueprint, White Paper, RFI/RFP, Obsidian note, Zenn/Qiita article), write under
 the 8 rules
 in `references/style-constitution.md`. Summary: state "what this is" and
 "the outcome for the reader" in the first three lines; make headings
@@ -408,7 +417,7 @@ See each reference file for detail. The items below are for living,
 multi-section documents (README, design doc, API reference, release notes,
 user manual, requirements definition, system design, test plan, operations
 runbook, migration plan, security design, technical proposal, Blueprint,
-White Paper, RFI/RFP, Zenn/Qiita article). Atomic
+White Paper, RFI/RFP, Obsidian note, Zenn/Qiita article). Atomic
 artifacts (commit message, PR
 description, issue report, code comment/docstring, a single appended
 release-notes entry) are already covered by their own doctype checklist

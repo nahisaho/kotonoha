@@ -9,6 +9,8 @@ technical documents without losing the reader. `japanese-prose` improves
 Japanese wording with GiNZA-based diagnostics. `presentation-planner` turns
 source material into a reusable presentation scenario, slide outline, design
 specification, and handoff for a dedicated PPTX creation skill.
+The `obsidian` skill applies scoped Vault conventions and link diagnostics
+and saves new or proofread notes only after explicit plan approval.
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -54,8 +56,8 @@ review.
   descriptions/commit messages/issue reports, release notes, user manuals,
   code comments, requirements definitions, system designs, test plans,
   operations runbooks, migration plans, security designs, technical proposals,
-  Blueprints, White Papers, RFI/RFP procurement documents, and Qiita/Zenn
-  articles
+  Blueprints, White Papers, RFI/RFP procurement documents, Obsidian notes
+  and templates, and Qiita/Zenn articles
 - Doctype-specific structure and checklists to guide writing
 - Original GiNZA-based `japanese-prose` lint, reading-load review, terminology
   checks, and iterative prose optimization without changing IDs, facts,
@@ -95,15 +97,46 @@ review.
 | Evidence-led publication | Technical or business White Paper | `white-paper` |
 | Request for information | RFI | `rfi` |
 | Request for proposal | RFP | `rfp` |
+| Vault knowledge note | Obsidian note or reusable template | `obsidian` |
 | Technical article | Zenn article | `zenn` |
 | Technical article | Qiita article | `qiita` |
 
 Reusable templates are included for README, design decisions, user manuals,
 PR descriptions, requirements definitions, system designs, test plans,
 operations runbooks, migration plans, security designs, technical proposals,
-Blueprints, White Papers, RFI, RFP, and Qiita articles. Every supported
+Blueprints, White Papers, RFI, RFP, Obsidian notes, and Qiita articles. Every supported
 doctype includes dedicated structure guidance and a review checklist under
 `skills/tech-writer/references/doctypes/`.
+
+For Obsidian, copy
+[`obsidian.md`](skills/tech-writer/assets/templates/obsidian.md) into your
+vault's template folder and select that folder in the core Templates plugin.
+Create and name an empty note, then run **Templates: Insert template**.
+The template includes YAML properties, core title/date variables, wikilinks,
+a callout, and a task; no community plugins are required. Kotonoha does not
+configure your vault. See the [Obsidian guide](skills/tech-writer/references/doctypes/obsidian.md)
+for setup, placeholder handling, and limitations.
+
+## Working with an Obsidian Vault
+
+Use the dedicated `obsidian` skill for Vault conventions, note creation,
+related-note proposals, internal-link diagnosis and Japanese proofreading.
+Its local CLI requires Linux, CPython 3.12 and uv; it does not require
+Obsidian, MCP or plugins. Install `tech-writer` and `japanese-prose` alongside
+it for creation and proofreading, or install all skills.
+
+The user explicitly selects the Vault, read scopes and model-context consent.
+Only `apply` writes a single approved `.md` note; a hash-bound plan, protected
+syntax checks and an exact semantic review are required for changed edits.
+Unresolved links are observations, not automatic repair requests.
+Runtime commands use `uv run --offline --locked --python 3.12`; dependency
+bootstrap needs separate consent. See the [Japanese workflow guide](skills/obsidian/references/workflow.md)
+for requests, command examples, data retention and recovery.
+
+Saving is limited to verified local filesystems and conservatively refuses
+symlinks, unsupported ownership/modes, multiple hard links and all xattrs,
+including SELinux labels. Post-check external edits and LLM mistakes cannot
+be eliminated. The skill is not a host sandbox.
 
 ## What consulting-analyst does
 
@@ -174,7 +207,7 @@ npx kotonoha install
 
 `kotonoha install` installs every packaged skill that is not already present.
 The following commands install `consulting-analyst`, `tech-writer`,
-`japanese-prose`, and `presentation-planner` into `.github/skills/`:
+`japanese-prose`, `obsidian`, and `presentation-planner` into `.github/skills/`:
 
 ```bash
 npm install --save-dev kotonoha
@@ -182,12 +215,13 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-Confirm that all four skills were installed:
+Confirm that all five skills were installed:
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md
 test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
+test -f .github/skills/obsidian/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
