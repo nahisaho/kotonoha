@@ -468,7 +468,7 @@ class VaultTests(unittest.TestCase):
         installed = self.home / "installed skills"
         subprocess.run(["node", str(ROOT / "bin/kotonoha.js"), "install", "--target", str(installed)],
                        check=True, capture_output=True)
-        executable = installed / "obsidian/scripts/vault.py"
+        executable = installed / "obsidian-vault/scripts/vault.py"
         self.request_path.write_text(json.dumps(self.request))
         command = ["uv", "run", "--offline", "--locked", "--python", "3.12", str(executable)]
         result = subprocess.run(command + ["inspect", "--request", str(self.request_path)],
@@ -476,12 +476,12 @@ class VaultTests(unittest.TestCase):
         self.assertEqual(result.returncode, 3, result.stderr)
         self.assertEqual(json.loads(result.stdout)["data"]["links"], CASES["expected_links"])
         single = self.home / "single"
-        subprocess.run(["node", str(ROOT / "bin/kotonoha.js"), "install", "--skill", "obsidian",
+        subprocess.run(["node", str(ROOT / "bin/kotonoha.js"), "install", "--skill", "obsidian-vault",
                         "--target", str(single)], check=True, capture_output=True)
         self.edit_plan()
         result = subprocess.run(
             ["uv", "run", "--offline", "--locked", "--python", "3.12",
-             str(single / "obsidian/scripts/vault.py"), "plan", "--request",
+             str(single / "obsidian-vault/scripts/vault.py"), "plan", "--request",
              str(self.request_path), "--candidate", str(self.candidate),
              "--review", str(self.review_path)], capture_output=True, text=True,
         )

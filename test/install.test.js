@@ -258,11 +258,11 @@ function assertObsidianAssets(skillsRoot) {
   const relativePaths = [
     "tech-writer/assets/templates/obsidian.md",
     "tech-writer/references/doctypes/obsidian.md",
-    "obsidian/SKILL.md",
-    "obsidian/references/workflow.md",
-    "obsidian/references/execution-contract.json",
-    "obsidian/scripts/vault.py",
-    "obsidian/scripts/vault.py.lock",
+    "obsidian-vault/SKILL.md",
+    "obsidian-vault/references/workflow.md",
+    "obsidian-vault/references/execution-contract.json",
+    "obsidian-vault/scripts/vault.py",
+    "obsidian-vault/scripts/vault.py.lock",
   ];
   for (const relativePath of relativePaths) {
     assert.equal(
@@ -519,20 +519,20 @@ test("installs one selected skill", () => {
   );
 });
 
-test("installs Obsidian alone without silently adding sibling skills", () => {
+test("installs obsidian-vault alone without silently adding sibling skills", () => {
   const workingDirectory = createTemporaryDirectory();
   execFileSync(
     process.execPath,
-    [cli, "install", "--skill", "obsidian"],
+    [cli, "install", "--skill", "obsidian-vault"],
     { cwd: workingDirectory, stdio: "pipe" },
   );
   const root = path.join(workingDirectory, ".github", "skills");
   for (const relativePath of [
-    "obsidian/SKILL.md",
-    "obsidian/scripts/vault.py",
-    "obsidian/scripts/vault.py.lock",
-    "obsidian/references/execution-contract.json",
-    "obsidian/references/workflow.md",
+    "obsidian-vault/SKILL.md",
+    "obsidian-vault/scripts/vault.py",
+    "obsidian-vault/scripts/vault.py.lock",
+    "obsidian-vault/references/execution-contract.json",
+    "obsidian-vault/references/workflow.md",
   ]) {
     assert.equal(
       fs.readFileSync(path.join(root, relativePath), "utf8"),

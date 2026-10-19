@@ -9,7 +9,7 @@ technical documents without losing the reader. `japanese-prose` improves
 Japanese wording with GiNZA-based diagnostics. `presentation-planner` turns
 source material into a reusable presentation scenario, slide outline, design
 specification, and handoff for a dedicated PPTX creation skill.
-The `obsidian` skill applies scoped Vault conventions and link diagnostics
+The `obsidian-vault` skill applies scoped Vault conventions and link diagnostics
 and saves new or proofread notes only after explicit plan approval.
 
 [English](./README.md) | [日本語](./README-ja.md)
@@ -119,7 +119,7 @@ for setup, placeholder handling, and limitations.
 
 ## Working with an Obsidian Vault
 
-Use the dedicated `obsidian` skill for Vault conventions, note creation,
+Use the dedicated `obsidian-vault` skill for Vault conventions, note creation,
 related-note proposals, internal-link diagnosis and Japanese proofreading.
 Its local CLI requires Linux, CPython 3.12 and uv; it does not require
 Obsidian, MCP or plugins. Install `tech-writer` and `japanese-prose` alongside
@@ -130,7 +130,7 @@ Only `apply` writes a single approved `.md` note; a hash-bound plan, protected
 syntax checks and an exact semantic review are required for changed edits.
 Unresolved links are observations, not automatic repair requests.
 Runtime commands use `uv run --offline --locked --python 3.12`; dependency
-bootstrap needs separate consent. See the [Japanese workflow guide](skills/obsidian/references/workflow.md)
+bootstrap needs separate consent. See the [Japanese workflow guide](skills/obsidian-vault/references/workflow.md)
 for requests, command examples, data retention and recovery.
 
 Saving is limited to verified local filesystems and conservatively refuses
@@ -207,7 +207,7 @@ npx kotonoha install
 
 `kotonoha install` installs every packaged skill that is not already present.
 The following commands install `consulting-analyst`, `tech-writer`,
-`japanese-prose`, `obsidian`, and `presentation-planner` into `.github/skills/`:
+`japanese-prose`, `obsidian-vault`, and `presentation-planner` into `.github/skills/`:
 
 ```bash
 npm install --save-dev kotonoha
@@ -221,7 +221,7 @@ Confirm that all five skills were installed:
 test -f .github/skills/consulting-analyst/SKILL.md
 test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
-test -f .github/skills/obsidian/SKILL.md
+test -f .github/skills/obsidian-vault/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 

@@ -27,5 +27,14 @@
       ],
       "approval_record_note": "The approvals.json hash identifies the record before this approval was appended."
     }
+  ],
+  "artifact_relocations": [
+    {
+      "original_path": "skills/obsidian/references/execution-contract.json",
+      "current_path": "skills/obsidian-vault/references/execution-contract.json",
+      "sha256": "761c203bfe9811fb07ef5e1abfa00bb195b7a916a71ceea3bb4d881a60d409c4",
+      "reason": "User-approved Skill rename; approved contract bytes unchanged.",
+      "user_message": "obsidian-vault にします。"
+    }
   ]
 }

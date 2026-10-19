@@ -58,7 +58,7 @@ YAML frontmatter and a few platform extensions on top — see their doctype
 reference files. Obsidian uses YAML properties, wikilinks, and callouts;
 see `references/doctypes/obsidian.md` for core Templates compatibility.
 For an existing Vault's conventions, related-note suggestions, link diagnosis,
-or approval-gated saves, use the sibling `obsidian` skill when available.
+or approval-gated saves, use the sibling `obsidian-vault` skill when available.
 Tech-writer still owns document structure and the reusable template; it must
 not bypass that skill's scope checks or save directly into the Vault.
 

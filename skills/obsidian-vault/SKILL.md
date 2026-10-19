@@ -1,5 +1,5 @@
 ---
-name: obsidian
+name: obsidian-vault
 description: >-
   Works with an explicitly authorized Obsidian Vault: discovers naming,
   folder, property and tag conventions, creates notes or reusable templates,
@@ -13,7 +13,7 @@ license: MIT
 argument-hint: "[conventions|create|related|links|proofread] <Vault and scope>"
 ---
 
-# obsidian
+# obsidian-vault
 
 明示されたVaultの規約を尊重し、許可範囲内でノートを作成・診断する。
 文書の構成は兄弟のtech-writer、日本語の表現はjapanese-proseへ委ねる。
@@ -38,11 +38,11 @@ argument-hint: "[conventions|create|related|links|proofread] <Vault and scope>"
 
 ## 実行経路
 
-`<obsidian-dir>`は、このSKILL.mdがあるインストール先のディレクトリに置き換える。
+`<obsidian-vault-dir>`は、このSKILL.mdがあるインストール先のディレクトリに置き換える。
 すべての処理に次の起動部分を使い、[実行契約](references/execution-contract.json)に従う。
 
 ```bash
-uv run --offline --locked --python 3.12 <obsidian-dir>/scripts/vault.py inspect --request /absolute/workspace/request.json
+uv run --offline --locked --python 3.12 <obsidian-vault-dir>/scripts/vault.py inspect --request /absolute/workspace/request.json
 ```
 
 Vaultの本文はinspectまたはreadだけで取得する。ホストの検索・編集ツールで範囲確認を迂回しない。

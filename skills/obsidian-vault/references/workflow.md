@@ -19,7 +19,7 @@ Skillへの自然言語の依頼例は次のとおり。
 既存の同名Skillを無断で置換しない。必要な兄弟Skillは別途導入する。
 
 ```bash
-npx kotonoha install --skill obsidian
+npx kotonoha install --skill obsidian-vault
 npx kotonoha install --skill tech-writer
 npx kotonoha install --skill japanese-prose
 ```
@@ -30,14 +30,14 @@ npx kotonoha install --skill japanese-prose
 Linux、CPython 3.12、uvが必要である。依存関係の初回準備は通信が発生し得るため、利用者の別途許可を得て実行する。
 
 ```bash
-uv sync --locked --python 3.12 --script .github/skills/obsidian/scripts/vault.py
+uv sync --locked --python 3.12 --script .github/skills/obsidian-vault/scripts/vault.py
 ```
 
 実際のノート処理は必ずオフラインの固定起動経路を使う。
 起動に失敗した場合、ホストは機能を未実施と説明する。未起動のスクリプトのJSON結果を捏造しない。
 
 ```bash
-uv run --offline --locked --python 3.12 .github/skills/obsidian/scripts/vault.py inspect --request /absolute/workspace/request.json
+uv run --offline --locked --python 3.12 .github/skills/obsidian-vault/scripts/vault.py inspect --request /absolute/workspace/request.json
 ```
 
 ## 依頼ファイル
