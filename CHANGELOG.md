@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-21
+
+### Fixed
+
+- Prohibit session-storage outputs for all Obsidian Skills, including auxiliary
+  files and delegated work. Ask for a non-session location before writing when
+  necessary; retain Vault scope checks and external CLI workspace requirements.
+
 ## [0.5.0] - 2026-10-20
 
 ### Added
