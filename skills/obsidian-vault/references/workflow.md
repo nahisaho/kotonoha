@@ -77,6 +77,8 @@ npx kotonoha install --skill tech-writer
 npx kotonoha install --skill japanese-prose
 ```
 
+上記はCopilot向けの導入例である。Claude Codeでは各コマンドに`--agent claude`、両方には`--agent all`を付け、必要な兄弟Skillも同じルートへ導入する。既定のルートはCopilotが`.github/skills`、Claude Codeが`.claude/skills`である。以下の起動例では、選択したルートにパスを合わせる。
+
 既存のjapanese-proseが古い場合は共通ゲートを利用できず、依存不足となる。
 既存Skillのローカル変更を確認・退避し、利用者が更新を許可してから、対象Skillだけを`--force`付きで再導入する。
 

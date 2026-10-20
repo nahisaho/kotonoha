@@ -14,6 +14,10 @@ replacement authority. Do not overwrite local customizations without consent.
 npx kotonoha install --skill obsidian-bases
 ```
 
+This defaults to Copilot's `.github/skills`. Add `--agent claude` for Claude
+Code's `.claude/skills`, or `--agent all` for both. Resolve `<bases-dir>` from
+the installed Skill in the selected root.
+
 Installation copies authored assets and the canonical private lockfile, not
 `node_modules`. Before dependency preparation explain the local installation
 directory and possible package-registry traffic; get separate permission.

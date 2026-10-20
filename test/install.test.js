@@ -9,6 +9,22 @@ const { publishTagForVersion } = require("../bin/npm-publish-tag.js");
 const repositoryRoot = path.resolve(__dirname, "..");
 const cli = path.join(repositoryRoot, "bin", "kotonoha.js");
 
+test("bundled Skill descriptions fit the host discovery limit", () => {
+  const skillsRoot = path.join(repositoryRoot, "skills");
+  for (const directory of fs.readdirSync(skillsRoot)) {
+    const file = path.join(skillsRoot, directory, "SKILL.md");
+    if (!fs.existsSync(file)) continue;
+    const content = fs.readFileSync(file, "utf8");
+    const block = content.match(/^description: >-\r?\n((?:  .*\r?\n)+)/m);
+    assert.ok(block, `${directory} should have a folded description`);
+    const description = block[1].trim().split(/\r?\n/).map((line) => line.trim()).join(" ");
+    assert.ok(
+      description.length > 0 && description.length <= 1024,
+      `${directory} description has ${description.length} characters; host discovery accepts 1-1024`,
+    );
+  }
+});
+
 test("tech-writer workflow section references stay aligned", () => {
   const skill = fs.readFileSync(
     path.join(repositoryRoot, "skills", "tech-writer", "SKILL.md"),
@@ -526,6 +542,7 @@ test("installs all skills into the default project directory", () => {
   assertObsidianAssets(path.join(workingDirectory, ".github", "skills"));
   assertCanvasAssets(path.join(workingDirectory, ".github", "skills"));
   assertBasesAssets(path.join(workingDirectory, ".github", "skills"));
+  assert.equal(fs.existsSync(path.join(workingDirectory, ".claude")), false);
 
   assert.ok(
     fs.existsSync(
@@ -571,6 +588,142 @@ test("installs all skills into the default project directory", () => {
       ),
     ),
   );
+});
+
+test("installs identical skill bundles for the selected agents", async (t) => {
+  for (const agent of ["copilot", "claude", "all"]) {
+    await t.test(agent, (t) => {
+      const workingDirectory = createTemporaryDirectory();
+      t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+      execFileSync(process.execPath, [cli, "install", "--agent", agent], {
+        cwd: workingDirectory,
+        stdio: "pipe",
+      });
+      for (const [name, directory] of [["copilot", ".github"], ["claude", ".claude"]]) {
+        const root = path.join(workingDirectory, directory, "skills");
+        if (agent !== "all" && agent !== name) {
+          assert.equal(fs.existsSync(root), false);
+          continue;
+        }
+        assertAnalysisContracts(root);
+        assertObsidianAssets(root);
+        assertCanvasAssets(root);
+        assertBasesAssets(root);
+        const skills = fs.readdirSync(path.join(repositoryRoot, "skills"))
+          .filter((skill) => fs.existsSync(path.join(repositoryRoot, "skills", skill, "SKILL.md")))
+          .sort();
+        assert.deepEqual(fs.readdirSync(root).sort(), skills);
+        for (const skill of skills) {
+          assert.equal(
+            fs.readFileSync(path.join(root, skill, "SKILL.md"), "utf8"),
+            fs.readFileSync(path.join(repositoryRoot, "skills", skill, "SKILL.md"), "utf8"),
+          );
+        }
+      }
+    });
+  }
+});
+
+test("a single agent supports equals syntax, skill selection and a custom target", (t) => {
+  const workingDirectory = createTemporaryDirectory();
+  t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+  execFileSync(process.execPath, [
+    cli, "install", "--agent=claude", "--target=custom", "--skill=presentation-planner",
+  ], { cwd: workingDirectory, stdio: "pipe" });
+  assert.deepEqual(fs.readdirSync(path.join(workingDirectory, "custom")), ["presentation-planner"]);
+  assert.equal(fs.existsSync(path.join(workingDirectory, "custom/presentation-planner/SKILL.md")), true);
+  assert.equal(fs.existsSync(path.join(workingDirectory, ".github")), false);
+  assert.equal(fs.existsSync(path.join(workingDirectory, ".claude")), false);
+});
+
+test("invalid agent options fail before creating either agent root", async (t) => {
+  for (const [args, message] of [
+    [["--agent"], /--agent requires/],
+    [["--agent", "--force"], /--agent requires/],
+    [["--agent="], /--agent requires/],
+    [["--agent", "unknown"], /unknown agent: unknown/],
+    [["--agent=toString"], /unknown agent: toString/],
+    [["--agent", "all", "--target", "custom"], /--target cannot be combined with --agent all/],
+    [["--target=custom", "--agent=all"], /--target cannot be combined with --agent all/],
+    [["--agent", "all", "--skill", "unknown-skill"], /unknown skill: unknown-skill/],
+  ]) {
+    await t.test(args.join(" "), (t) => {
+      const workingDirectory = createTemporaryDirectory();
+      t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+      const result = spawnSync(process.execPath, [cli, "install", ...args], {
+        cwd: workingDirectory, encoding: "utf8",
+      });
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, message);
+      assert.deepEqual(fs.readdirSync(workingDirectory), []);
+    });
+  }
+});
+
+test("both agents preserve existing skills and force updates only the selected agent", (t) => {
+  const workingDirectory = createTemporaryDirectory();
+  t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+  const roots = [".github/skills", ".claude/skills"].map((root) => path.join(workingDirectory, root));
+  for (const root of roots) {
+    fs.mkdirSync(path.join(root, "tech-writer"), { recursive: true });
+    fs.writeFileSync(path.join(root, "tech-writer/custom.txt"), "keep");
+  }
+  execFileSync(process.execPath, [cli, "install", "--agent=all"], {
+    cwd: workingDirectory, stdio: "pipe",
+  });
+  for (const root of roots) {
+    assert.equal(fs.readFileSync(path.join(root, "tech-writer/custom.txt"), "utf8"), "keep");
+    assert.equal(fs.existsSync(path.join(root, "japanese-prose/SKILL.md")), true);
+  }
+  execFileSync(process.execPath, [cli, "install", "--agent", "claude", "--force"], {
+    cwd: workingDirectory, stdio: "pipe",
+  });
+  assert.equal(fs.existsSync(path.join(roots[1], "tech-writer/custom.txt")), false);
+  assert.equal(fs.readFileSync(path.join(roots[0], "tech-writer/custom.txt"), "utf8"), "keep");
+});
+
+test("a selected skill conflict on either agent is checked before copying to the other", (t) => {
+  const workingDirectory = createTemporaryDirectory();
+  t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+  const roots = [".github/skills", ".claude/skills"].map((root) => path.join(workingDirectory, root));
+  fs.mkdirSync(path.join(roots[1], "tech-writer"), { recursive: true });
+  fs.writeFileSync(path.join(roots[1], "tech-writer/custom.txt"), "preserve");
+  const result = spawnSync(process.execPath, [
+    cli, "install", "--agent", "all", "--skill", "tech-writer",
+  ], { cwd: workingDirectory, encoding: "utf8" });
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /already exists.*--force/);
+  assert.equal(fs.existsSync(roots[0]), false);
+  assert.equal(fs.readFileSync(path.join(roots[1], "tech-writer/custom.txt"), "utf8"), "preserve");
+  fs.mkdirSync(path.join(roots[1], "unselected"));
+  fs.writeFileSync(path.join(roots[1], "unselected/custom.txt"), "keep sibling");
+  execFileSync(process.execPath, [
+    cli, "install", "--agent", "all", "--skill", "tech-writer", "--force",
+  ], { cwd: workingDirectory, stdio: "pipe" });
+  for (const root of roots) {
+    assert.equal(fs.existsSync(path.join(root, "tech-writer/SKILL.md")), true);
+    assert.equal(fs.existsSync(path.join(root, "tech-writer/custom.txt")), false);
+  }
+  assert.equal(fs.readFileSync(path.join(roots[1], "unselected/custom.txt"), "utf8"), "keep sibling");
+  assert.equal(fs.existsSync(path.join(roots[0], "japanese-prose")), false);
+});
+
+test("an unusable second agent root stops a forced install before replacing skills", (t) => {
+  const workingDirectory = createTemporaryDirectory();
+  t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+  const copilot = path.join(workingDirectory, ".github/skills");
+  fs.mkdirSync(path.join(copilot, "tech-writer"), { recursive: true });
+  fs.writeFileSync(path.join(copilot, "tech-writer/custom.txt"), "preserve");
+  fs.mkdirSync(path.join(workingDirectory, ".claude"));
+  fs.writeFileSync(path.join(workingDirectory, ".claude/skills"), "not a directory");
+  const result = spawnSync(process.execPath, [
+    cli, "install", "--agent", "all", "--force",
+  ], { cwd: workingDirectory, encoding: "utf8" });
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /kotonoha: failed to prepare skill root/);
+  assert.equal(fs.readFileSync(path.join(copilot, "tech-writer/custom.txt"), "utf8"), "preserve");
+  assert.deepEqual(fs.readdirSync(copilot), ["tech-writer"]);
+  assert.equal(fs.readFileSync(path.join(workingDirectory, ".claude/skills"), "utf8"), "not a directory");
 });
 
 test("installs one selected skill", () => {
@@ -793,9 +946,11 @@ test("--force replaces an existing installation", () => {
   assert.ok(fs.existsSync(path.join(target, "japanese-prose", "SKILL.md")));
 });
 
-test("the packed npm artifact installs a usable CLI", () => {
+test("the packed npm artifact installs a usable CLI", (t) => {
   const packDirectory = createTemporaryDirectory();
   const consumerDirectory = createTemporaryDirectory();
+  t.after(() => fs.rmSync(packDirectory, { recursive: true, force: true }));
+  t.after(() => fs.rmSync(consumerDirectory, { recursive: true, force: true }));
 
   const packOutput = execFileSync(
     "npm",
@@ -815,6 +970,8 @@ test("the packed npm artifact installs a usable CLI", () => {
     cwd: consumerDirectory,
     stdio: "pipe",
   });
+  assert.equal(fs.existsSync(path.join(consumerDirectory, ".github")), false);
+  assert.equal(fs.existsSync(path.join(consumerDirectory, ".claude")), false);
   assert.ok(
     fs.existsSync(
       path.join(consumerDirectory, "node_modules", "kotonoha", "README-ja.md"),
@@ -822,6 +979,20 @@ test("the packed npm artifact installs a usable CLI", () => {
   );
 
   const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+  execFileSync(npx, ["--no-install", "kotonoha", "install", "--agent", "all"], {
+    cwd: consumerDirectory, stdio: "pipe",
+  });
+  for (const directory of [".github", ".claude"]) {
+    const root = path.join(consumerDirectory, directory, "skills");
+    assertAnalysisContracts(root);
+    assertObsidianAssets(root);
+    assertCanvasAssets(root);
+    assertBasesAssets(root);
+    const help = execFileSync(process.execPath, [
+      path.join(root, "obsidian-bases/scripts/check.cjs"), "--help",
+    ], { encoding: "utf8" });
+    assert.equal(JSON.parse(help).read_only, true);
+  }
   execFileSync(
     npx,
     [

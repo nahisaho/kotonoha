@@ -50,8 +50,10 @@ Never trade technical precision for conversational phrasing.
    skill-loading mechanism. If the host exposes only skill files, resolve
    `<tech-writer-dir>/../japanese-prose/SKILL.md` first, then check
    `.github/skills/japanese-prose/SKILL.md`,
+   `.claude/skills/japanese-prose/SKILL.md`,
    `.copilot/skills/japanese-prose/SKILL.md`, and
-   `$HOME/.copilot/skills/japanese-prose/SKILL.md`; expand `$HOME`, load the
+   `$HOME/.copilot/skills/japanese-prose/SKILL.md`, then
+   `$HOME/.claude/skills/japanese-prose/SKILL.md`; expand `$HOME`, load the
    discovered skill,
    and follow its workflow.
 2. Ask the loaded skill to review and rewrite only the Japanese prose under

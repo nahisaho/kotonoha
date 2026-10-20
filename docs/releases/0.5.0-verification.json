@@ -1,0 +1,179 @@
+{
+  "version": "0.5.0",
+  "artifact": "/tmp/kotonoha-test/releases/0.5.0/kotonoha-0.5.0.tgz",
+  "artifact_sha256": "f69b0d7051aee4e66a72a6f70188e8956dd4e96cbd3bc80826d035dcd5ec8c7a",
+  "targeted_installer_tests": {
+    "run": 38,
+    "passed": 38
+  },
+  "exact_artifact_offline_npm_install": "passed_without_ignore_scripts",
+  "npm_install_does_not_write_skill_roots": true,
+  "per_agent_runtime_checks": {
+    "copilot": {
+      "skills": 7,
+      "all_copied_skill_bytes_match_manifest": true,
+      "vault_locked_offline_help": "passed",
+      "canvas_shared_backend_inspect": "passed_target_unchanged",
+      "bases_missing_dependency_exit": 4,
+      "bases_explicit_offline_setup_and_four_templates": "passed",
+      "prose_invariant_gate": "passed"
+    },
+    "claude": {
+      "skills": 7,
+      "all_copied_skill_bytes_match_manifest": true,
+      "vault_locked_offline_help": "passed",
+      "canvas_shared_backend_inspect": "passed_target_unchanged",
+      "bases_missing_dependency_exit": 4,
+      "bases_explicit_offline_setup_and_four_templates": "passed",
+      "prose_invariant_gate": "passed"
+    }
+  },
+  "exact_artifact_copilot_discovery": {
+    "bundled_count": 7,
+    "unique_count": 7,
+    "chosen_root": ".github/skills"
+  },
+  "real_copilot_source_modes": {
+    "copilot": {
+      "bundled_skills": [
+        "consulting-analyst",
+        "japanese-prose",
+        "obsidian-bases",
+        "obsidian-canvas",
+        "obsidian-vault",
+        "presentation-planner",
+        "tech-writer"
+      ],
+      "count": 7,
+      "unique_count": 7,
+      "chosen_root": ".github/skills",
+      "all_enabled": true
+    },
+    "claude": {
+      "bundled_skills": [
+        "consulting-analyst",
+        "japanese-prose",
+        "obsidian-bases",
+        "obsidian-canvas",
+        "obsidian-vault",
+        "presentation-planner",
+        "tech-writer"
+      ],
+      "count": 7,
+      "unique_count": 7,
+      "chosen_root": ".claude/skills",
+      "all_enabled": true
+    },
+    "all": {
+      "bundled_skills": [
+        "consulting-analyst",
+        "japanese-prose",
+        "obsidian-bases",
+        "obsidian-canvas",
+        "obsidian-vault",
+        "presentation-planner",
+        "tech-writer"
+      ],
+      "count": 7,
+      "unique_count": 7,
+      "chosen_root": ".github/skills",
+      "all_enabled": true
+    }
+  },
+  "real_claude_code": {
+    "client": "Claude Code",
+    "client_version": "2.1.304",
+    "exit_code": 0,
+    "native_skills": [
+      "consulting-analyst",
+      "japanese-prose",
+      "obsidian-bases",
+      "obsidian-canvas",
+      "obsidian-vault",
+      "presentation-planner",
+      "tech-writer",
+      "dataviz",
+      "update-config",
+      "verify",
+      "debug",
+      "code-review",
+      "simplify",
+      "batch",
+      "fewer-permission-prompts",
+      "doctor",
+      "loop",
+      "schedule",
+      "claude-api",
+      "run",
+      "run-skill-generator",
+      "plugin-authoring"
+    ],
+    "skill_tool_calls": [
+      "consulting-analyst",
+      "japanese-prose",
+      "obsidian-bases",
+      "obsidian-canvas",
+      "obsidian-vault",
+      "presentation-planner",
+      "tech-writer"
+    ],
+    "read_tool_paths": [
+      "/tmp/kotonoha-test/v050-agent/hosts/claude-normal-skill-wl6_wwsw/project/.claude/skills/tech-writer/references/japanese-prose-optimization.md",
+      "/tmp/kotonoha-test/v050-agent/hosts/claude-normal-skill-wl6_wwsw/project/.claude/skills/japanese-prose/SKILL.md"
+    ],
+    "tool_errors": [],
+    "result_error": false,
+    "settings_isolated": true,
+    "tools_restricted_to": [
+      "Skill",
+      "Read"
+    ],
+    "external_model_session": true,
+    "note": "Initial non-Git/restricted startup probes did not expose project Skills. The passing verification uses normal Git-project startup with isolated HOME/config, only project settings, no MCP, and only Skill/Read tools. The probes do not isolate a single causal flag."
+  },
+  "natural_japanese_routing": {
+    "scenario": "Japanese README structure-review request, without naming a Skill",
+    "skill_tool_calls": [
+      "tech-writer"
+    ],
+    "readme_read": true,
+    "tool_errors": [],
+    "exit_code": 0,
+    "result_error": false,
+    "no_write_or_shell_tools_available": true
+  },
+  "discovery_bug_and_fix": {
+    "original_description_characters": 1915,
+    "boundary_cases": [
+      {
+        "description_characters": 1024,
+        "tech_writer_discovered": true
+      },
+      {
+        "description_characters": 1025,
+        "tech_writer_discovered": false
+      }
+    ],
+    "fixed_description_characters": 792
+  },
+  "independent_review": {
+    "model": "Claude Sonnet 5.5",
+    "initial_installer_review_open_must_fix": 0,
+    "metadata_fix_closure_open_must_fix": 0,
+    "narrow_fix_body_note": "The description-only correction leaves the body untouched; the separate Claude sibling-path additions were already covered by the initial installer review.",
+    "post_review_release_only_changes": [
+      "root package version 0.5.0",
+      "README release availability text",
+      "CHANGELOG 0.5.0 section and comparison links"
+    ]
+  },
+  "residual_risks": [
+    "Forced replacement removes the old directory before final rename; rename failure can lose the old installation. Back up local edits first.",
+    "Multiple Skill/root installations are not an atomic transaction; later failures can leave earlier copies installed.",
+    "Placement is not isolation; Copilot can read .claude/skills. Native CLI deduplication was verified, other host versions/IDEs were not.",
+    "Live Claude checks cover normal Git-project startup, explicit loads of all seven Skills and one Japanese auto-routing case, not every possible request or special restricted startup mode.",
+    "Node18, non-Linux hosts and actual casefold filesystems were not exercised for this release.",
+    "Actual Obsidian rendering/formula evaluation is not tested; existing frozen-subset, consent, runtime preparation and fail-closed limits remain."
+  ],
+  "fixture_cleanup": "removed in finally"
+}

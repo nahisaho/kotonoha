@@ -1,39 +1,17 @@
 ---
 name: tech-writer
 description: >-
-  Helps structure and polish technical documents: README, design docs/ADRs,
-  API reference, PR descriptions/commit messages/issue reports, release
-  notes/CHANGELOG, user manuals/how-to guides, code comments/docstrings,
-  requirements definitions, system designs, test plans, operations runbooks,
-  migration plans, security designs/threat models, technical proposals,
-  Blueprints, White Papers, RFI/RFP procurement documents, Obsidian notes
-  and templates, and Qiita/Zenn articles. Use for requests
-  like "write a README", "draft a design doc", "define system requirements",
-  "write a system design", "create a test plan", "write an operations
-  runbook", "plan a migration", "create a threat model", "write a technical
-  proposal", "create a Blueprint", "write a White Paper", "draft an RFI",
-  "create an RFP", "write this PR description", "clean up my commit
-  message", "make this how-to guide clearer", "write API docs", "summarize
-  the release notes", "create an Obsidian note", "write a Zenn article",
-  "write this up for Qiita", as
-  well as
-  Japanese-language equivalents (「READMEを書いて」「設計ドキュメントを作って」
-  「要件定義書を作って」「システム設計書を書いて」「テスト計画書を作って」
-  「運用設計書を書いて」「移行計画を作って」「脅威モデルを作って」
-  「技術提案書を書いて」「Blueprintを作って」「ホワイトペーパーを書いて」
-  「RFIを作って」「RFPを作って」「PRの説明文を書いて」
-  「コミットメッセージを整えて」「手順書を分かりやすくして」
-  「APIドキュメントを整備して」「リリースノートをまとめて」
-  「Obsidian用のノートを作って」「Obsidianのテンプレートを作って」
-  「Zennの記事を書いて」「Qiitaに投稿する記事を書いて」). Especially useful when
-  the request is a bare goal without enough context to start (e.g. "I want
-  to write a README" / "○○を書きたい"), since this skill drives a one
-  question-at-a-time intake before writing. Supports both Japanese and
-  English documents, with Japanese as the primary target. Owns document
-  structure, information completeness, and reader fit; for living Japanese
-  documents, it invokes kotonoha's original bundled `japanese-prose` skill,
-  which uses GiNZA for sentence-level naturalness, word choice, rhythm, and
-  repeated AI-like pattern analysis.
+  Structures, writes, reviews, and scores technical documents: README,
+  design docs/ADRs, API references, requirements, system designs, test plans,
+  operations runbooks, migration plans, security designs/threat models,
+  technical proposals, Blueprints, White Papers, RFI/RFP, PR descriptions,
+  commit messages, issue reports, release notes/CHANGELOG, manuals/how-to
+  guides, comments/docstrings, Obsidian notes/templates, and Qiita/Zenn
+  articles. Use when asked to create, improve, review, or score these
+  documents in Japanese or English, including a bare goal without context.
+  Asks one question at a time before writing. Owns structure, completeness,
+  traceability, and reader fit; delegates sentence-level Japanese wording
+  to kotonoha's original bundled japanese-prose skill with GiNZA diagnostics.
 license: MIT
 argument-hint: "[write|review|score] [doctype] <target file or request>"
 ---
@@ -333,8 +311,10 @@ Load `japanese-prose` through the host's skill-loading mechanism. When only
 installed skill files are exposed, resolve the sibling path
 `<tech-writer-dir>/../japanese-prose/SKILL.md` first, then check
 `.github/skills/japanese-prose/SKILL.md`,
+`.claude/skills/japanese-prose/SKILL.md`,
 `.copilot/skills/japanese-prose/SKILL.md`, and
-`$HOME/.copilot/skills/japanese-prose/SKILL.md`. Load the discovered
+`$HOME/.copilot/skills/japanese-prose/SKILL.md`, then
+`$HOME/.claude/skills/japanese-prose/SKILL.md`. Load the discovered
 `SKILL.md` and follow its quick or full workflow. A standard
 `npx kotonoha install` installs this sibling skill automatically. Treat the
 pass as unavailable only when someone copied or installed tech-writer without

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-20
+
+### Added
+
+- Add explicit `kotonoha install --agent
+  copilot|claude|all` selection for GitHub Copilot, Claude Code, or both.
+  Keep the Copilot default and independent `--skill` selection.
+- Preserve existing Skills in both roots, preflight explicit-skill conflicts
+  before copying, and allow `--target` overrides for a single agent.
+
+### Changed
+
+- Document both hosts and their installation/update paths. Extend
+  `tech-writer`'s prose Skill discovery to Claude project and personal roots.
+- Keep npm installation free of automatic Skill writes or interactive setup.
+
+### Fixed
+
+- Shorten `tech-writer`'s description to the Agent Skills 1,024-character
+  limit so hosts discover all seven bundled Skills. Add a regression check.
+
 ## [0.4.2] - 2026-10-20
 
 ### Added
@@ -190,4 +211,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.4]: https://github.com/nahisaho/kotonoha/compare/v0.1.2...v0.1.4
 [0.1.5]: https://github.com/nahisaho/kotonoha/compare/v0.1.4...v0.1.5
 [0.4.2]: https://github.com/nahisaho/kotonoha/compare/d76ef4a...v0.4.2
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.4.2...HEAD
+[0.5.0]: https://github.com/nahisaho/kotonoha/compare/v0.4.2...v0.5.0
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.0...HEAD

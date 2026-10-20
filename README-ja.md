@@ -1,6 +1,6 @@
 # kotonoha
 
-kotonohaは、コンサルティング分析、技術文書、日本語表現、プレゼンテーション設計を支援するGitHub Copilot CLIスキルを提供します。曖昧な課題の構造化から、文書化、日本語表現の改善、プレゼンテーション設計までを一連の流れとして支援します。
+kotonohaは、GitHub CopilotとClaude Code向けのスキルを提供します。曖昧な課題の構造化から、文書化、日本語表現の改善、プレゼンテーション設計までを一連の流れとして支援します。
 
 `consulting-analyst`は、課題を論点、仮説、証拠、選択肢、提言へ構造化します。分析結果を受け取った`tech-writer`は、README、設計文書、Blueprint、White Paper、提案書などへ内容を落とし込みます。日本語の表現品質は`japanese-prose`がGiNZAベースの診断で改善します。プレゼンテーションが必要な場合は、`presentation-planner`がシナリオ、スライド構成、デザイン仕様、PPTX作成スキル向けの引き継ぎ情報を生成します。
 
@@ -155,7 +155,8 @@ White Paper向けの分析を作成して
 
 ### 前提条件
 
-- GitHub Copilot CLIがインストールされていること
+- GitHub Copilot（CLIまたは対応IDEのエージェントモード）かClaude Codeがインストールされていること
+- インストーラー用のNode.js 18以上とnpm
 - tech-writerの構造lintを実行する場合はPython 3.9以上
 - 同梱`japanese-prose`の文章lint、読解負荷分析、アウトライン抽出、用語検査、編集前後の不変条件検査を実行する場合はPython 3.10以上と`uv`。GiNZA、`ja_ginza`、spaCy、Markdown解析用の依存関係は、各スクリプトの初回実行時に`uv`が解決
 
@@ -167,6 +168,34 @@ White Paper向けの分析を作成して
 npm install --save-dev kotonoha
 npx kotonoha install
 ```
+
+`npm install`はパッケージの導入だけを行います。エージェントの選択画面は表示せず、スキルディレクトリにも自動で書き込みません。
+
+### GitHub Copilot・Claude Code・両方を選択
+
+`--agent`はkotonoha `0.5.0`以降で利用できます。`0.4.2`などの旧版では使えないため、先にnpmパッケージを更新してください。
+
+```bash
+npx kotonoha install --agent copilot   # .github/skills/
+npx kotonoha install --agent claude    # .claude/skills/
+npx kotonoha install --agent all       # 両方のディレクトリ
+```
+
+未指定時は従来どおり`--agent copilot`です。`--agent`で配置先のエージェント、`--skill`で導入するスキルを選びます。両エージェントには同じSkillファイル、スクリプト、テンプレートを配置します。エージェント本体のインストール、認証設定、各スキルのPython・Node実行依存の準備は行いません。
+
+エージェントとスキルの選択は組み合わせられます。
+
+```bash
+npx kotonoha install --agent claude --skill tech-writer
+npx kotonoha install --agent all --skill obsidian-bases
+npx kotonoha install --agent all --force
+```
+
+既存ディレクトリの保護と`--force`は、選択した各配置先に適用します。明示した単一スキルがどちらかの配置先に存在する場合、コピー開始前に処理を止めます。ただし、コピー中のファイルシステムエラーでは、それ以前のコピーが残ることがあります。複数の配置先をまとめて元に戻す機能はありません。
+
+単一エージェントでは`--target`で配置先を変更できます。`--agent all`と`--target`は併用できません。配置先を個別に変える場合は、エージェントごとに実行します。
+
+この選択はファイルの配置先を決めるもので、エージェント間の隔離ではありません。Copilotも`.claude/skills`を認識するため、Claude向けに配置してもCopilotからの読み込みは防げません。対応する配置先は、公式資料（[CopilotのSkill説明](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)、[Claude CodeのSkill説明](https://code.claude.com/docs/en/skills)）を参照してください。
 
 ### 同梱スキルをまとめてインストール
 
@@ -232,7 +261,8 @@ consulting-analyst、tech-writer、japanese-prose、obsidian-vault、obsidian-ca
 ```bash
 npx kotonoha install --skill consulting-analyst
 npx kotonoha install --skill presentation-planner
-npx kotonoha install --target .claude/skills
+npx kotonoha install --agent claude
+npx kotonoha install --agent claude --target ~/.claude/skills
 npx kotonoha install --target ~/.copilot/skills
 ```
 
@@ -272,7 +302,11 @@ npmパッケージを更新しても、コピー済みのスキルは自動更�
 
 ```bash
 npx kotonoha install --force
+npx kotonoha install --agent claude --force
+npx kotonoha install --agent all --force
 ```
+
+上記のうち、初回の導入と同じ`--agent`に対応するコマンドを1つ実行します。最初のコマンドが更新するのは、既定のCopilot向け配置先だけです。
 
 スキルを1つだけ更新する場合は、次のように実行します。
 
@@ -293,7 +327,7 @@ npx kotonoha install --target ~/.copilot/skills --force
 
 ```bash
 npx kotonoha --version
-git diff -- .github/skills
+git diff -- .github/skills .claude/skills
 ```
 
 `--force`なしで`npx kotonoha install`を実行しても既存のスキルディレクトリは更新されず、不足しているスキルだけがインストールされます。
@@ -314,9 +348,9 @@ cp -r skills/obsidian-bases /path/to/your-repo/.github/skills/obsidian-bases
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
-## Copilotに文書作成を依頼
+## Copilot・Claude Codeに文書作成を依頼
 
-Copilot CLIセッションで必要な文書種別を依頼すると、対応するスキルが自動的に呼び出されます。
+CopilotまたはClaude Codeのセッションで必要な文書種別を依頼すると、対応するスキルが自動的に呼び出されます。
 
 - 「READMEを書いて」「この設計書をレビューして」「PR説明文を書いて」「この手順書を分かりやすくして」
 - 「要件定義書を作って」「承認済み要件からシステム設計書を書いて」「移行計画とRunbookを作って」

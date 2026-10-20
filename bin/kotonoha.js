@@ -4,13 +4,19 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const packageJson = require("../package.json");
+const agentTargets = {
+  copilot: ".github/skills",
+  claude: ".claude/skills",
+};
 
 function printUsage() {
   console.log(`Usage:
-  kotonoha install [--target <directory>] [--skill <name|all>] [--force]
+  kotonoha install [--agent <copilot|claude|all>] [--target <directory>] [--skill <name|all>] [--force]
 
 Options:
-  --target <directory>  Skill directory root (default: .github/skills)
+  --agent <name|all>    Agent to install for (default: copilot)
+                       copilot: .github/skills; claude: .claude/skills; all: both
+  --target <directory>  Override the skill root for one agent; cannot combine with --agent all
   --skill <name|all>    Skill to install (default: all)
   --force               Replace existing selected skill installations
   --help                 Show this help
@@ -23,7 +29,8 @@ function fail(message) {
 }
 
 function parseInstallOptions(args) {
-  let target = ".github/skills";
+  let agent = "copilot";
+  let target;
   let skill = "all";
   let force = false;
 
@@ -32,6 +39,25 @@ function parseInstallOptions(args) {
 
     if (argument === "--force") {
       force = true;
+      continue;
+    }
+
+    if (argument === "--agent") {
+      const value = args[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("--agent requires copilot, claude, or all");
+      }
+      agent = value;
+      index += 1;
+      continue;
+    }
+
+    if (argument.startsWith("--agent=")) {
+      const value = argument.slice("--agent=".length);
+      if (!value) {
+        throw new Error("--agent requires copilot, claude, or all");
+      }
+      agent = value;
       continue;
     }
 
@@ -76,7 +102,14 @@ function parseInstallOptions(args) {
     throw new Error(`unknown option: ${argument}`);
   }
 
-  return { target, skill, force };
+  if (agent !== "all" && !Object.hasOwn(agentTargets, agent)) {
+    throw new Error(`unknown agent: ${agent}; available agents: copilot, claude, all`);
+  }
+  if (agent === "all" && target !== undefined) {
+    throw new Error("--target cannot be combined with --agent all; install each agent separately to use custom directories");
+  }
+
+  return { agent, target, skill, force };
 }
 
 function install(args) {
@@ -89,7 +122,10 @@ function install(args) {
   }
 
   const skillsRoot = path.resolve(__dirname, "..", "skills");
-  const targetRoot = path.resolve(process.cwd(), options.target);
+  const agents = options.agent === "all" ? Object.keys(agentTargets) : [options.agent];
+  const targetRoots = agents.map((agent) =>
+    path.resolve(process.cwd(), options.target ?? agentTargets[agent]),
+  );
 
   if (!fs.existsSync(skillsRoot)) {
     fail(`packaged skills not found at ${skillsRoot}`);
@@ -118,9 +154,16 @@ function install(args) {
     }
   }
 
-  const existingDestinations = selectedSkills
-    .map((skill) => path.join(targetRoot, skill))
-    .filter((destination) => fs.existsSync(destination));
+  const destinations = targetRoots.flatMap((targetRoot) =>
+    selectedSkills.map((skill) => ({
+      skill,
+      targetRoot,
+      destination: path.join(targetRoot, skill),
+    })),
+  );
+  const existingDestinations = destinations
+    .filter(({ destination }) => fs.existsSync(destination))
+    .map(({ destination }) => destination);
 
   if (existingDestinations.length > 0 && !options.force && !installAll) {
     fail(
@@ -129,10 +172,16 @@ function install(args) {
     return;
   }
 
-  fs.mkdirSync(targetRoot, { recursive: true });
-  for (const skill of selectedSkills) {
+  for (const targetRoot of targetRoots) {
+    try {
+      fs.mkdirSync(targetRoot, { recursive: true });
+    } catch (error) {
+      fail(`failed to prepare skill root ${targetRoot}: ${error.message}`);
+      return;
+    }
+  }
+  for (const { skill, targetRoot, destination } of destinations) {
     const source = path.join(skillsRoot, skill);
-    const destination = path.join(targetRoot, skill);
     if (fs.existsSync(destination) && !options.force) {
       console.log(
         `Skipped ${skill} (${destination} already exists; use --force to replace)`,

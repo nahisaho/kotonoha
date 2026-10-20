@@ -20,6 +20,8 @@ kotonoha install --skill obsidian-canvas
 kotonoha install --skill obsidian-vault
 ```
 
+上記はCopilot向けの導入例である。Claude Codeでは両コマンドに`--agent claude`、両方には`--agent all`を付ける。CanvasとVaultの兄弟Skillは、エージェントごとの同じルートに置く。
+
 添削にはjapanese-proseも必要である。通常の図の編集では必須にしない。
 初回の依存準備で通信する場合は、対象と目的を説明して別に許可を得る。
 

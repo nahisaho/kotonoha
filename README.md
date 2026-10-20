@@ -1,6 +1,6 @@
 # kotonoha
 
-kotonoha provides GitHub Copilot CLI skills for consulting analysis, technical
+kotonoha provides skills for GitHub Copilot and Claude Code: consulting analysis, technical
 documents, Japanese prose, and presentation planning. `consulting-analyst`
 structures ambiguous problems into issue trees, hypotheses, evidence, option
 comparisons, and recommendations. `tech-writer` turns that reasoning into
@@ -251,7 +251,8 @@ handoff without inventing missing evidence.
 
 ### Prerequisites
 
-- GitHub Copilot CLI installed
+- GitHub Copilot (CLI or a supported IDE agent mode) or Claude Code installed
+- Node.js 18+ and npm for the installer
 - Python 3.9+ for tech-writer's structural lint
 - Python 3.10+ and `uv` for the edit-invariant gate and bundled GiNZA
   diagnostics such as prose lint,
@@ -267,6 +268,48 @@ with the included CLI:
 npm install --save-dev kotonoha
 npx kotonoha install
 ```
+
+`npm install` installs the package only; it does not write to your agent's
+skill directories or prompt you to choose an agent.
+
+### Choose GitHub Copilot, Claude Code, or both
+
+Agent selection requires kotonoha `0.5.0` or later. Older packages such as
+`0.4.2` do not support `--agent`; update the npm package before using it.
+
+```bash
+npx kotonoha install --agent copilot   # .github/skills/
+npx kotonoha install --agent claude    # .claude/skills/
+npx kotonoha install --agent all       # both directories
+```
+
+The default is `--agent copilot`, preserving existing installations.
+`--agent` chooses the destination agent(s); `--skill` chooses the bundled
+skill(s). Both agents receive the same Skill files, scripts and templates.
+The installer does not install either agent application, configure credentials,
+or prepare Python/Node runtime dependencies for individual skills.
+
+You can combine agent and skill selection:
+
+```bash
+npx kotonoha install --agent claude --skill tech-writer
+npx kotonoha install --agent all --skill obsidian-bases
+npx kotonoha install --agent all --force
+```
+
+Existing-directory protection and `--force` apply separately in each selected
+root. An explicitly selected skill that already exists in either root blocks
+the operation before any Skill is copied. A later filesystem/copy error can
+still leave earlier copies installed; this is not a transaction across roots.
+
+For one agent, `--target` overrides its default root. Combining `--target`
+with `--agent all` is rejected; use separate commands for custom roots.
+
+Agent selection controls file placement, not isolation: Copilot can also
+discover `.claude/skills`. Installing for Claude does not prevent Copilot from
+loading those files. See the official
+[Copilot Skill locations](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
+and [Claude Code Skills](https://code.claude.com/docs/en/skills).
 
 ### Install all bundled skills together
 
@@ -364,7 +407,8 @@ one skill, or use another supported skill directory:
 ```bash
 npx kotonoha install --skill consulting-analyst
 npx kotonoha install --skill presentation-planner
-npx kotonoha install --target .claude/skills
+npx kotonoha install --agent claude
+npx kotonoha install --agent claude --target ~/.claude/skills
 npx kotonoha install --target ~/.copilot/skills
 ```
 
@@ -411,7 +455,12 @@ skills. Reinstall all packaged skills after the package update:
 
 ```bash
 npx kotonoha install --force
+npx kotonoha install --agent claude --force
+npx kotonoha install --agent all --force
 ```
+
+Choose the command matching the original `--agent`; these are alternatives.
+The first updates only the default Copilot destination.
 
 To update only one skill:
 
@@ -434,7 +483,7 @@ committing them:
 
 ```bash
 npx kotonoha --version
-git diff -- .github/skills
+git diff -- .github/skills .claude/skills
 ```
 
 Running `npx kotonoha install` without `--force` is safe but does not update
@@ -459,9 +508,9 @@ cp -r skills/obsidian-bases /path/to/your-repo/.github/skills/obsidian-bases
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
-## Ask Copilot for the document you need
+## Ask Copilot or Claude Code for the document you need
 
-Just ask for the document type you need in a Copilot CLI session, and it's
+Just ask for the document type you need in a Copilot or Claude Code session, and it's
 invoked automatically.
 
 - "Write a README", "Review this design doc", "Write the PR description",
