@@ -398,7 +398,7 @@ test("Vault working directories prefer user targets over session-state copies", 
   assert.match(skill, /resolve\s+relative targets from the selected working directory/);
   assert.match(skill, /Preserve explicitly\s+Vault-relative and absolute paths/);
   assert.match(skill, /Edit the resolved target itself, not a session-state copy/);
-  assert.match(skill, /Never default to\s+`~\/\.copilot\/session-state\/\.\.\.\/files\/` unless the user explicitly selects it/);
+  assert.match(skill, /Never save any\s+operation files in session storage/);
   assert.match(skill, /Working-directory selection grants neither\s+whole-Vault access nor write permission/);
   assert.match(workflow, /相対指定の作業ディレクトリは開始時のカレントから/);
   assert.match(workflow, /CLI計画や添削に必要なVault外の場所を使えなければ、別の場所の指定とコピーへの同意を得るまで停止/);
@@ -408,6 +408,25 @@ test("Vault working directories prefer user targets over session-state copies", 
   );
   assert.match(handoff, /user-specified\s+directory, or the current directory at request start/);
   assert.match(handoff, /Do not replace the target with a copy in session-state\s+storage/);
+});
+
+test("all Obsidian workflows forbid session storage for auxiliary files and handoffs", () => {
+  for (const name of ["obsidian-vault", "obsidian-canvas", "obsidian-bases"]) {
+    for (const relative of ["SKILL.md", "references/workflow.md"]) {
+      const text = fs.readFileSync(path.join(repositoryRoot, "skills", name, relative), "utf8");
+      assert.match(text, /Never save any\s+operation files in session storage|成果物と補助ファイルは、セッション領域へ一切保存しない/);
+      assert.match(text, /~\/\.copilot\/session-state\//);
+      assert.match(text, /temporary files|一時ファイル/);
+      assert.match(text, /resolved locations|実体の保存場所/);
+      assert.match(text, /delegated|委譲先/);
+      assert.doesNotMatch(text, /unless the user explicitly selects it|ユーザーが保存先として明示しない限り/);
+    }
+  }
+  const handoff = fs.readFileSync(
+    path.join(repositoryRoot, "skills/tech-writer/SKILL.md"), "utf8",
+  );
+  assert.match(handoff, /For Obsidian handoffs, never save any operation files in session storage/);
+  assert.match(handoff, /non-session locations and this restriction to every delegated Skill/);
 });
 
 test("tech-writer lint detects bold delimiters touching prose", () => {

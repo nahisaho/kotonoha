@@ -46,6 +46,11 @@ directory, or the current directory at request start if none was specified.
 Resolve the final target there without reinterpreting an explicitly absolute or
 Vault-relative path. Do not replace the target with a copy in session-state
 storage; retain Vault scope checks and separate consent for any auxiliary copies.
+For Obsidian handoffs, never save any operation files in session storage,
+including originals, drafts, diagnostics, reviews and temporary files. Pass the
+authorized non-session locations and this restriction to every delegated Skill
+or tool. If a location is missing or resolves to session storage, ask for a
+non-session location before writing; do not silently substitute another path.
 Route standalone `.base` configuration to `obsidian-bases`, not the Markdown
 template or Vault Markdown writer; its host workflow validates without evaluating
 formulas and never mutates source-note properties.

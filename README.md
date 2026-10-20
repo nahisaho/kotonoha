@@ -139,6 +139,12 @@ at request start by default. Relative targets resolve there unless explicitly
 Vault-relative; absolute targets stay unchanged. Edit the authorized target
 itself, not a session-state copy. This does not broaden the permitted Vault scope;
 auxiliary copies still need separate consent and a suitable location.
+All three Obsidian skills prohibit saving operation files in session storage,
+including originals, candidates, diagnostics, reviews, plans and temporary files.
+If a selected directory resolves there, they ask for another location before
+writing. Delegated skills receive the same restriction. CLI workspaces still
+require a consented location outside the Vault, not in session storage.
+This governs skill-directed files, not host-managed conversation logs.
 Protected syntax checks and a hash-bound semantic review remain required for
 Japanese proofreading in either mode.
 Unresolved links are observations, not automatic repair requests.

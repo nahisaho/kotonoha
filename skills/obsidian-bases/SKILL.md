@@ -35,7 +35,13 @@ Use the user's working directory or the current directory at request start.
 Resolve relative working directories from that start and relative targets from
 the selected directory; preserve explicitly Vault-relative and absolute paths.
 Verify authorized Vault/scope separately. Edit the target itself, never substitute
-a session-state copy or silently use `~/.copilot/session-state/.../files/`.
+a session-state copy. Never save any operation files in session storage,
+including `~/.copilot/session-state/`. This includes deliverables, requests,
+originals, candidates, diffs, diagnostics, reviews and temporary files.
+Check resolved locations before writing; if the working directory or any
+selected output is in session storage, stop and ask for a non-session location.
+Do not use it as a fallback. Pass the same locations and restriction to
+delegated Skills and tools; use stdout when no diagnostic file is needed.
 Auxiliary files need a suitable consented location, purpose, retention and cleanup
 agreement. If an external proofreading workspace is needed, ask for it.
 

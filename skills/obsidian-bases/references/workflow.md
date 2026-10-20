@@ -58,6 +58,13 @@ Preserve absolute and explicitly Vault-relative paths. A directory choice is
 not Vault authority. If the target's existing parent or allowed scope is missing,
 stop instead of creating directories or saving elsewhere. Never substitute
 session-state copies for the target.
+Never save any operation files in session storage, including
+`~/.copilot/session-state/`: deliverables, requests, originals, candidates,
+diffs, diagnostics, reviews and temporary files are all covered.
+Check resolved locations before writing. If the workdir or an output is in
+session storage, stop and ask for a non-session location, even if explicitly
+selected. Never fall back there. Pass the locations and restriction to delegated
+Skills/tools; use stdout when no diagnostic file is needed.
 
 ## Check exact text
 

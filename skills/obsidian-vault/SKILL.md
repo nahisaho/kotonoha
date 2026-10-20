@@ -39,8 +39,12 @@ relative targets from the selected working directory. Preserve explicitly
 Vault-relative and absolute paths. Working-directory selection grants neither
 whole-Vault access nor write permission: verify the authorized Vault and scopes.
 
-Edit the resolved target itself, not a session-state copy. Never default to
-`~/.copilot/session-state/.../files/` unless the user explicitly selects it.
+Edit the resolved target itself, not a session-state copy. Never save any
+operation files in session storage, including `~/.copilot/session-state/`.
+This includes deliverables, requests, originals, candidates, diffs, diagnostics,
+reviews, plans, receipts, results and temporary files. Check resolved locations
+before writing; if the working directory or any selected output is in session
+storage, stop and ask for a non-session location. Do not use it as a fallback.
 Stop on out-of-scope, ambiguous or missing-parent targets; do not create folders
 or substitute another location.
 
@@ -51,6 +55,8 @@ purpose, retention until user deletion, and cleanup of known per-operation files
 Copy consent is separate from target-write consent. If CLI planning or
 proofreading needs an external workspace but the working directory is inside
 the Vault, ask for another location; never silently use session storage.
+Pass the same non-session locations and restriction to delegated Skills and
+tools; use stdout for diagnostics when no output file is needed.
 Without copy consent, make no external copies or CLI `plan`/`apply` calls.
 Do not claim control over host/model-provider retention or deletion.
 
