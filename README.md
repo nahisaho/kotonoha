@@ -10,7 +10,10 @@ Japanese wording with GiNZA-based diagnostics. `presentation-planner` turns
 source material into a reusable presentation scenario, slide outline, design
 specification, and handoff for a dedicated PPTX creation skill.
 The `obsidian-vault` skill applies scoped Vault conventions and link diagnostics
-and saves new or proofread notes only after explicit plan approval.
+and directly creates or edits authorized Markdown notes using host file tools,
+with optional CLI plan-approved saving. Direct editing is unreleased.
+The unreleased `obsidian-canvas` skill adds scoped diagram diagnosis,
+layout and approval-gated Canvas edits; it is not in published 0.4.1.
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -119,24 +122,62 @@ for setup, placeholder handling, and limitations.
 
 ## Working with an Obsidian Vault
 
-Use the dedicated `obsidian-vault` skill for Vault conventions, note creation,
-related-note proposals, internal-link diagnosis and Japanese proofreading.
-Its local CLI requires Linux, CPython 3.12 and uv; it does not require
-Obsidian, MCP or plugins. Install `tech-writer` and `japanese-prose` alongside
-it for creation and proofreading, or install all skills.
+Use the dedicated `obsidian-vault` skill for Vault conventions, direct Markdown
+creation and editing, related-note proposals, internal-link diagnosis and Japanese
+proofreading. The unreleased direct-edit workflow uses host file tools without
+requiring Python, uv, Obsidian, MCP or plugins. Use `tech-writer` for document
+structure and `japanese-prose` for proofreading.
 
 The user explicitly selects the Vault, read scopes and model-context consent.
-Only `apply` writes a single approved `.md` note; a hash-bound plan, protected
-syntax checks and an exact semantic review are required for changed edits.
+Direct editing requires authorization for the exact target and changes, preserves
+unspecified content, refuses unsafe paths, and reads back the saved file.
+A request for a proposal or pre-save approval never authorizes a write.
+Direct edits use the user-specified working directory, or the current directory
+at request start by default. Relative targets resolve there unless explicitly
+Vault-relative; absolute targets stay unchanged. Edit the authorized target
+itself, not a session-state copy. This does not broaden the permitted Vault scope;
+auxiliary copies still need separate consent and a suitable location.
+Protected syntax checks and a hash-bound semantic review remain required for
+Japanese proofreading in either mode.
 Unresolved links are observations, not automatic repair requests.
-Runtime commands use `uv run --offline --locked --python 3.12`; dependency
-bootstrap needs separate consent. See the [Japanese workflow guide](skills/obsidian-vault/references/workflow.md)
+
+Optional CLI plan-approved saving remains available for creation and proofreading,
+not general content edits. Only `apply` writes in this mode, after exact plan
+approval. It requires Linux, CPython 3.12 and uv, using
+`uv run --offline --locked --python 3.12`; dependency bootstrap needs separate
+consent. Direct edits do not use the CLI's root lock, atomic commit or receipt-based
+replay protection, and must not be an automatic fallback from CLI failures.
+See the [Japanese workflow guide](skills/obsidian-vault/references/workflow.md)
 for requests, command examples, data retention and recovery.
 
-Saving is limited to verified local filesystems and conservatively refuses
-symlinks, unsupported ownership/modes, multiple hard links and all xattrs,
-including SELinux labels. Post-check external edits and LLM mistakes cannot
-be eliminated. The skill is not a host sandbox.
+Saving requires verifiable local regular files and preserved ownership/modes;
+symlinks, multiple hard links and unsupported attributes are refused.
+CLI saving additionally requires a verified filesystem and refuses all xattrs,
+including SELinux labels. Never remove attributes to bypass a refusal.
+Direct-edit failure and concurrency limitations are disclosed before saving;
+neither mode eliminates post-check external edits or LLM mistakes.
+The skill is not a host sandbox.
+
+## Working with Obsidian Canvas
+
+The dedicated `obsidian-canvas` skill handles note maps, mind maps, conditional
+workflows and evidence comparisons in JSON Canvas 1.0. It reads, diagnoses,
+lays out and edits `.canvas` files without opening Obsidian or fetching URLs.
+This source/development feature is not included in published `kotonoha@0.4.1`.
+
+Install `obsidian-vault` alongside it with storage API version 1. A selective
+Canvas install does not silently add or replace siblings; an old backend
+reports a missing dependency. Japanese proofreading additionally requires
+`japanese-prose`. Runtime commands are locked and offline on Linux/Python 3.12.
+
+Every changed plan binds exact content, authorized ID/field changes, persisted
+evidence/proposal markings and the review. Selected text and labels require
+per-string semantic reviews when proofreading. Only an explicitly approved
+plan can save a single Canvas; source notes and attachments are unchanged.
+Unknown structure is diagnosis-only. Rendering, arbitrary Obsidian extensions
+and casefold filesystem behavior are not claimed as verified.
+See the [Japanese Canvas workflow](skills/obsidian-canvas/references/workflow.md)
+for scope, copying consent, partial results and uncertain-save recovery.
 
 ## What consulting-analyst does
 
@@ -207,7 +248,8 @@ npx kotonoha install
 
 `kotonoha install` installs every packaged skill that is not already present.
 The following commands install `consulting-analyst`, `tech-writer`,
-`japanese-prose`, `obsidian-vault`, and `presentation-planner` into `.github/skills/`:
+`japanese-prose`, `obsidian-vault`, `obsidian-canvas`, and `presentation-planner`
+into `.github/skills/` in this source/development package:
 
 ```bash
 npm install --save-dev kotonoha
@@ -215,13 +257,14 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-Confirm that all five skills were installed:
+Confirm that all six skills were installed (published 0.4.1 has five):
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md
 test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/obsidian-vault/SKILL.md
+test -f .github/skills/obsidian-canvas/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -287,7 +330,8 @@ pass unambiguously, ask: `Create or revise <file> as a technical document and
 run GiNZA-based Japanese prose optimization.`
 
 The default destinations are `.github/skills/consulting-analyst`,
-`.github/skills/tech-writer`, `.github/skills/japanese-prose`, and
+`.github/skills/tech-writer`, `.github/skills/japanese-prose`,
+`.github/skills/obsidian-vault`, `.github/skills/obsidian-canvas`, and
 `.github/skills/presentation-planner` in the current project. To install only
 one skill, or use another supported skill directory:
 
@@ -383,6 +427,8 @@ into that repository's `.github/skills/`, `.claude/skills/`, or your global
 cp -r skills/consulting-analyst /path/to/your-repo/.github/skills/consulting-analyst
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
+cp -r skills/obsidian-vault /path/to/your-repo/.github/skills/obsidian-vault
+cp -r skills/obsidian-canvas /path/to/your-repo/.github/skills/obsidian-canvas
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -430,10 +476,16 @@ skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   references/                # boundary, scenario/design guidance, customization, handoff contract
   assets/scenario-templates/ # executive, technical, and data-report narrative scenarios
   assets/design-templates/   # executive, technical, and data-report YAML designs
+skills/obsidian-vault/       # scoped Markdown notes and shared storage API
+skills/obsidian-canvas/      # JSON Canvas diagnosis, layouts, and approved saves
+  scripts/                   # locked offline CLI and original-fixture tests
+  assets/templates/          # note map, mind map, workflow, comparison
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
 .github/skills/consulting-analyst
 .github/skills/japanese-prose
 .github/skills/presentation-planner
+.github/skills/obsidian-vault
+.github/skills/obsidian-canvas
 ```
 
 ## Known limitations

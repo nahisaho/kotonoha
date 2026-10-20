@@ -1,0 +1,404 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/Request",
+  "title": "kotonoha Canvas execution contract",
+  "x-contract-version": 1,
+  "x-artifact-schemas": {
+    "plan.json": "Plan", "semantic-review.json": "Review", "delta.json": "Delta",
+    "diagnostics.json": "Diagnostics", "result.json": "OperationResult", "receipt.json": "Receipt"
+  },
+  "x-reference-reasons": {
+    "file_exists": {"classification": "resolved", "partial": false},
+    "heading_exists": {"classification": "resolved", "partial": false},
+    "missing_file": {"classification": "unresolved", "partial": false},
+    "missing_heading": {"classification": "unresolved", "partial": false},
+    "multiple_notes": {"classification": "ambiguous", "partial": false},
+    "external_url": {"classification": "indeterminate", "partial": false},
+    "outside_scope": {"classification": "indeterminate", "partial": true},
+    "incomplete_search": {"classification": "indeterminate", "partial": true},
+    "source_parse_incomplete": {"classification": "indeterminate", "partial": true},
+    "target_parse_incomplete": {"classification": "indeterminate", "partial": true},
+    "unsupported_subpath": {"classification": "indeterminate", "partial": true},
+    "ambiguous_heading": {"classification": "indeterminate", "partial": true},
+    "unsupported_reference": {"classification": "indeterminate", "partial": true},
+    "not_regular_file": {"classification": "indeterminate", "partial": true},
+    "forbidden_path": {"classification": "indeterminate", "partial": true},
+    "forbidden_url": {"classification": "indeterminate", "partial": true},
+    "limit_exceeded": {"classification": "indeterminate", "partial": true},
+    "read_failed": {"classification": "indeterminate", "partial": true}
+  },
+  "x-diagnostic-codes": {
+    "format": ["json_syntax", "duplicate_key", "nonfinite_number", "invalid_type", "missing_required", "duplicate_id", "missing_endpoint", "invalid_enum"],
+    "unsupported": ["utf8_bom", "utf8_decode", "unicode_scalar", "unknown_attribute", "unknown_node_type", "integer_range", "unsupported_color"],
+    "policy": ["invalid_input", "consent_required", "review_required", "stale_review", "review_rejected", "source_not_editable", "candidate_not_editable", "forbidden_reference", "unrequested_change", "formatting_consent_required", "marking_required", "protected_change", "layout_refused", "approval_mismatch", "plan_mismatch", "target_changed", "target_exists", "prior_outcome_unknown", "replay_mismatch", "workspace_conflict", "scope_refused", "limit_exceeded", "storage_capability", "dependency_missing"],
+    "layout": ["nonpositive_size", "overlap", "ambiguous_marking"],
+    "runtime": ["runtime_error", "read_failed", "limit_exceeded"]
+  },
+  "x-backend": {
+    "skill": "obsidian-vault",
+    "storage_api": 1,
+    "missing": {"status": "not_performed", "exit_code": 4},
+    "functions": ["Vault.read_authorized", "Vault.stat_authorized", "Vault.enumerate_authorized", "commit_bytes"]
+  },
+  "x-commands": {
+    "inspect": {"required": ["--request"], "optional": ["--path"], "vault_write": false, "workspace_write": false},
+    "read": {"required": ["--request", "--path"], "optional": [], "vault_write": false, "workspace_write": false},
+    "layout": {"required": ["--request", "--candidate"], "optional": [], "vault_write": false, "workspace_write": true},
+    "plan": {"required": ["--request", "--candidate"], "optional": ["--review"], "vault_write": false, "workspace_write": true},
+    "apply": {"required": ["--request", "--plan", "--approve-plan-sha256"], "optional": [], "vault_write": true, "workspace_write": true}
+  },
+  "x-exit-codes": {
+    "0": "completed",
+    "1": "control_input_or_runtime_failure",
+    "2": "authorization_conflict_or_gate_refusal",
+    "3": "partial_diagnostic_coverage",
+    "4": "missing_capability_or_dependency"
+  },
+  "x-policy": {
+    "consent": "All commands require model_context. layout/plan/apply require workspace_copies.",
+    "runtime": "uv run --offline --locked --python 3.12 <canvas-dir>/scripts/canvas.py",
+    "no_change": "Identical before/candidate bytes return no_changes before write capability, review or artifact creation checks.",
+    "review": "Every changed plan requires an actual hash-bound diagram review. proofread additionally requires the nine semantic checks.",
+    "formatting": "Changed edits require allow_formatting=true and disclosure of the full byte diff; values and surviving array order remain protected outside allowed changes.",
+    "partial_save": "Allowed indeterminate references may yield partial/3 with saved/verified=true; this means incomplete diagnostic coverage, not an uncertain commit.",
+    "uncertain_commit": "Current possibly committed invocation is failed/1/unknown. Prior uncertain operation causes refusal/2/unsaved and no current write.",
+    "unknown": "Unknown keys at document/node/edge level, unknown node kind, unsupported structure or decoding prohibit whole-document edits.",
+    "reference_policy": "Prohibited file/background paths or non-HTTP(S) link-node URLs in either original or candidate prohibit whole-document edits.",
+    "receipt": "Receipt schema, operation/request/plan/after bindings and current target bytes are all mandatory for already_applied.",
+    "limits": "max_file_bytes applies before reading each payload, max_total_bytes bounds unique Vault content versions per command. Apply reserves before/after verification bytes before commit. Control/artifact JSON is limited to 1048576 bytes; large before/candidate/diff artifacts use payload limits instead.",
+    "numbers": "Document integers include mathematically integral JSON numbers, excluding booleans, within the exact JavaScript integer range.",
+    "annotations": "Every added entity and every entity with changed semantic fields needs a marking binding. Markings are persisted using known text/label fields, never hidden custom attributes."
+  },
+  "$defs": {
+    "Hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "NullableHash": {"oneOf": [{"$ref": "#/$defs/Hash"}, {"type": "null"}]},
+    "Nonce": {"type": "string", "pattern": "^[a-f0-9]{32}$"},
+    "Nonempty": {"type": "string", "minLength": 1},
+    "NullableString": {"type": ["string", "null"]},
+    "Strings": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "Integer": {"type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991},
+    "Color": {"type": "string", "pattern": "^(?:[1-6]|#[0-9A-Fa-f]{6})$"},
+    "Scope": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "path"],
+      "properties": {"kind": {"enum": ["file", "directory"]}, "path": {"$ref": "#/$defs/Nonempty"}}
+    },
+    "Mutation": {
+      "type": "object", "additionalProperties": false, "required": ["entity", "id", "action", "fields"],
+      "properties": {
+        "entity": {"enum": ["node", "edge", "document"]},
+        "id": {"$ref": "#/$defs/NullableString"},
+        "action": {"enum": ["add", "remove", "set"]},
+        "fields": {"$ref": "#/$defs/Strings"}
+      }
+    },
+    "Marking": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entity", "id", "carrier_entity", "carrier_id", "carrier_field", "category"],
+      "properties": {
+        "entity": {"enum": ["node", "edge"]}, "id": {"type": "string"},
+        "carrier_entity": {"enum": ["node", "edge"]}, "carrier_id": {"type": "string"},
+        "carrier_field": {"enum": ["text", "label"]},
+        "category": {"enum": ["evidence", "proposal", "unverified"]}
+      }
+    },
+    "Layout": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["mode", "node_ids", "origin_x", "origin_y", "gap", "columns"],
+      "properties": {
+        "mode": {"enum": ["grid", "horizontal", "vertical"]},
+        "node_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "origin_x": {"$ref": "#/$defs/Integer"}, "origin_y": {"$ref": "#/$defs/Integer"},
+        "gap": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "columns": {"type": "integer", "minimum": 1, "maximum": 1024}
+      }
+    },
+    "Request": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "vault_root", "read_scopes", "purpose", "intent", "write_target", "base_sha256", "workspace", "consent", "limits", "mutations", "markings", "protected_terms", "allow_formatting", "layout", "operation_nonce"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "operation_nonce": {"oneOf": [{"$ref": "#/$defs/Nonce"}, {"type": "null"}]},
+        "vault_root": {"$ref": "#/$defs/Nonempty"},
+        "read_scopes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/Scope"}},
+        "purpose": {"$ref": "#/$defs/Nonempty"},
+        "intent": {"enum": ["inspect", "create", "edit", "proofread"]},
+        "write_target": {"$ref": "#/$defs/NullableString"},
+        "base_sha256": {"$ref": "#/$defs/NullableHash"},
+        "workspace": {"$ref": "#/$defs/NullableString"},
+        "consent": {
+          "type": "object", "additionalProperties": false, "required": ["model_context", "workspace_copies"],
+          "properties": {"model_context": {"type": "boolean"}, "workspace_copies": {"type": "boolean"}}
+        },
+        "limits": {
+          "type": "object", "additionalProperties": false, "required": ["max_files", "max_file_bytes", "max_total_bytes"],
+          "properties": {
+            "max_files": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+            "max_file_bytes": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+            "max_total_bytes": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991}
+          }
+        },
+        "mutations": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/Mutation"}},
+        "markings": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/Marking"}},
+        "protected_terms": {"$ref": "#/$defs/Strings"},
+        "allow_formatting": {"type": "boolean"},
+        "layout": {"$ref": "#/$defs/Layout"}
+      },
+      "allOf": [
+        {"if": {"properties": {"intent": {"const": "inspect"}}}, "then": {"properties": {"write_target": {"type": "null"}, "base_sha256": {"type": "null"}, "operation_nonce": {"type": "null"}, "layout": {"type": "null"}, "mutations": {"maxItems": 0}, "markings": {"maxItems": 0}}}},
+        {"if": {"properties": {"intent": {"enum": ["create", "edit", "proofread"]}}}, "then": {"properties": {"write_target": {"$ref": "#/$defs/Nonempty"}, "workspace": {"$ref": "#/$defs/Nonempty"}, "operation_nonce": {"$ref": "#/$defs/Nonce"}}}},
+        {"if": {"properties": {"intent": {"const": "create"}}}, "then": {"properties": {"base_sha256": {"type": "null"}, "mutations": {"maxItems": 0}}}},
+        {"if": {"properties": {"intent": {"enum": ["edit", "proofread"]}}}, "then": {"properties": {"base_sha256": {"$ref": "#/$defs/Hash"}}}},
+        {"if": {"properties": {"intent": {"const": "proofread"}}}, "then": {"properties": {"layout": {"type": "null"}}}}
+      ]
+    },
+    "CommonNode": {
+      "type": "object", "required": ["id", "type", "x", "y", "width", "height"],
+      "properties": {
+        "id": {"type": "string"}, "type": {"enum": ["text", "file", "link", "group"]},
+        "x": {"$ref": "#/$defs/Integer"}, "y": {"$ref": "#/$defs/Integer"},
+        "width": {"$ref": "#/$defs/Integer"}, "height": {"$ref": "#/$defs/Integer"},
+        "color": {"$ref": "#/$defs/Color"}
+      }
+    },
+    "Node": {
+      "oneOf": [
+        {"allOf": [{"$ref": "#/$defs/CommonNode"}, {"required": ["text"], "properties": {"type": {"const": "text"}, "text": {"type": "string"}}}], "unevaluatedProperties": false},
+        {"allOf": [{"$ref": "#/$defs/CommonNode"}, {"required": ["file"], "properties": {"type": {"const": "file"}, "file": {"type": "string"}, "subpath": {"type": "string", "pattern": "^#"}}}], "unevaluatedProperties": false},
+        {"allOf": [{"$ref": "#/$defs/CommonNode"}, {"properties": {"type": {"const": "link"}, "url": {"type": "string"}}, "required": ["url"]}], "unevaluatedProperties": false},
+        {"allOf": [{"$ref": "#/$defs/CommonNode"}, {"properties": {"type": {"const": "group"}, "label": {"type": "string"}, "background": {"type": "string"}, "backgroundStyle": {"enum": ["cover", "ratio", "repeat"]}}}], "unevaluatedProperties": false}
+      ]
+    },
+    "Edge": {
+      "type": "object", "additionalProperties": false, "required": ["id", "fromNode", "toNode"],
+      "properties": {
+        "id": {"type": "string"}, "fromNode": {"type": "string"}, "toNode": {"type": "string"},
+        "fromSide": {"enum": ["top", "right", "bottom", "left"]},
+        "toSide": {"enum": ["top", "right", "bottom", "left"]},
+        "fromEnd": {"enum": ["none", "arrow"]}, "toEnd": {"enum": ["none", "arrow"]},
+        "color": {"$ref": "#/$defs/Color"}, "label": {"type": "string"}
+      }
+    },
+    "Document": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "nodes": {"type": "array", "items": {"$ref": "#/$defs/Node"}},
+        "edges": {"type": "array", "items": {"$ref": "#/$defs/Edge"}}
+      }
+    },
+    "DiagramChecks": {
+      "type": "object", "additionalProperties": false,
+      "required": ["intent_matches", "evidence_distinguished", "markers_persist", "dependency_changes_listed", "layout_reviewed_as_data"],
+      "properties": {
+        "intent_matches": {"type": "boolean"}, "evidence_distinguished": {"type": "boolean"},
+        "markers_persist": {"type": "boolean"}, "dependency_changes_listed": {"type": "boolean"},
+        "layout_reviewed_as_data": {"type": "boolean"}
+      }
+    },
+    "SemanticChecks": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actors", "negation", "conditions", "modality", "scope", "causality", "quantity_bindings", "terminology", "structure"],
+      "properties": {
+        "actors": {"type": "boolean"}, "negation": {"type": "boolean"}, "conditions": {"type": "boolean"},
+        "modality": {"type": "boolean"}, "scope": {"type": "boolean"}, "causality": {"type": "boolean"},
+        "quantity_bindings": {"type": "boolean"}, "terminology": {"type": "boolean"}, "structure": {"type": "boolean"}
+      }
+    },
+    "StringReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entity", "id", "field", "before_sha256", "after_sha256", "checks"],
+      "properties": {
+        "entity": {"enum": ["node", "edge"]}, "id": {"type": "string"}, "field": {"enum": ["text", "label"]},
+        "before_sha256": {"$ref": "#/$defs/Hash"}, "after_sha256": {"$ref": "#/$defs/Hash"},
+        "checks": {"$ref": "#/$defs/SemanticChecks"}
+      }
+    },
+    "Review": {
+      "type": "object", "additionalProperties": false,
+      "required": ["before_sha256", "after_sha256", "reviewer", "diagram_checks", "semantic_checks"],
+      "properties": {
+        "before_sha256": {"$ref": "#/$defs/NullableHash"}, "after_sha256": {"$ref": "#/$defs/Hash"},
+        "reviewer": {"$ref": "#/$defs/Nonempty"}, "diagram_checks": {"$ref": "#/$defs/DiagramChecks"},
+        "semantic_checks": {"oneOf": [{"type": "null"}, {"type": "array", "items": {"$ref": "#/$defs/StringReview"}}]}
+      }
+    },
+    "Identity": {
+      "type": "object", "additionalProperties": false, "required": ["device", "inode"],
+      "properties": {"device": {"type": "integer"}, "inode": {"type": "integer"}}
+    },
+    "Change": {
+      "type": "object", "additionalProperties": false, "required": ["entity", "id", "action", "field", "dependency"],
+      "properties": {
+        "entity": {"enum": ["node", "edge", "document"]}, "id": {"$ref": "#/$defs/NullableString"},
+        "action": {"enum": ["add", "remove", "set"]}, "field": {"$ref": "#/$defs/NullableString"},
+        "dependency": {"type": "boolean"}
+      }
+    },
+    "Reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canvas", "entity", "id", "field", "occurrence", "raw", "fragment", "classification", "reason", "candidates", "policy_forbidden"],
+      "properties": {
+        "canvas": {"type": "string"}, "entity": {"enum": ["node", "edge"]}, "id": {"type": "string"},
+        "field": {"type": "string"}, "occurrence": {"type": "integer", "minimum": 1}, "raw": {"type": "string"},
+        "fragment": {"$ref": "#/$defs/NullableString"},
+        "classification": {"enum": ["resolved", "unresolved", "ambiguous", "indeterminate"]},
+        "reason": {"enum": ["file_exists", "heading_exists", "missing_file", "missing_heading", "multiple_notes", "external_url", "outside_scope", "incomplete_search", "source_parse_incomplete", "target_parse_incomplete", "unsupported_subpath", "ambiguous_heading", "unsupported_reference", "not_regular_file", "forbidden_path", "forbidden_url", "limit_exceeded", "read_failed"]}, "candidates": {"$ref": "#/$defs/Strings"}, "policy_forbidden": {"type": "boolean"}
+      }
+    },
+    "Diagnostic": {
+      "type": "object", "additionalProperties": false, "required": ["path", "category", "code", "entity", "id", "field", "related_ids"],
+      "properties": {
+        "path": {"$ref": "#/$defs/NullableString"},
+        "category": {"enum": ["format", "unsupported", "policy", "layout", "runtime"]},
+        "code": {"enum": ["json_syntax", "duplicate_key", "nonfinite_number", "invalid_type", "missing_required", "duplicate_id", "missing_endpoint", "invalid_enum", "utf8_bom", "utf8_decode", "unicode_scalar", "unknown_attribute", "unknown_node_type", "integer_range", "unsupported_color", "invalid_input", "consent_required", "review_required", "stale_review", "review_rejected", "source_not_editable", "candidate_not_editable", "forbidden_reference", "unrequested_change", "formatting_consent_required", "marking_required", "protected_change", "layout_refused", "approval_mismatch", "plan_mismatch", "target_changed", "target_exists", "prior_outcome_unknown", "replay_mismatch", "workspace_conflict", "scope_refused", "limit_exceeded", "storage_capability", "dependency_missing", "nonpositive_size", "overlap", "ambiguous_marking", "runtime_error", "read_failed"]}, "entity": {"enum": ["node", "edge", "document", null]},
+        "id": {"$ref": "#/$defs/NullableString"}, "field": {"$ref": "#/$defs/NullableString"},
+        "related_ids": {"$ref": "#/$defs/Strings"}
+      }
+    },
+    "Diagnostics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["structure", "references", "issues", "render_check"],
+      "properties": {
+        "structure": {"enum": ["supported", "unsupported", "invalid"]},
+        "references": {"type": "array", "items": {"$ref": "#/$defs/Reference"}},
+        "issues": {"type": "array", "items": {"$ref": "#/$defs/Diagnostic"}},
+        "render_check": {"const": "not_performed"}
+      }
+    },
+    "Plan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "kind", "operation_id", "request_sha256", "contract_sha256", "implementation_sha256", "vault_identity", "parent_identity", "target", "before_sha256", "after_sha256", "review_sha256", "diff_sha256", "delta_sha256", "diagnostics_sha256", "stage_target", "artifacts", "state"],
+      "properties": {
+        "schema_version": {"const": 1}, "kind": {"enum": ["create", "edit", "proofread"]},
+        "operation_id": {"$ref": "#/$defs/Hash"}, "request_sha256": {"$ref": "#/$defs/Hash"},
+        "contract_sha256": {"$ref": "#/$defs/Hash"}, "implementation_sha256": {"$ref": "#/$defs/Hash"},
+        "vault_identity": {"$ref": "#/$defs/Identity"}, "parent_identity": {"$ref": "#/$defs/Identity"},
+        "target": {"type": "string", "pattern": "\\.canvas$"},
+        "before_sha256": {"$ref": "#/$defs/NullableHash"}, "after_sha256": {"$ref": "#/$defs/Hash"},
+        "review_sha256": {"$ref": "#/$defs/Hash"}, "diff_sha256": {"$ref": "#/$defs/Hash"},
+        "delta_sha256": {"$ref": "#/$defs/Hash"}, "diagnostics_sha256": {"$ref": "#/$defs/Hash"},
+        "stage_target": {"type": "string"}, "state": {"const": "validated"},
+        "artifacts": {
+          "type": "object", "additionalProperties": false, "required": ["before", "candidate", "review", "diff", "delta", "diagnostics"],
+          "properties": {
+            "before": {"$ref": "#/$defs/NullableString"}, "candidate": {"type": "string"},
+            "review": {"type": "string"}, "diff": {"type": "string"}, "delta": {"type": "string"}, "diagnostics": {"type": "string"}
+          }
+        }
+      }
+    },
+    "Receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "operation_id", "request_sha256", "plan_sha256", "target", "after_sha256", "verified"],
+      "properties": {
+        "schema_version": {"const": 1}, "operation_id": {"$ref": "#/$defs/Hash"},
+        "request_sha256": {"$ref": "#/$defs/Hash"}, "plan_sha256": {"$ref": "#/$defs/Hash"},
+        "target": {"type": "string"}, "after_sha256": {"$ref": "#/$defs/Hash"}, "verified": {"const": true}
+      }
+    },
+    "Delta": {"type": "array", "items": {"$ref": "#/$defs/Change"}},
+    "OperationResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "operation_id", "request_sha256", "plan_sha256", "target", "before_sha256", "after_sha256", "phase", "verified"],
+      "properties": {
+        "schema_version": {"const": 1}, "operation_id": {"$ref": "#/$defs/Hash"},
+        "request_sha256": {"$ref": "#/$defs/Hash"}, "plan_sha256": {"$ref": "#/$defs/Hash"},
+        "target": {"type": "string"}, "before_sha256": {"$ref": "#/$defs/NullableHash"},
+        "after_sha256": {"$ref": "#/$defs/Hash"}, "phase": {"enum": ["pending", "saved", "unknown"]},
+        "verified": {"type": "boolean"}
+      },
+      "allOf": [
+        {"if": {"properties": {"phase": {"const": "saved"}}}, "then": {"properties": {"verified": {"const": true}}}, "else": {"properties": {"verified": {"const": false}}}}
+      ]
+    },
+    "DocumentResult": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes", "diagnostics"],
+      "properties": {
+        "path": {"type": "string"}, "sha256": {"$ref": "#/$defs/Hash"},
+        "bytes": {"type": "integer", "minimum": 0}, "diagnostics": {"$ref": "#/$defs/Diagnostics"}
+      }
+    },
+    "InspectData": {
+      "type": "object", "additionalProperties": false, "required": ["documents"],
+      "properties": {"documents": {"type": "array", "items": {"$ref": "#/$defs/DocumentResult"}}}
+    },
+    "ReadData": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes", "content", "diagnostics"],
+      "properties": {
+        "path": {"type": "string"}, "sha256": {"$ref": "#/$defs/Hash"}, "bytes": {"type": "integer", "minimum": 0},
+        "content": {"type": ["string", "null"]},
+        "diagnostics": {"oneOf": [{"$ref": "#/$defs/Diagnostics"}, {"type": "null"}]}
+      }
+    },
+    "LayoutData": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_path", "candidate_sha256", "changed", "issues", "reference_check", "render_check"],
+      "properties": {
+        "candidate_path": {"type": "string"}, "candidate_sha256": {"$ref": "#/$defs/Hash"}, "changed": {"type": "boolean"},
+        "issues": {"type": "array", "items": {"$ref": "#/$defs/Diagnostic"}},
+        "reference_check": {"const": "not_performed"}, "render_check": {"const": "not_performed"}
+      }
+    },
+    "PlanData": {
+      "type": "object", "additionalProperties": false, "required": ["plan_path", "plan_sha256", "operation_id", "no_changes"],
+      "properties": {
+        "plan_path": {"$ref": "#/$defs/NullableString"}, "plan_sha256": {"$ref": "#/$defs/NullableHash"},
+        "operation_id": {"$ref": "#/$defs/NullableHash"}, "no_changes": {"type": "boolean"}
+      },
+      "allOf": [
+        {"if": {"properties": {"no_changes": {"const": true}}}, "then": {"properties": {"plan_path": {"type": "null"}, "plan_sha256": {"type": "null"}, "operation_id": {"type": "null"}}}},
+        {"if": {"properties": {"no_changes": {"const": false}}}, "then": {"properties": {"plan_path": {"type": "string"}, "plan_sha256": {"$ref": "#/$defs/Hash"}, "operation_id": {"$ref": "#/$defs/Hash"}}}}
+      ]
+    },
+    "ApplyData": {
+      "type": "object", "additionalProperties": false,
+      "required": ["target", "operation_id", "after_sha256", "changed", "verified", "diagnostics", "approved_diagnostics_sha256"],
+      "properties": {
+        "target": {"type": "string"}, "operation_id": {"$ref": "#/$defs/Hash"},
+        "after_sha256": {"$ref": "#/$defs/NullableHash"}, "changed": {"type": ["boolean", "null"]}, "verified": {"type": "boolean"},
+        "diagnostics": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/Diagnostics"}]},
+        "approved_diagnostics_sha256": {"$ref": "#/$defs/NullableHash"}
+      }
+    },
+    "Report": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "command", "status", "exit_code", "write_status", "operation_state", "request_sha256", "processed", "unprocessed", "issues", "data"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "command": {"enum": ["inspect", "read", "layout", "plan", "apply"]},
+        "status": {"enum": ["completed", "partial", "not_performed", "failed"]},
+        "exit_code": {"enum": [0, 1, 2, 3, 4]},
+        "write_status": {"enum": ["not_requested", "unsaved", "saved", "unknown"]},
+        "operation_state": {"enum": ["scoped", "proposed", "validated", "approved", "saved", "blocked"]},
+        "request_sha256": {"$ref": "#/$defs/NullableHash"},
+        "processed": {"$ref": "#/$defs/Strings"}, "unprocessed": {"$ref": "#/$defs/Strings"},
+        "issues": {"type": "array", "items": {"$ref": "#/$defs/Diagnostic"}},
+        "data": {"type": ["object", "null"]}
+      },
+      "allOf": [
+        {"if": {"properties": {"status": {"enum": ["completed", "partial"]}}}, "then": {"properties": {"request_sha256": {"$ref": "#/$defs/Hash"}, "data": {"type": "object"}}}},
+        {"if": {"properties": {"status": {"enum": ["failed", "not_performed"]}}}, "then": {"properties": {"operation_state": {"const": "blocked"}}}},
+        {"if": {"properties": {"operation_state": {"const": "saved"}}}, "then": {"properties": {"write_status": {"const": "saved"}}}},
+        {"if": {"properties": {"command": {"enum": ["inspect", "read"]}, "status": {"enum": ["completed", "partial"]}}}, "then": {"properties": {"operation_state": {"const": "scoped"}}}},
+        {"if": {"properties": {"command": {"const": "layout"}, "status": {"enum": ["completed", "partial"]}}}, "then": {"properties": {"status": {"const": "completed"}, "operation_state": {"const": "proposed"}}}},
+        {"if": {"properties": {"command": {"const": "plan"}, "status": {"enum": ["completed", "partial"]}}}, "then": {"properties": {"operation_state": {"enum": ["scoped", "validated"]}}, "allOf": [
+          {"if": {"properties": {"data": {"properties": {"no_changes": {"const": true}}}}}, "then": {"properties": {"status": {"const": "completed"}, "operation_state": {"const": "scoped"}}}},
+          {"if": {"properties": {"data": {"properties": {"no_changes": {"const": false}}}}}, "then": {"properties": {"operation_state": {"const": "validated"}}}}
+        ]}},
+        {"if": {"properties": {"command": {"const": "apply"}, "status": {"enum": ["completed", "partial"]}}}, "then": {"properties": {"write_status": {"const": "saved"}}}},
+        {"if": {"properties": {"command": {"const": "apply"}, "write_status": {"const": "unsaved"}}}, "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"allOf": [{"$ref": "#/$defs/ApplyData"}, {"properties": {"changed": {"const": false}, "verified": {"const": false}}}]}]}}}},
+        {"if": {"properties": {"write_status": {"const": "unknown"}}}, "then": {"properties": {"data": {"allOf": [{"$ref": "#/$defs/ApplyData"}, {"properties": {"changed": {"type": "null"}, "verified": {"const": false}}}]}}}},
+        {"if": {"properties": {"status": {"const": "completed"}}}, "then": {"properties": {"exit_code": {"const": 0}}}},
+        {"if": {"properties": {"status": {"const": "partial"}}}, "then": {"properties": {"exit_code": {"const": 3}}}},
+        {"if": {"properties": {"status": {"const": "failed"}}}, "then": {"properties": {"exit_code": {"const": 1}}}},
+        {"if": {"properties": {"status": {"const": "not_performed"}}}, "then": {"properties": {"exit_code": {"enum": [2, 4]}}}},
+        {"if": {"properties": {"write_status": {"const": "unknown"}}}, "then": {"properties": {"status": {"const": "failed"}, "operation_state": {"const": "blocked"}, "command": {"const": "apply"}}}},
+        {"if": {"properties": {"command": {"const": "inspect"}}}, "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/InspectData"}]}, "write_status": {"const": "not_requested"}}}},
+        {"if": {"properties": {"command": {"const": "read"}}}, "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/ReadData"}]}, "write_status": {"const": "not_requested"}}}},
+        {"if": {"properties": {"command": {"const": "layout"}}}, "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/LayoutData"}]}, "write_status": {"const": "not_requested"}}}},
+        {"if": {"properties": {"command": {"const": "plan"}}}, "then": {"properties": {"data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/PlanData"}]}, "write_status": {"const": "unsaved"}}}},
+        {"if": {"properties": {"command": {"const": "apply"}}}, "then": {"properties": {"write_status": {"enum": ["unsaved", "saved", "unknown"]}, "data": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/ApplyData"}]}}}},
+        {"if": {"properties": {"write_status": {"const": "saved"}}}, "then": {"properties": {"command": {"const": "apply"}, "status": {"enum": ["completed", "partial"]}, "operation_state": {"const": "saved"}, "data": {"allOf": [{"$ref": "#/$defs/ApplyData"}, {"properties": {"after_sha256": {"$ref": "#/$defs/Hash"}, "verified": {"const": true}, "changed": {"type": "boolean"}}}]}}}}
+      ]
+    }
+  }
+}

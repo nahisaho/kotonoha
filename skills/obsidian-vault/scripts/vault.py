@@ -40,6 +40,7 @@ CHECKS = (
     "actors", "negation", "conditions", "modality", "scope", "causality",
     "quantity_bindings", "terminology", "structure",
 )
+STORAGE_API_VERSION = 1
 
 
 class Failure(Exception):
@@ -166,6 +167,12 @@ class Vault:
             raise Failure("outside_scope", path)
         if not path.endswith(".md"):
             raise Failure("unsupported_format", path)
+        return self.read_authorized(path, maximum)
+
+    def read_authorized(self, path, maximum=None):
+        path = relative(path)
+        if not self.allowed(path):
+            raise Failure("outside_scope", path)
         with self.parent(path) as (parent, name):
             try:
                 descriptor = os.open(
@@ -186,7 +193,20 @@ class Vault:
                     raise Failure("limit_reached", path)
                 return data, metadata
 
+    def stat_authorized(self, path):
+        path = relative(path)
+        if not self.allowed(path):
+            raise Failure("outside_scope", path)
+        with self.parent(path) as (parent, name):
+            metadata = os.stat(name, dir_fd=parent, follow_symlinks=False)
+            if stat.S_ISLNK(metadata.st_mode):
+                raise Failure("symlink_not_followed", path)
+            return metadata
+
     def enumerate(self):
+        return self.enumerate_authorized((".md",), strict_file_scopes=True)
+
+    def enumerate_authorized(self, suffixes, strict_file_scopes=False):
         paths, skipped, issues = set(), set(), []
         enumeration_complete = True
 
@@ -201,7 +221,7 @@ class Vault:
                 return
             for name in names:
                 path = name if prefix == "." else prefix + "/" + name
-                if name in MANAGEMENT:
+                if name in MANAGEMENT or not strict_file_scopes and name.lower() in MANAGEMENT:
                     issues.append(issue("excluded_management_directory", path))
                     continue
                 try:
@@ -217,7 +237,7 @@ class Vault:
                             walk(child, path)
                         finally:
                             os.close(child)
-                    elif name.endswith(".md"):
+                    elif name.endswith(tuple(suffixes)):
                         if stat.S_ISREG(metadata.st_mode):
                             paths.add(path)
                         else:
@@ -230,8 +250,10 @@ class Vault:
 
         for kind, path in self.scopes:
             if kind == "file":
-                if not path.endswith(".md"):
-                    raise Failure("unsupported_format", path)
+                if not path.endswith(tuple(suffixes)):
+                    if strict_file_scopes:
+                        raise Failure("unsupported_format", path)
+                    continue
                 paths.add(path)
                 continue
             try:
@@ -980,6 +1002,75 @@ def exclusive_create(parent, stage_name, name):
     os.link(stage_name, name, src_dir_fd=parent, dst_dir_fd=parent, follow_symlinks=False)
 
 
+def commit_bytes(vault, parent, name, stage_name, before, candidate, metadata,
+                 vault_identity, progress, *, read_at, target):
+    """Commit validated bytes; retain commit progress even when verification fails."""
+    progress.update(committed=False, own_stage=False, cleanup_failed=False)
+    try:
+        try:
+            descriptor = os.open(
+                stage_name, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                0o666 if before is None else 0o600, dir_fd=parent,
+            )
+        except FileExistsError as error:
+            raise Failure("target_exists") from error
+        progress["own_stage"] = True
+        with os.fdopen(descriptor, "w+b") as stream:
+            stream.write(candidate)
+            stream.flush()
+            if metadata is not None:
+                os.fchown(stream.fileno(), metadata.st_uid, metadata.st_gid)
+                os.fchmod(stream.fileno(), stat.S_IMODE(metadata.st_mode))
+            os.fsync(stream.fileno())
+            current_root = directory(vault.root)
+            try:
+                if identity(os.fstat(current_root)) != vault_identity:
+                    raise Failure("parent_changed")
+            finally:
+                os.close(current_root)
+            with vault.parent(target) as (current_parent, _):
+                if identity(os.fstat(current_parent)) != identity(os.fstat(parent)):
+                    raise Failure("parent_changed", target)
+            if before is not None:
+                current, current_metadata = read_at(parent, name)
+                if digest(current) != digest(before):
+                    raise Failure("target_changed", target)
+                if (identity(current_metadata) != identity(metadata)
+                        or current_metadata.st_mode != metadata.st_mode
+                        or current_metadata.st_gid != metadata.st_gid):
+                    raise Failure("target_changed", target)
+                with os.fdopen(os.open(name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent), "rb") as check:
+                    metadata_supported(os.fstat(check.fileno()), check.fileno())
+                os.replace(stage_name, name, src_dir_fd=parent, dst_dir_fd=parent)
+                progress.update(committed=True, own_stage=False)
+            else:
+                try:
+                    exclusive_create(parent, stage_name, name)
+                except FileExistsError as error:
+                    raise Failure("target_exists", target) from error
+                progress["committed"] = True
+            os.fsync(parent)
+            verified, _ = read_at(parent, name)
+            if digest(verified) != digest(candidate):
+                raise OSError("Post-commit verification failed")
+            if progress["own_stage"]:
+                os.unlink(stage_name, dir_fd=parent)
+                progress["own_stage"] = False
+                os.fsync(parent)
+            return verified
+    finally:
+        original_error = sys.exc_info()[1]
+        if progress["own_stage"]:
+            try:
+                os.unlink(stage_name, dir_fd=parent)
+            except OSError:
+                progress["cleanup_failed"] = True
+                if original_error is None:
+                    raise
+            else:
+                progress["own_stage"] = False
+
+
 def apply(request, vault, report, args):
     if not request["consent"]["workspace_copies"]:
         raise Failure("consent_missing")
@@ -1142,77 +1233,33 @@ def apply(request, vault, report, args):
         pending = dict(report, status="failed", exit_code=1, write_status="unknown",
                        issues=[issue("commit_outcome_uncertain", target)])
         replace_private(result_path, canonical(pending))
-        committed, own_stage = False, False
+        committed = False
+        progress = {"committed": False, "own_stage": False, "cleanup_failed": False}
         stage_name = PurePosixPath(stage).name
         try:
-            try:
-                descriptor = os.open(
-                    stage_name, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
-                    0o666 if planned["kind"] == "create" else 0o600, dir_fd=parent,
-                )
-            except FileExistsError as error:
-                raise Failure("target_exists", stage) from error
-            own_stage = True
-            with os.fdopen(descriptor, "w+b") as stream:
-                stream.write(candidate)
-                stream.flush()
-                if metadata is not None:
-                    os.fchown(stream.fileno(), metadata.st_uid, metadata.st_gid)
-                    os.fchmod(stream.fileno(), stat.S_IMODE(metadata.st_mode))
-                os.fsync(stream.fileno())
-                current_root = directory(vault.root)
-                try:
-                    if identity(os.fstat(current_root)) != planned["vault_identity"]:
-                        raise Failure("parent_changed", target)
-                finally:
-                    os.close(current_root)
-                with vault.parent(target) as (current_parent, _):
-                    if identity(os.fstat(current_parent)) != identity(os.fstat(parent)):
-                        raise Failure("parent_changed", target)
-                if before is not None:
-                    current, current_metadata = read_at(parent, name)
-                    if digest(current) != planned["before_sha256"]:
-                        raise Failure("target_changed", target)
-                    if (identity(current_metadata) != identity(metadata)
-                            or current_metadata.st_mode != metadata.st_mode
-                            or current_metadata.st_gid != metadata.st_gid):
-                        raise Failure("target_changed", target)
-                    with os.fdopen(os.open(name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent), "rb") as check:
-                        metadata_supported(os.fstat(check.fileno()), check.fileno())
-                    os.replace(stage_name, name, src_dir_fd=parent, dst_dir_fd=parent)
-                    committed, own_stage = True, False
-                else:
-                    try:
-                        exclusive_create(parent, stage_name, name)
-                    except FileExistsError as error:
-                        raise Failure("target_exists", target) from error
-                    committed = True
-                os.fsync(parent)
-                verified, _ = read_at(parent, name)
-                if digest(verified) != planned["after_sha256"]:
-                    raise OSError("Post-commit verification failed")
-                if own_stage:
-                    os.unlink(stage_name, dir_fd=parent)
-                    own_stage = False
-                    os.fsync(parent)
-                replace_private(receipt_path, canonical(expected_receipt))
-                report.update(operation_state="saved", write_status="saved")
-                report["data"].update(
-                    after_sha256=digest(verified), changed=True, verified=True,
-                )
-                report["issues"].append(issue("saved", target))
-                replace_private(result_path, canonical(report))
+            verified = commit_bytes(
+                vault, parent, name, stage_name, before, candidate, metadata,
+                planned["vault_identity"], progress, read_at=read_at, target=target,
+            )
+            committed = progress["committed"]
+            replace_private(receipt_path, canonical(expected_receipt))
+            report.update(operation_state="saved", write_status="saved")
+            report["data"].update(
+                after_sha256=digest(verified), changed=True, verified=True,
+            )
+            report["issues"].append(issue("saved", target))
+            replace_private(result_path, canonical(report))
         except (OSError, Failure) as error:
+            committed = progress["committed"]
             report["issues"] = [item for item in report["issues"] if item["code"] != "saved"]
-            if own_stage:
-                try:
-                    os.unlink(stage_name, dir_fd=parent)
-                except OSError as cleanup_error:
-                    report["issues"].append(issue("runtime_error", stage))
-                    if not committed:
-                        report.update(status="failed", exit_code=1, operation_state="blocked")
-                        report["issues"].append(issue("write_failed_before_commit", target))
-                        raise Failure("write_failed_before_commit", target, status="failed", exit_code=1) from cleanup_error
+            if progress["cleanup_failed"]:
+                report["issues"].append(issue("runtime_error", stage))
+                if not committed:
+                    report.update(status="failed", exit_code=1, operation_state="blocked")
+                    report["issues"].append(issue("write_failed_before_commit", target))
+                    raise Failure(
+                        "write_failed_before_commit", target, status="failed", exit_code=1,
+                    ) from error
             report.update(
                 status="failed" if committed or not isinstance(error, Failure) else error.status,
                 exit_code=1 if committed or not isinstance(error, Failure) else error.exit_code,

@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "stage": "implementation",
+  "status": "implemented_and_reviewed_with_documented_limitations",
+  "requirements_sha256": "9ccca26b16934cb0bb5d408897c35454b2349c068bf75d21176d5c9a636c121f",
+  "design_sha256": "042093b6a7fb91680226d38d2518634114ceb9166bd40fbef35a6f9f020d91db",
+  "contract_sha256": "a51068df28a347aa9616772f20e00f5b6f2431e127976484f99c73b2dff96a1b",
+  "acceptance_cases_sha256": "05107f50c36dad1b85430a8b5264d1c0afc7ae0f0908d1dba3bd190e00c35caf",
+  "implementation_manifest": {
+    "path": "/tmp/kotonoha-test/obsidian-canvas/implementation-review-manifest.json",
+    "sha256": "06ea128a7919f90cf88fc8069cc976e5ea4edf5a6d7e813451d406ddb6e1ec18",
+    "files": 25,
+    "reviewer_verified_all_hashes": true
+  },
+  "mechanical_verification": [
+    {
+      "command": "npm run test:obsidian-canvas",
+      "result": "passed_with_skip",
+      "tests_run": 90,
+      "passed": 89,
+      "skipped": 1,
+      "skip_reason": "No actual casefold filesystem available",
+      "runner_seconds": 15.087
+    },
+    {
+      "command": "npm run test:obsidian-vault",
+      "result": "passed",
+      "tests_run": 31,
+      "runner_seconds": 5.199
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "tests_run": 17,
+      "runner_seconds": 3.61,
+      "includes": ["source installation", "actual npm-packed installation", "byte-identical assets", "selective sibling preservation", "Vault direct-edit instruction contract"]
+    },
+    {
+      "command": "uv run --offline skills/japanese-prose/scripts/test_engine.py",
+      "result": "passed",
+      "tests_run": 17,
+      "runner_seconds": 3.816
+    },
+    {
+      "command": "python /tmp/kotonoha-test/obsidian-canvas/legacy-characterization.py check",
+      "result": "exact_stdout_and_exit_match",
+      "cases": 4,
+      "fixture_vault_changes": 0
+    },
+    {
+      "evidence": "/tmp/kotonoha-test/obsidian-canvas/packed-cli-verification.json",
+      "result": "passed",
+      "commands": ["inspect", "read"],
+      "actual_packed_installed_offline_launcher": true,
+      "fixture_vault_changes": 0,
+      "elapsed_seconds": 2.57
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "coverage": {
+    "diagnostic_oracles": 26,
+    "enum_samples": 23,
+    "format_oracles": 7,
+    "exact_number_oracles": 16,
+    "reference_oracles": 19,
+    "geometry_oracles": 7,
+    "layout_oracles": 6,
+    "logical_replay_cells": 45,
+    "actual_apply_replay_combinations": 90,
+    "legacy_canvas_cross_process_locking": "both directions; blocked commits preserve targets; sequential verified saves after release",
+    "installed_dependencies": ["missing backend", "old backend", "missing Japanese gate", "incompatible Japanese gate"],
+    "workflow_and_correction_mapping": "skills/obsidian-canvas/scripts/test_canvas.py: ACCEPTANCE_COVERAGE and accompanying explicit-gap notes",
+    "claim": "Bounded verification of the listed cases, not exhaustive behavior or rendering proof"
+  },
+  "review": {
+    "model": "claude-sonnet-5.5",
+    "agent_id": "206c0109-0445-4454-8e53-247c2e008520",
+    "passes": ["initial integrated implementation review", "bounded remaining-runtime and contextual-evidence supplement"],
+    "must_fix_findings": [],
+    "recommendation": "accept_with_documented_limitations",
+    "runtime_scope": ["parser", "references", "limits", "private workspace", "request context", "mutations and retyping", "effective markers", "per-string proofreading gates", "plan and apply", "replay", "shared backend use"],
+    "shared_backend_review": "/tmp/kotonoha-test/obsidian-canvas/shared-storage-review.json",
+    "closed_prior_finding": "C-I1: retain durable pending-unknown replay guard when owned-stage cleanup fails",
+    "contextual_quality": {
+      "templates": ["note-map: pass", "mind-map: pass", "workflow: pass", "comparison: pass"],
+      "uses": ["USE-001: pass", "USE-002: pass", "USE-003: pass", "USE-004: pass"],
+      "semantic_examples": {
+        "C09": "Nine meaning-changing candidates rejected contextually; all nine separately reviewed counterparts preserve meaning",
+        "checks": ["actors", "negation", "conditions", "modality", "scope", "causality", "quantity_bindings", "terminology", "structure"]
+      },
+      "corrected_initial_review_statements": [
+        "The rich fixture HTTP(S) link is allowed external_url with policy_forbidden=false, not a prohibited reference.",
+        "The rich file card inherits proposal from its containing group; file and heading existence do not establish semantic evidence.",
+        "Contextual review was performed by Claude Sonnet 5.5, not a human."
+      ],
+      "human_approval": false,
+      "general_accuracy_claim": false
+    }
+  },
+  "separate_vault_workflow_change": {
+    "authorization": "User requested direct Vault file creation/editing and selected direct-tools",
+    "scope": "Vault Markdown host-tool instructions only; no direct Canvas or Bases save authorization",
+    "cli_contract_unchanged": true,
+    "evidence": "/tmp/kotonoha-test/obsidian-vault-direct-edit/verification.json",
+    "direct_writes_join_cli_root_lock": false
+  },
+  "residuals": [
+    "Obsidian rendering was not performed; render_check remains not_performed.",
+    "Actual casefold filesystem test was skipped; no verified casefold support claim.",
+    "Foreign-owner and kernel metadata-failure variants are not exhaustively tested.",
+    "Interpreter and package-startup failures are not fully tested; launcher failure must not be fabricated as runtime JSON.",
+    "Oversized review/plan wording versus limits exit policy lacks a dedicated exact assertion.",
+    "A durable pending record after a clean precommit refusal may conservatively block replay; recovery is manual, not automatic retry.",
+    "Semantic attestations and contextual fixture review are not semantic proof or human save approval.",
+    "Direct host writes do not use the CLI root lock, atomic commit or receipt replay protections.",
+    "Post-check external edits and same-user malicious processes remain outside the complete protection boundary."
+  ],
+  "release": {
+    "version_unchanged": "0.4.1",
+    "committed": false,
+    "pushed": false,
+    "published": false,
+    "release_authorized": false
+  }
+}

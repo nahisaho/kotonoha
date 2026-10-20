@@ -1,0 +1,10 @@
+{
+  "nodes": [
+    {"id": "sources", "type": "group", "x": -40, "y": -40, "width": 720, "height": 320, "label": "[未確認] 許可された実在ノートに差し替える"},
+    {"id": "note-a", "type": "text", "x": 0, "y": 0, "width": 280, "height": 200, "text": "[提案] ノートAの主題と根拠を確認する"},
+    {"id": "note-b", "type": "text", "x": 360, "y": 0, "width": 280, "height": 200, "text": "[未確認] ノートBとの共通点と違いを調べる"}
+  ],
+  "edges": [
+    {"id": "relation", "fromNode": "note-a", "toNode": "note-b", "fromSide": "right", "toSide": "left", "toEnd": "arrow", "label": "[提案] 関係の根拠を確認する"}
+  ]
+}

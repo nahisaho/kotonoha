@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {"id": "topic", "type": "text", "x": 0, "y": 0, "width": 280, "height": 180, "text": "[提案] 検討する主題"},
+    {"id": "question", "type": "text", "x": 360, "y": 0, "width": 280, "height": 180, "text": "[未確認] 答えが必要な問い"},
+    {"id": "idea", "type": "text", "x": 360, "y": 260, "width": 280, "height": 180, "text": "[提案] 検証するアイデア"}
+  ],
+  "edges": [
+    {"id": "topic-question", "fromNode": "topic", "toNode": "question", "toEnd": "arrow", "label": "[提案] 問いを分ける"},
+    {"id": "topic-idea", "fromNode": "topic", "toNode": "idea", "toEnd": "arrow", "label": "[提案] 候補を挙げる"}
+  ]
+}

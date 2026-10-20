@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {"id": "comparison", "type": "group", "x": -40, "y": -40, "width": 720, "height": 580, "label": "[未確認] 同じ比較軸で資料を確認する"},
+    {"id": "option-a", "type": "text", "x": 0, "y": 0, "width": 280, "height": 200, "text": "[提案] 案A\n\n確認する軸: 必要な権限、運用負担、制約"},
+    {"id": "option-b", "type": "text", "x": 360, "y": 0, "width": 280, "height": 200, "text": "[提案] 案B\n\n確認する軸: 必要な権限、運用負担、制約"},
+    {"id": "evidence", "type": "text", "x": 0, "y": 280, "width": 640, "height": 180, "text": "[未確認] 出典と確認日を記録し、未確認の条件を残す"}
+  ],
+  "edges": [
+    {"id": "comparison-axis", "fromNode": "option-a", "toNode": "option-b", "label": "[提案] 同じ軸で比較する"}
+  ]
+}

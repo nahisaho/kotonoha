@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `obsidian-canvas` for scoped JSON Canvas diagnosis, four diagram
+  templates, explicit edits, layout proposals and approval-gated saves.
+- Add per-string semantic reviews for selected Canvas text and labels,
+  persistent evidence/proposal markings, and original acceptance fixtures.
+
+### Changed
+
+- Allow explicitly authorized host-tool creation and editing of Vault Markdown
+  notes without mandatory CLI plans. Keep CLI plan-approved saving optional,
+  preserve proofreading checks, and distinguish direct-edit failure guarantees.
+- Use the user-specified directory, or the current directory by default, for
+  Vault direct editing. Modify the authorized target itself rather than a
+  session-state copy; retain Vault scope and auxiliary-copy consent checks.
+- Rewrite the `obsidian-vault` Skill entrypoint in concise English to reduce
+  loading tokens while preserving its operating and safety rules.
+- Share authorized storage and atomic commit primitives with `obsidian-vault`
+  while preserving its Markdown CLI contract. Existing unapplied plans must
+  be regenerated and approved after updating the implementation.
+
 ## [0.4.1] - 2026-10-19
 
 ### Added

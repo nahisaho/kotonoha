@@ -63,19 +63,45 @@ Obsidianでは、[`obsidian.md`](skills/tech-writer/assets/templates/obsidian.md
 
 ## Obsidian Vaultの操作
 
-専用の`obsidian-vault`は、Vaultの規約確認、ノート新規作成、関連ノート候補、内部リンク診断、日本語添削を担当します。
-文書構成はtech-writer、日本語表現はjapanese-proseを利用するため、3つのSkillを同じ場所へ導入してください。
-初期対応はLinux、CPython 3.12、uvです。Obsidianアプリ、MCP、プラグインには依存しません。
+専用の`obsidian-vault`は、Vaultの規約確認、Markdownノートの直接作成・編集、関連ノート候補、内部リンク診断、日本語添削を担当します。
+直接編集は開発版の機能であり、公開済みの`kotonoha@0.4.1`には含まれません。
+対象と変更内容への許可を確認し、ホストのファイルツールで本文・プロパティ・タグ・リンクを変更できます。
+直接編集には専用CLIの計画ファイル、Python、uvは不要です。Obsidianアプリ、MCP、プラグインにも依存しません。
+文書構成にはtech-writer、日本語添削にはjapanese-proseを利用します。
 
-Vault、読み取り範囲、モデルに渡す情報を利用者が明示し、保存する場合は正確な差分と計画を承認します。
-保存は専用CLIのapplyだけで行い、添削時の記法保護とハッシュ付き意味レビューを迂回しません。
+Vault、読み取り範囲、モデルに渡す情報を利用者が明示し、指定外の内容を保持します。
+保存前の確認を求められた場合は、差分承認まで保存しません。
+直接編集の作業ディレクトリはユーザー指定を優先し、未指定なら依頼開始時のカレントディレクトリを使います。
+相対保存先はそこから解決しますが、Vaultルート基準と明示したパスや絶対パスは維持します。
+許可済みのVaultと範囲内にある対象自体を編集し、セッション領域のコピーで代替しません。
+補助ファイルへの同意と適切な保存場所も別途必要です。
+CLI計画保存モードも選べます。こちらはLinux、CPython 3.12、uvを使い、正確な差分と計画の承認後にapplyします。
+両モードとも、添削時の記法保護とハッシュ付き意味レビューは省略しません。
 未解決リンクを誤りと断定せず、自動修復もしません。
-処理はオフライン・lock付きで起動します。依存関係の初回準備は別途の許可が必要です。
+CLI処理はオフライン・lock付きで起動します。依存関係の初回準備は別途の許可が必要です。
 依頼例、コマンド、コピーの保持と復旧は[操作ガイド](skills/obsidian-vault/references/workflow.md)を参照してください。
 
-保存は確認できたローカルFSに限定し、シンボリックリンク、維持できない属性、複数ハードリンクを拒否します。
+保存は必要な確認ができるローカル通常ファイルに限定し、シンボリックリンク、維持できない属性、複数ハードリンクを拒否します。
 拡張属性付きファイルも保存非対応であり、SELinuxラベルなどの削除を回避策にしません。
-最終照合直後の外部編集やLLMの誤判断は完全には防げず、ホストを隔離する機能でもありません。
+直接編集はCLIの原子的確定、ルートロック、成功記録による再実行保護を利用しません。
+保存後に読み戻して確認しますが、途中失敗や同時編集の完全な防止は保証しません。
+LLMの誤判断を完全には防げず、ホストを隔離する機能でもありません。
+
+## Obsidian Canvasの操作
+
+専用の`obsidian-canvas`は、ノート関係図、アイデア整理、条件付きの手順、資料比較を扱います。
+JSON Canvas 1.0の読み取り・診断・配置提案・編集に対応し、Obsidianの起動やURLへの通信は行いません。
+この機能は開発版の内容であり、公開済みの`kotonoha@0.4.1`には含まれません。
+
+同じ場所に共用API版1のobsidian-vaultを導入します。Canvasだけの選択導入では兄弟を自動更新しません。
+添削ではjapanese-proseも必要です。初期対応はLinux、CPython 3.12、固定依存によるオフライン実行です。
+既存の兄弟Skillが旧版なら、必要な更新を明示し、許可なく置き換えません。
+
+保存前にID・属性ごとの変更、根拠や提案の文字による表示、正確な差分と計画を確認します。
+日本語添削には変更文字列ごとのハッシュ付き意味レビューが必要です。
+保存は利用者が明示承認した1Canvasだけに限定し、参照元ノートや添付を変更しません。
+未知の構造は診断のみとし、実表示や任意の拡張、casefoldファイルシステムの検証済み対応は保証しません。
+同意、コマンド、部分実施、保存結果が不明な場合の復旧は[Canvas操作ガイド](skills/obsidian-canvas/references/workflow.md)を参照してください。
 
 ## consulting-analystの機能
 
@@ -129,20 +155,21 @@ npx kotonoha install
 
 ### 同梱スキルをまとめてインストール
 
-`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。次のコマンドは、`consulting-analyst`、`tech-writer`、`japanese-prose`、`obsidian-vault`、`presentation-planner`を`.github/skills/`へインストールします。
+`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。開発版では、`consulting-analyst`、`tech-writer`、`japanese-prose`、`obsidian-vault`、`obsidian-canvas`、`presentation-planner`を`.github/skills/`へインストールします。
 
 ```bash
 npm install --save-dev kotonoha
 npx kotonoha install --skill all
 ```
 
-`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。5つのスキルがインストールされたことを確認します。
+`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。開発版では6つのスキルがインストールされたことを確認します。公開済み0.4.1はCanvasを含まない5つです。
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md
 test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/obsidian-vault/SKILL.md
+test -f .github/skills/obsidian-canvas/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -183,7 +210,7 @@ README-ja.mdの日本語を自然で読みやすい表現に修正して
 新しい日本語文書では、`このリポジトリの日本語READMEを作成して`のように依頼すると、`tech-writer`が下書きと構造レビューを行い、rubber-duck reviewの前にGiNZAベースの文章最適化を実行します。文章最適化を確実に指定する場合は、`<ファイル名>を技術文書として作成または修正し、GiNZAによる日本語表現最適化まで実施して`と指示します。
 
 既定のインストール先は、現在のプロジェクトの`.github/skills/`です。
-consulting-analyst、tech-writer、japanese-prose、obsidian-vault、presentation-plannerをそれぞれのサブディレクトリに配置します。
+consulting-analyst、tech-writer、japanese-prose、obsidian-vault、obsidian-canvas、presentation-plannerをそれぞれのサブディレクトリに配置します。
 スキルを1つだけインストールする場合や、対応している別のディレクトリを使用する場合は、次のように指定します。
 
 ```bash
@@ -265,6 +292,8 @@ git diff -- .github/skills
 cp -r skills/consulting-analyst /path/to/your-repo/.github/skills/consulting-analyst
 cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
+cp -r skills/obsidian-vault /path/to/your-repo/.github/skills/obsidian-vault
+cp -r skills/obsidian-canvas /path/to/your-repo/.github/skills/obsidian-canvas
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -311,10 +340,16 @@ skills/presentation-planner/ # シナリオ、デザイン仕様、PPTX引き継
   references/                # 責任境界、シナリオ・デザインガイド、カスタマイズ、引き継ぎ契約
   assets/scenario-templates/ # 経営判断、技術説明、データ報告向けシナリオ
   assets/design-templates/   # 経営提案、技術説明、データ報告向けYAMLデザイン
+skills/obsidian-vault/       # 許可範囲のMarkdown操作と共用保存API
+skills/obsidian-canvas/      # JSON Canvas診断、配置、承認付き保存
+  scripts/                   # 固定依存のオフラインCLIと独自受入データの試験
+  assets/templates/          # 関係図、アイデア、手順、比較の構成例
 .github/skills/tech-writer   # Copilot CLIが読み込むskills/tech-writerへのシンボリックリンク
 .github/skills/consulting-analyst
 .github/skills/japanese-prose
 .github/skills/presentation-planner
+.github/skills/obsidian-vault
+.github/skills/obsidian-canvas
 ```
 
 ## 既知の制約

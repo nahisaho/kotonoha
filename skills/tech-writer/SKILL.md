@@ -58,9 +58,16 @@ YAML frontmatter and a few platform extensions on top — see their doctype
 reference files. Obsidian uses YAML properties, wikilinks, and callouts;
 see `references/doctypes/obsidian.md` for core Templates compatibility.
 For an existing Vault's conventions, related-note suggestions, link diagnosis,
-or approval-gated saves, use the sibling `obsidian-vault` skill when available.
+or authorized direct edits or CLI plan-approved saves, use the sibling
+`obsidian-vault` skill when available.
 Tech-writer still owns document structure and the reusable template; it must
-not bypass that skill's scope checks or save directly into the Vault.
+hand Vault writes back to that skill's selected workflow, not bypass its scope
+checks or write into the Vault on its own.
+Preserve the user's working directory when handing off: use a user-specified
+directory, or the current directory at request start if none was specified.
+Resolve the final target there without reinterpreting an explicitly absolute or
+Vault-relative path. Do not replace the target with a copy in session-state
+storage; retain Vault scope checks and separate consent for any auxiliary copies.
 
 ## Division of labor
 

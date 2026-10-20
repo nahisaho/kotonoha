@@ -91,6 +91,82 @@ class VaultTests(unittest.TestCase):
         self.assertEqual(self.invoke("inspect"), first)
         self.assertEqual(self.snapshot(), initial)
 
+    def test_shared_storage_keeps_markdown_facade_and_scope_checks(self):
+        self.write("Maps/source.canvas", '{"nodes":[]}\n')
+        self.write("Assets/picture.png", b"opaque attachment")
+        (self.root / "Alias.png").symlink_to("Assets/picture.png")
+        storage = vault.Vault(self.request)
+        try:
+            self.assertEqual(storage.read_authorized("Maps/source.canvas")[0], b'{"nodes":[]}\n')
+            with self.assertRaises(vault.Failure):
+                storage.read("Maps/source.canvas")
+            paths, _, _, _ = storage.enumerate_authorized((".canvas", ".md"))
+            self.assertIn("Maps/source.canvas", paths)
+            self.assertNotIn("Maps/source.canvas", storage.enumerate()[0])
+            self.assertEqual(storage.stat_authorized("Assets/picture.png").st_size, 17)
+            with self.assertRaises(vault.Failure) as caught:
+                storage.stat_authorized("Alias.png")
+            self.assertEqual(caught.exception.code, "symlink_not_followed")
+        finally:
+            storage.close()
+        limited = dict(self.request, read_scopes=[{"kind": "file", "path": "Maps/source.canvas"}])
+        storage = vault.Vault(limited)
+        try:
+            with self.assertRaises(vault.Failure) as caught:
+                storage.stat_authorized("Assets/picture.png")
+            self.assertEqual(caught.exception.code, "outside_scope")
+            self.assertEqual(storage.enumerate_authorized((".md",))[0], [])
+            with self.assertRaises(vault.Failure):
+                storage.enumerate()
+        finally:
+            storage.close()
+
+    def test_shared_commit_retains_progress_after_failed_verification(self):
+        self.write("Maps/.keep.md", "# Keep\n")
+        storage = vault.Vault(self.request)
+        self.addCleanup(storage.close)
+        progress = {}
+        with storage.parent("Maps/new.canvas") as (parent, name):
+            def bad_read(parent, name):
+                return b"not the candidate", os.stat(name, dir_fd=parent)
+
+            with self.assertRaises(OSError):
+                vault.commit_bytes(
+                    storage, parent, name, ".owned-stage", None, b'{"nodes":[]}\n',
+                    None, vault.identity(os.fstat(storage.fd)), progress,
+                    read_at=bad_read, target="Maps/new.canvas",
+                )
+        self.assertTrue(progress["committed"])
+        self.assertFalse(progress["own_stage"])
+        self.assertEqual((self.root / "Maps/new.canvas").read_bytes(), b'{"nodes":[]}\n')
+        self.assertFalse((self.root / "Maps/.owned-stage").exists())
+
+    def test_failed_stage_cleanup_keeps_pending_legacy_replay_guard(self):
+        planned = self.edit_plan()
+        before = (self.root / "Notes/draft.md").read_bytes()
+        replace, unlink = vault.os.replace, vault.os.unlink
+
+        def fail_commit(source, target, **kwargs):
+            if isinstance(source, str) and source.startswith(".kotonoha-"):
+                raise OSError("Injected precommit failure")
+            return replace(source, target, **kwargs)
+
+        def fail_cleanup(path, **kwargs):
+            if isinstance(path, str) and path.startswith(".kotonoha-"):
+                raise PermissionError("Injected owned-stage cleanup failure")
+            return unlink(path, **kwargs)
+
+        with patch.object(vault.os, "replace", fail_commit), patch.object(vault.os, "unlink", fail_cleanup):
+            failed = self.apply_plan(planned)
+        self.assertEqual((failed["status"], failed["exit_code"], failed["write_status"]),
+                         ("failed", 1, "unsaved"))
+        operation = Path(planned["data"]["plan_path"]).parent
+        self.assertEqual(json.loads((operation / "result.json").read_text())["write_status"], "unknown")
+        self.assertEqual((self.root / "Notes/draft.md").read_bytes(), before)
+        repeated = self.apply_plan(planned)
+        self.assertEqual(repeated["exit_code"], 2)
+        self.assertEqual(repeated["issues"][0]["code"], "commit_outcome_uncertain")
+
     def test_partial_domains_and_visible_duplicates(self):
         self.request["read_scopes"] = [
             {"kind": "directory", "path": name} for name in ("Notes", "Targets")

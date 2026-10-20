@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "provenance": "Original authored inputs and expectations. No product output is an oracle.",
+  "evaluation": {
+    "diagnostics": "Each isolated case materializes Maps/sample.canvas. Start from its document, apply the ordered replacements, and compare the entire Diagnostics object. references names an exact reference_sets array; issues are exact objects. render_check is always not_performed.",
+    "replacement": "path is an array of literal object keys or array indices. set replaces or adds, remove removes, append appends. No shell, JSONPath, expression evaluation or product code is used to materialize fixtures.",
+    "reference_override": "A case may replace the complete references array. Never append inferred expected records.",
+    "hashes": "Compute expected bytes and SHA-256 directly from the authored fixture using UTF-8, ensure_ascii=false, indent=2, and one final LF. Raw cases use their literal UTF-8 bytes, or bytes_hex exclusively.",
+    "coverage": "Diagnostic cases compare complete diagnostics; workflow cases assert the listed exact state, reason, changes and file effects. Faults are injected at the named boundary. Missing expected assertions must not be replaced by implementation snapshots.",
+    "review": "All-true mechanism-test reviews are synthetic fixtures, not semantic-quality evidence or human approval. The nine meaning examples additionally require a real contextual review.",
+    "quality": "For each use, a real review must find the intended information and relations, identify proposals and uncertainties, and reject invented evidence. Schema success alone cannot pass this check."
+  },
+  "vault": {
+    "Notes/A.md": "# A\n\n## Detail\n\n承認後に担当者が資料を確認する。\n",
+    "Archive/A.md": "# Archived A\n\n旧版の資料。\n",
+    "Notes/B.md": "# B\n\n比較用の資料。\n",
+    "Assets/pattern.png": "Opaque attachment fixture. Metadata only; not a rendering fixture.\n"
+  },
+  "documents": {
+    "empty": {},
+    "rich": {
+      "nodes": [
+        {"id": "g", "type": "group", "x": -32, "y": -32, "width": 1040, "height": 640, "color": "6", "label": "[提案] 調査の整理", "background": "Assets/pattern.png", "backgroundStyle": "cover"},
+        {"id": "n", "type": "file", "x": 0, "y": 0, "width": 320, "height": 180, "color": "#00aaFF", "file": "Notes/A.md", "subpath": "#Detail"},
+        {"id": "t", "type": "text", "x": 400, "y": 0, "width": 320, "height": 180, "color": "2", "text": "[根拠あり] Aの詳細を参照する。\n\n[[Notes/A#Detail]]\n\n`[[CodeOnly]]`\n"},
+        {"id": "l", "type": "link", "x": 0, "y": 240, "width": 320, "height": 180, "url": "https://example.invalid/source"}
+      ],
+      "edges": [
+        {"id": "e", "fromNode": "n", "toNode": "t", "fromSide": "right", "toSide": "left", "fromEnd": "none", "toEnd": "arrow", "color": "3", "label": "[提案] 比較の候補"}
+      ]
+    },
+    "mind_map": {
+      "nodes": [
+        {"id": "topic", "type": "text", "x": 0, "y": 0, "width": 240, "height": 160, "text": "[提案] 利用者への説明"},
+        {"id": "question", "type": "text", "x": 320, "y": 0, "width": 240, "height": 160, "text": "[未確認] 初回利用で何が分からないか"}
+      ],
+      "edges": [{"id": "question", "fromNode": "topic", "toNode": "question", "label": "[提案] 調べる"}]
+    },
+    "workflow": {
+      "nodes": [
+        {"id": "check", "type": "text", "x": 0, "y": 0, "width": 240, "height": 160, "text": "[提案] 承認結果を確認する"},
+        {"id": "save", "type": "text", "x": 320, "y": 0, "width": 240, "height": 160, "text": "[提案] 保存する"},
+        {"id": "stop", "type": "text", "x": 320, "y": 240, "width": 240, "height": 160, "text": "[提案] 保存せず停止する"}
+      ],
+      "edges": [
+        {"id": "yes", "fromNode": "check", "toNode": "save", "toEnd": "arrow", "label": "[提案] 承認あり"},
+        {"id": "no", "fromNode": "check", "toNode": "stop", "toEnd": "arrow", "label": "[提案] 承認なし"}
+      ]
+    },
+    "comparison": {
+      "nodes": [
+        {"id": "axis", "type": "group", "x": -32, "y": -32, "width": 700, "height": 300, "label": "[未確認] 導入条件の比較"},
+        {"id": "first", "type": "text", "x": 0, "y": 0, "width": 240, "height": 160, "text": "[提案] 案A: 手動確認を残す"},
+        {"id": "second", "type": "text", "x": 320, "y": 0, "width": 240, "height": 160, "text": "[未確認] 案B: 自動化に必要な権限を調べる"}
+      ]
+    }
+  },
+  "reference_sets": {
+    "none": [],
+    "rich": [
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "g", "field": "background", "occurrence": 1, "raw": "Assets/pattern.png", "fragment": null, "classification": "resolved", "reason": "file_exists", "candidates": ["Assets/pattern.png"], "policy_forbidden": false},
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "n", "field": "file", "occurrence": 1, "raw": "Notes/A.md", "fragment": "#Detail", "classification": "resolved", "reason": "heading_exists", "candidates": ["Notes/A.md"], "policy_forbidden": false},
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "t", "field": "text", "occurrence": 1, "raw": "[[Notes/A#Detail]]", "fragment": "#Detail", "classification": "resolved", "reason": "heading_exists", "candidates": ["Notes/A.md"], "policy_forbidden": false},
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "l", "field": "url", "occurrence": 1, "raw": "https://example.invalid/source", "fragment": null, "classification": "indeterminate", "reason": "external_url", "candidates": [], "policy_forbidden": false}
+    ],
+    "incomplete_rich": [
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "g", "field": "background", "occurrence": 1, "raw": "Assets/pattern.png", "fragment": null, "classification": "indeterminate", "reason": "source_parse_incomplete", "candidates": [], "policy_forbidden": false},
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "n", "field": "file", "occurrence": 1, "raw": "Notes/A.md", "fragment": "#Detail", "classification": "indeterminate", "reason": "source_parse_incomplete", "candidates": [], "policy_forbidden": false},
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "t", "field": "text", "occurrence": 1, "raw": "[[Notes/A#Detail]]", "fragment": "#Detail", "classification": "indeterminate", "reason": "source_parse_incomplete", "candidates": [], "policy_forbidden": false},
+      {"canvas": "Maps/sample.canvas", "entity": "node", "id": "l", "field": "url", "occurrence": 1, "raw": "https://example.invalid/source", "fragment": null, "classification": "indeterminate", "reason": "source_parse_incomplete", "candidates": [], "policy_forbidden": false}
+    ]
+  },
+  "diagnostic_cases": [
+    {"id": "D01", "document": "empty", "replacements": [], "structure": "supported", "references": "none", "issues": []},
+    {"id": "D02", "document": "empty", "replacements": [{"action": "set", "path": ["nodes"], "value": []}, {"action": "set", "path": ["edges"], "value": []}], "structure": "supported", "references": "none", "issues": []},
+    {"id": "D03", "document": "rich", "replacements": [], "structure": "supported", "references": "rich", "issues": []},
+    {"id": "D04", "document": "mind_map", "replacements": [], "structure": "supported", "references": "none", "issues": []},
+    {"id": "D05", "document": "workflow", "replacements": [], "structure": "supported", "references": "none", "issues": []},
+    {"id": "D06", "document": "comparison", "replacements": [], "structure": "supported", "references": "none", "issues": []},
+    {"id": "D07", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 1, "x"], "value": 10.0}], "structure": "supported", "references": "rich", "issues": []},
+    {"id": "D08", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 1, "x"], "value": true}], "structure": "invalid", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "format", "code": "invalid_type", "entity": "node", "id": "n", "field": "x", "related_ids": []}]},
+    {"id": "D09", "document": "rich", "replacements": [{"action": "remove", "path": ["nodes", 1, "height"]}], "structure": "invalid", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "format", "code": "missing_required", "entity": "node", "id": "n", "field": "height", "related_ids": []}]},
+    {"id": "D10", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 1, "id"], "value": "t"}, {"action": "set", "path": ["edges", 0, "fromNode"], "value": "t"}], "structure": "invalid", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "format", "code": "duplicate_id", "entity": "node", "id": "t", "field": "id", "related_ids": []}]},
+    {"id": "D11", "document": "rich", "replacements": [{"action": "set", "path": ["edges", 0, "toNode"], "value": "absent"}], "structure": "invalid", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "format", "code": "missing_endpoint", "entity": "edge", "id": "e", "field": "toNode", "related_ids": ["absent"]}]},
+    {"id": "D12", "document": "rich", "replacements": [{"action": "set", "path": ["edges", 0, "toEnd"], "value": "diamond"}], "structure": "invalid", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "format", "code": "invalid_enum", "entity": "edge", "id": "e", "field": "toEnd", "related_ids": []}]},
+    {"id": "D13", "document": "rich", "replacements": [{"action": "set", "path": ["extension"], "value": {}}], "structure": "unsupported", "references": "incomplete_rich", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "unknown_attribute", "entity": "document", "id": null, "field": "extension", "related_ids": []}]},
+    {"id": "D14", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 1, "extension"], "value": {}}], "structure": "unsupported", "references": "incomplete_rich", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "unknown_attribute", "entity": "node", "id": "n", "field": "extension", "related_ids": []}]},
+    {"id": "D15", "document": "rich", "replacements": [{"action": "set", "path": ["edges", 0, "extension"], "value": {}}], "structure": "unsupported", "references": "incomplete_rich", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "unknown_attribute", "entity": "edge", "id": "e", "field": "extension", "related_ids": []}]},
+    {"id": "D16", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 1, "x"], "value": 9007199254740992}], "structure": "unsupported", "references": "incomplete_rich", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "integer_range", "entity": "node", "id": "n", "field": "x", "related_ids": []}]},
+    {"id": "D17", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 1, "color"], "value": "red"}], "structure": "unsupported", "references": "incomplete_rich", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "unsupported_color", "entity": "node", "id": "n", "field": "color", "related_ids": []}]},
+    {"id": "D18", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 1, "width"], "value": 0}], "structure": "supported", "references": "rich", "issues": [{"path": "Maps/sample.canvas", "category": "layout", "code": "nonpositive_size", "entity": "node", "id": "n", "field": "width", "related_ids": []}]},
+    {"id": "D19", "document": "rich", "replacements": [{"action": "set", "path": ["edges", 0, "toNode"], "value": "n"}], "structure": "supported", "references": "rich", "issues": []},
+    {"id": "D20", "document": "rich", "replacements": [{"action": "append", "path": ["edges"], "value": {"id": "back", "fromNode": "t", "toNode": "n"}}], "structure": "supported", "references": "rich", "issues": []},
+    {"id": "D21", "document": "rich", "replacements": [{"action": "set", "path": ["nodes", 2, "x"], "value": 20}, {"action": "set", "path": ["nodes", 2, "y"], "value": 20}], "structure": "supported", "references": "rich", "issues": [{"path": "Maps/sample.canvas", "category": "layout", "code": "overlap", "entity": "node", "id": "t", "field": null, "related_ids": ["n"]}]},
+    {"id": "D22", "raw": "{\"nodes\":[],\"nodes\":[]}\n", "structure": "invalid", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "format", "code": "duplicate_key", "entity": "document", "id": null, "field": null, "related_ids": []}]},
+    {"id": "D23", "raw": "{\"nodes\":[NaN]}\n", "structure": "invalid", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "format", "code": "nonfinite_number", "entity": "document", "id": null, "field": null, "related_ids": []}]},
+    {"id": "D24", "bytes_hex": "efbbbf7b7d0a", "structure": "unsupported", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "utf8_bom", "entity": "document", "id": null, "field": null, "related_ids": []}]},
+    {"id": "D25", "bytes_hex": "ff0a", "structure": "unsupported", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "utf8_decode", "entity": "document", "id": null, "field": null, "related_ids": []}]},
+    {"id": "D26", "document": "empty", "replacements": [{"action": "set", "path": ["nodes"], "value": [{"id": "future", "type": "audio", "x": 0, "y": 0, "width": 100, "height": 100, "source": "unknown.wav"}]}], "structure": "unsupported", "references": "none", "issues": [{"path": "Maps/sample.canvas", "category": "unsupported", "code": "unknown_node_type", "entity": "node", "id": "future", "field": "type", "related_ids": []}]}
+  ],
+  "enum_cases": {
+    "document": "rich",
+    "independent_single_replacements": [
+      {"path": ["nodes", 0, "backgroundStyle"], "values": ["cover", "ratio", "repeat"]},
+      {"path": ["nodes", 1, "color"], "values": ["1", "2", "3", "4", "5", "6", "#abcdef", "#ABCDEF"]},
+      {"path": ["edges", 0, "fromSide"], "values": ["top", "right", "bottom", "left"]},
+      {"path": ["edges", 0, "toSide"], "values": ["top", "right", "bottom", "left"]},
+      {"path": ["edges", 0, "fromEnd"], "values": ["none", "arrow"]},
+      {"path": ["edges", 0, "toEnd"], "values": ["none", "arrow"]}
+    ],
+    "expected": {"structure": "supported", "references": "rich", "issues": [], "render_check": "not_performed"}
+  },
+  "uses": [
+    {"id": "USE-001", "document": "rich", "review": "Existing A and its heading are real; the comparison relation and URL are not established evidence."},
+    {"id": "USE-002", "document": "mind_map", "review": "The topic connects to the explicitly unanswered question; a proposed investigation is not a finding."},
+    {"id": "USE-003", "document": "workflow", "review": "Approved and unapproved branches lead to save and stop respectively; both arrows retain their condition."},
+    {"id": "USE-004", "document": "comparison", "review": "Two alternatives share one comparison dimension; unknown permissions are not represented as available."}
+  ],
+  "layout_cases": [
+    {"id": "L01", "document": "workflow", "mode": "horizontal", "node_ids": ["stop", "check", "save"], "origin_x": -100, "origin_y": 20, "gap": 40, "columns": 2, "expected_xy": {"stop": [-100, 20], "check": [180, 20], "save": [460, 20]}},
+    {"id": "L02", "document": "workflow", "mode": "vertical", "node_ids": ["stop", "check", "save"], "origin_x": -100, "origin_y": 20, "gap": 40, "columns": 2, "expected_xy": {"stop": [-100, 20], "check": [-100, 220], "save": [-100, 420]}},
+    {"id": "L03", "document": "workflow", "mode": "grid", "node_ids": ["stop", "check", "save"], "origin_x": -100, "origin_y": 20, "gap": 40, "columns": 2, "expected_xy": {"stop": [-100, 20], "check": [180, 20], "save": [-100, 220]}}
+  ],
+  "workflow_defaults": {
+    "document": "rich", "target": "Maps/sample.canvas", "intent": "edit",
+    "candidate_replacements": [{"action": "set", "path": ["nodes", 1, "x"], "value": 16}],
+    "mutations": [{"entity": "node", "id": "n", "action": "set", "fields": ["x"]}],
+    "markings": [], "allow_formatting": true,
+    "read_scopes": [{"kind": "directory", "path": "."}],
+    "limits": {"max_files": 20, "max_file_bytes": 1048576, "max_total_bytes": 4194304},
+    "consent": {"model_context": true, "workspace_copies": true},
+    "review": "Synthetic all-true diagram review bound to the exact fixture bytes. Only mechanism tests.",
+    "expect_unchanged_unless_saved": ["all source notes", "attachment bytes", "unrelated files", "target bytes and metadata on refusal"],
+    "successful_edit_delta": [{"entity": "node", "id": "n", "action": "set", "field": "x", "dependency": false}],
+    "approved_apply": "Use only the SHA-256 of this case's frozen plan bytes, supplied by the test approval fixture."
+  },
+  "workflow_cases": [
+    {"id": "W01", "command": "plan", "arrangement": "Default changed candidate and review.", "expected": {"status": "completed", "exit_code": 0, "write_status": "unsaved", "operation_state": "validated", "vault_writes": 0, "delta": "successful_edit_delta"}},
+    {"id": "W02", "command": "apply", "arrangement": "W01 exact plan approval.", "expected": {"status": "completed", "exit_code": 0, "write_status": "saved", "operation_state": "saved", "verified": true, "changed": true, "vault_commits": 1}},
+    {"id": "W03", "command": "apply", "arrangement": "Repeat W02 with valid result, receipt and matching current target.", "expected": {"status": "completed", "exit_code": 0, "write_status": "saved", "operation_state": "saved", "verified": true, "changed": false, "vault_commits": 0}},
+    {"id": "W04", "command": "plan", "arrangement": "Candidate identical to original bytes; review absent; storage capability unavailable.", "expected": {"status": "completed", "exit_code": 0, "write_status": "unsaved", "operation_state": "scoped", "no_changes": true, "vault_writes": 0, "workspace_writes": 0}},
+    {"id": "W05", "command": "plan", "arrangement": "workspace_copies=false.", "expected": {"exit_code": 2, "reason": "consent_required", "vault_writes": 0, "workspace_writes": 0}},
+    {"id": "W06", "command": "inspect", "arrangement": "model_context=false.", "expected": {"exit_code": 2, "reason": "consent_required", "vault_content_reads": 0, "vault_writes": 0, "workspace_writes": 0}},
+    {"id": "W07", "command": "plan", "arrangement": "Changed candidate, review missing.", "expected": {"exit_code": 2, "reason": "review_required", "vault_writes": 0}},
+    {"id": "W08", "command": "plan", "arrangement": "Review after_sha256 belongs to another candidate.", "expected": {"exit_code": 2, "reason": "stale_review", "vault_writes": 0}},
+    {"id": "W09", "command": "plan", "arrangement": "Each diagram review field independently false.", "expected": {"exit_code": 2, "reason": "review_rejected", "vault_writes": 0}},
+    {"id": "W10", "command": "apply", "arrangement": "Wrong approved plan hash.", "expected": {"exit_code": 2, "reason": "approval_mismatch", "vault_writes": 0}},
+    {"id": "W11", "command": "apply", "arrangement": "Each request, contract, implementation, artifact hash, path, root identity and parent identity independently mismatched.", "expected": {"exit_code": 2, "reason": "plan_mismatch", "vault_writes": 0}},
+    {"id": "W12", "command": "apply", "arrangement": "External target edit before final recheck.", "expected": {"exit_code": 2, "reason": "target_changed", "vault_commits": 0, "preserve_external_edit": true}},
+    {"id": "W13", "command": "apply", "arrangement": "Create mode; another process creates the target before exclusive commit.", "expected": {"exit_code": 2, "reason": "target_exists", "vault_commits": 0, "preserve_external_file": true}},
+    {"id": "W14", "command": "apply", "arrangement": "Inject stage flush failure, before pending commit record.", "expected": {"exit_code": 1, "write_status": "unsaved", "vault_commits": 0, "owned_stage_cleaned": true}},
+    {"id": "W15", "command": "apply", "arrangement": "Inject target verification, receipt write, or final result sync failure, independently after commit.", "expected": {"exit_code": 1, "write_status": "unknown", "operation_state": "blocked", "vault_commits": 1, "automatic_rollback": false}},
+    {"id": "W16", "command": "apply", "arrangement": "Prior pending record and absent or invalid receipt; target may already contain candidate.", "expected": {"exit_code": 2, "reason": "prior_outcome_unknown", "write_status": "unsaved", "vault_commits": 0}},
+    {"id": "W17", "command": "apply", "arrangement": "Valid receipt but current target changed, or successful result and receipt disagree.", "expected": {"exit_code": 2, "reason": "replay_mismatch", "vault_commits": 0}},
+    {"id": "W18", "command": "plan", "arrangement": "Existing source is each unsupported/invalid diagnostic case, with unrelated geometry change.", "expected": {"exit_code": 2, "reason": "source_not_editable", "vault_writes": 0}},
+    {"id": "W19", "command": "plan", "arrangement": "Source or candidate file/background is independently /tmp/private, ../outside.md, .git/config, .Git/config, .obsidian/config, or .OBSIDIAN/config; link URL independently file:, javascript:, data:, or http: without host. Unrelated geometry edit.", "expected": {"exit_code": 2, "reason": "forbidden_reference", "forbidden_target_probes": 0, "vault_writes": 0}},
+    {"id": "W20", "command": "plan", "arrangement": "allow_formatting=false on changed edit.", "expected": {"exit_code": 2, "reason": "formatting_consent_required", "vault_writes": 0}},
+    {"id": "W21", "command": "plan", "arrangement": "Additional undeclared attribute value/presence change, surviving-node reorder, surviving-edge reorder, or unrelated empty-array insertion.", "expected": {"exit_code": 2, "reason": "unrequested_change", "vault_writes": 0}},
+    {"id": "W22", "command": "plan", "arrangement": "Remove n and its incident e; request only node removal.", "expected": {"exit_code": 0, "delta": [{"entity": "node", "id": "n", "action": "remove", "field": null, "dependency": false}, {"entity": "edge", "id": "e", "action": "remove", "field": null, "dependency": true}], "vault_writes": 0}},
+    {"id": "W23", "command": "plan", "arrangement": "Remove n but retain dangling e.", "expected": {"exit_code": 2, "reason": "candidate_not_editable", "vault_writes": 0}},
+    {"id": "W24", "command": "plan", "arrangement": "Add node to {} with explicit node add and self-carried proposal text.", "expected": {"exit_code": 0, "delta": [{"entity": "document", "id": null, "action": "set", "field": "nodes_presence", "dependency": true}, {"entity": "node", "id": "new", "action": "add", "field": null, "dependency": false}], "vault_writes": 0}},
+    {"id": "W25", "command": "plan", "arrangement": "Added/semantically changed file or link node bound to enclosing group g; exact proposal prefix; group precedes and contains subject.", "expected": {"exit_code": 0, "vault_writes": 0}},
+    {"id": "W26", "command": "plan", "arrangement": "W25 independently missing prefix/binding, wrong category, nonexistent carrier, following group, noncontaining group, edge carrier group missing an endpoint; or move n outside g, remove g retaining n/l, change g prefix without n/l bindings, or introduce conflicting innermost groups.", "expected": {"exit_code": 2, "reason": "marking_required", "vault_writes": 0}},
+    {"id": "W27", "command": "plan", "arrangement": "proofread selected t.text: 参照する。 -> 参照します。 Exact diagram and nine-field semantic review, unchanged links/code and all other fields.", "expected": {"exit_code": 0, "vault_writes": 0}},
+    {"id": "W28", "command": "plan", "arrangement": "proofread independently alters URL, wikilink, code, heading, number, identifier, protected term, ID, node type, position, order, unselected label, or marker prefix/effective category.", "expected": {"exit_code": 2, "reason": "protected_change", "vault_writes": 0}},
+    {"id": "W29", "command": "plan", "arrangement": "proofread semantic_checks=null or [], duplicate/extra/stale/missing changed-string record, or each check independently false; use semantic_examples for actual contextual judgment. A missing JSON property is instead invalid_input.", "expected": {"exit_code": 2, "reason": "review_rejected", "vault_writes": 0}},
+    {"id": "W30", "command": "apply", "arrangement": "Known target with unsupported FS, xattrs, hard links, unpreservable uid/gid/mode, or unverifiable exact name.", "expected": {"exit_code": 4, "reason": "storage_capability", "vault_writes": 0}},
+    {"id": "W31", "command": "apply", "arrangement": "Create target name aliases an existing name on a casefold FS. Real casefold test required or explicitly not_performed.", "expected": {"exit_code": 2, "reason": "target_exists", "vault_commits": 0}},
+    {"id": "W32", "command": "inspect", "arrangement": "Explicit allowed source only, with Notes/A.md and attachment outside read scopes.", "expected": {"exit_code": 3, "outside_scope_probes": 0, "attachment_content_reads": 0, "vault_writes": 0, "workspace_writes": 0}},
+    {"id": "W33", "command": "inspect", "arrangement": "Text contains [[A]]; both Notes/A.md and Archive/A.md allowed and visible.", "expected": {"exit_code": 0, "reference": {"classification": "ambiguous", "reason": "multiple_notes", "candidates": ["Archive/A.md", "Notes/A.md"]}, "vault_writes": 0}},
+    {"id": "W34", "command": "inspect", "arrangement": "Only one same-name note is known but required search domain is incomplete.", "expected": {"exit_code": 3, "reference": {"classification": "indeterminate", "reason": "incomplete_search"}, "vault_writes": 0}},
+    {"id": "W35", "command": "apply", "arrangement": "Allowed outside-scope reference remains, is disclosed in plan, and exact plan is approved.", "expected": {"exit_code": 3, "status": "partial", "write_status": "saved", "verified": true, "changed": true, "vault_commits": 1}},
+    {"id": "W36", "command": "inspect", "arrangement": "Each agreed content count/byte limit exceeded; no unsafe missing/unique conclusion. Repeat same inputs gives identical report.", "expected": {"exit_code": 3, "reason": "limit_exceeded", "vault_writes": 0}},
+    {"id": "W37", "command": "apply", "arrangement": "Budget cannot reserve original plus candidate verification.", "expected": {"exit_code": 2, "reason": "limit_exceeded", "vault_commits": 0}},
+    {"id": "W38", "command": "inspect", "arrangement": "Missing sibling backend, old backend without storage API, missing interpreter or offline dependencies; proofread additionally missing invariants.py or mismatched SEMANTIC_CHECKS, while ordinary edit does not require that gate.", "expected": {"exit_code": 4, "reason": "dependency_missing", "vault_content_reads": 0, "automatic_downloads": 0}},
+    {"id": "W39", "command": "layout", "arrangement": "Selected card intersects existing group, has nonpositive dimensions, is a group, has unknown ID, or coordinates overflow.", "expected": {"exit_code": 2, "reason": "layout_refused", "vault_writes": 0}},
+    {"id": "W40", "command": "inspect", "arrangement": "Attachment read sentinel; external HTTP sentinel; malicious instructions in text, URL and paths.", "expected": {"attachment_content_reads": 0, "outbound_connections": 0, "spawned_payload_commands": 0, "vault_writes": 0}},
+    {"id": "W41", "command": "apply", "arrangement": "Canvas and legacy Markdown saves contend on same root flock; each rechecks current state after acquisition.", "expected": {"simultaneous_commit_sections": 0, "unapproved_writes": 0}},
+    {"id": "W42", "command": "read", "arrangement": "Read allowed source Markdown and Canvas; unsupported suffix, symlink, out-of-scope and management path independently refused.", "expected": {"refused_exit_code": 2, "unauthorized_reads": 0, "vault_writes": 0, "workspace_writes": 0}},
+    {"id": "W43", "command": "inspect", "arrangement": "Packed and workspace selective Canvas install does not install/overwrite siblings; all install includes all Skills; old suites unchanged.", "expected": {"installer_tests": "passed", "legacy_regressions": "passed", "implicit_sibling_updates": 0}},
+    {"id": "W44", "command": "apply", "arrangement": "Create under umask 0027; edit existing regular file mode 0640, uid/gid preserved; private artifacts checked.", "expected": {"new_mode_octal": "0640", "edit_mode_octal": "0640", "operation_directory_mode_octal": "0700", "artifact_mode_octal": "0600"}},
+    {"id": "W45", "command": "apply", "arrangement": "Terminate after pending record and before/after commit. Restart without trusted receipt.", "expected": {"exit_code": 2, "reason": "prior_outcome_unknown", "vault_commits": 0, "automatic_rollback": false}},
+    {"id": "W46", "command": "plan", "arrangement": "Request/control JSON has duplicate key, nonfinite value, unknown field, wrong type, over-1MiB content; CLI has duplicate/unknown/missing flags; inspect with write target; command-intent mismatch; proofread with layout; missing workspace/nonce; contradictory mutations; non-null create/edit semantic_checks.", "expected": {"exit_code": 1, "reason": "invalid_input", "vault_writes": 0}},
+    {"id": "W47", "command": "plan", "arrangement": "Independent create of each use document; all new nodes/edges have valid markings; no source, empty mutations, actual hash-bound diagram review.", "expected": {"exit_code": 0, "vault_writes": 0, "before_artifact": null}},
+    {"id": "W48", "command": "inspect", "arrangement": "Same fixed authorized inputs repeated; compare diagnostics exactly, including record ordering.", "expected": {"different_diagnostic_records": 0, "render_check": "not_performed"}}
+  ],
+  "review_correction_cases": [
+    {"id": "C01", "arrangement": "Retype n to text using same-ID remove/add pair and a self proposal prefix; keep incident e unchanged.", "expected": {"exit_code": 0, "delta": [{"entity": "node", "id": "n", "action": "remove", "field": null, "dependency": false}, {"entity": "node", "id": "n", "action": "add", "field": null, "dependency": false}], "removed_edges": []}},
+    {"id": "C02", "arrangement": "Approved edit keeps a known missing_file reference; no incomplete reasons.", "expected": {"exit_code": 0, "write_status": "saved", "verified": true}},
+    {"id": "C03", "arrangement": "Plan fits budget; apply's current authorized reference-note reads plus before/after reservation do not fit.", "expected": {"exit_code": 2, "reason": "limit_exceeded", "vault_commits": 0}},
+    {"id": "C04", "arrangement": "Candidate produces diagnostics.json exceeding 1048576 bytes.", "expected": {"exit_code": 2, "reason": "limit_exceeded", "vault_commits": 0, "truncated_success_plan": false}},
+    {"id": "C05", "arrangement": "Reference note heading changes after plan, target/source/policy unchanged. Current missing-heading diagnostic differs from approved diagnostic.", "expected": {"exit_code": 0, "write_status": "saved", "verified": true, "plan_mismatch": false}},
+    {"id": "C06", "arrangement": "Exact identical plan request, nonce, artifacts and identities; no result/receipt/stage.", "expected": {"exit_code": 0, "operation_state": "validated", "workspace_writes": 0, "same_plan_sha256": true}},
+    {"id": "C07", "arrangement": "Self evidence text inside proposal group; nested smaller unverified group contains only the file card.", "expected": {"effective_categories": {"t": "evidence", "n": "unverified", "l": "proposal"}}},
+    {"id": "C08", "arrangement": "Selected strings include group.label and edge.label. Only harmless prose is edited; marker prefixes, quantities, link/code-like syntax unchanged; exact per-string actual reviews.", "expected": {"exit_code": 0, "gate_calls": 2}},
+    {"id": "C09", "arrangement": "Each semantic example is independently paired with its meaning_preserving_after. Real contextual review, not automatic inference from the false examples.", "expected": {"meaning_preserving_counterpart": true, "meaning_changing_original": false}}
+  ],
+  "additional_format_cases": [
+    {"id": "F01", "raw": "{", "structure": "invalid", "code": "json_syntax", "entity": "document", "id_value": null, "field": null},
+    {"id": "F02", "raw": "[]", "structure": "invalid", "code": "invalid_type", "entity": "document", "id_value": null, "field": null},
+    {"id": "F03", "raw": "{\"nodes\":[{\"id\":\"r\",\"x\":0,\"y\":0,\"width\":100,\"height\":100}]}", "structure": "invalid", "code": "missing_required", "entity": "node", "id_value": "r", "field": "type"},
+    {"id": "F04", "raw": "{\"nodes\":[{\"id\":\"r\",\"type\":true,\"x\":0,\"y\":0,\"width\":100,\"height\":100}]}", "structure": "invalid", "code": "invalid_type", "entity": "node", "id_value": "r", "field": "type"},
+    {"id": "F05", "raw": "{\"nodes\":[{\"id\":\"r\",\"type\":\"file\",\"x\":0,\"y\":0,\"width\":100,\"height\":100,\"file\":\"Notes/A.md\",\"subpath\":\"Detail\"}]}", "structure": "invalid", "code": "invalid_enum", "entity": "node", "id_value": "r", "field": "subpath"},
+    {"id": "F06", "raw": "{\"nodes\":[{\"id\":\"r\",\"type\":\"group\",\"x\":0,\"y\":0,\"width\":100,\"height\":100,\"backgroundStyle\":\"stretch\"}]}", "structure": "invalid", "code": "invalid_enum", "entity": "node", "id_value": "r", "field": "backgroundStyle"},
+    {"id": "F07", "raw": "{\"nodes\":[{\"id\":\"r\",\"type\":\"text\",\"x\":0,\"y\":0,\"width\":100,\"height\":100,\"text\":\"\\ud800\"}]}", "structure": "unsupported", "code": "unicode_scalar", "entity": "node", "id_value": "r", "field": "text"}
+  ],
+  "exact_number_cases": {
+    "materialize": "Insert lexeme unchanged as x into a sole text node r with y=0,width=100,height=100,text=x. references=[], render_check=not_performed. On error, exactly one issue at node r field x, no related_ids.",
+    "cases": [
+      {"lexeme": "1E3", "structure": "supported", "issues": []},
+      {"lexeme": "-0", "structure": "supported", "issues": []},
+      {"lexeme": "9007199254740991.0", "structure": "supported", "issues": []},
+      {"lexeme": "-9007199254740991", "structure": "supported", "issues": []},
+      {"lexeme": "9007199254740992.0", "structure": "unsupported", "code": "integer_range"},
+      {"lexeme": "9007199254740993.0", "structure": "unsupported", "code": "integer_range"},
+      {"lexeme": "-9007199254740992", "structure": "unsupported", "code": "integer_range"},
+      {"lexeme": "1e400", "structure": "unsupported", "code": "integer_range"},
+      {"lexeme": "1e999999", "structure": "unsupported", "code": "integer_range"},
+      {"lexeme": "1e99999999999999999999", "structure": "unsupported", "code": "integer_range"},
+      {"lexeme": "1e-99999999999999999999", "structure": "invalid", "code": "invalid_type"},
+      {"lexeme": "0e99999999999999999999", "structure": "supported", "issues": []},
+      {"lexeme": "-0e-99999999999999999999", "structure": "supported", "issues": []},
+      {"lexeme": "1.5", "structure": "invalid", "code": "invalid_type"},
+      {"lexeme": "10.000000000000000000001", "structure": "invalid", "code": "invalid_type"},
+      {"repeat_digit": "9", "count": 5000, "structure": "unsupported", "code": "integer_range"}
+    ]
+  },
+  "reference_cases": {
+    "materialize": "Use sole node r with x=0,y=0,width=100,height=100, overlaid with input. The full vault above is authorized unless scopes overrides it. Directories names actual fixture directories. extra_vault replaces/adds exact bytes. Build full expected reference by shallow overlay of expected on defaults; no product output is used. Diagnostics is supported, issues=[], render_check=not_performed, exactly that reference.",
+    "defaults": {"canvas": "Maps/sample.canvas", "entity": "node", "id": "r", "field": "file", "occurrence": 1, "raw": "", "fragment": null, "classification": "indeterminate", "reason": "outside_scope", "candidates": [], "policy_forbidden": false},
+    "cases": [
+      {"id": "R01", "input": {"type": "file", "file": "Notes/Missing.md"}, "expected": {"raw": "Notes/Missing.md", "classification": "unresolved", "reason": "missing_file"}},
+      {"id": "R02", "input": {"type": "text", "text": "[[A]]"}, "expected": {"field": "text", "raw": "[[A]]", "classification": "ambiguous", "reason": "multiple_notes", "candidates": ["Archive/A.md", "Notes/A.md"]}},
+      {"id": "R03", "input": {"type": "file", "file": "Notes/A.md"}, "scopes": [{"kind": "file", "path": "Maps/sample.canvas"}], "expected": {"raw": "Notes/A.md", "reason": "outside_scope"}},
+      {"id": "R04", "input": {"type": "file", "file": "Notes/A.md", "subpath": "#Absent"}, "expected": {"raw": "Notes/A.md", "fragment": "#Absent", "classification": "unresolved", "reason": "missing_heading", "candidates": ["Notes/A.md"]}},
+      {"id": "R05", "input": {"type": "file", "file": "Notes/A.md", "subpath": "#^block"}, "expected": {"raw": "Notes/A.md", "fragment": "#^block", "reason": "unsupported_subpath", "candidates": ["Notes/A.md"]}},
+      {"id": "R06", "input": {"type": "file", "file": "Assets/pattern.png", "subpath": "#Detail"}, "expected": {"raw": "Assets/pattern.png", "fragment": "#Detail", "reason": "unsupported_subpath", "candidates": ["Assets/pattern.png"]}},
+      {"id": "R07", "input": {"type": "text", "text": "[資料](../Notes/A.md#Detail)"}, "expected": {"field": "text", "raw": "[資料](../Notes/A.md#Detail)", "fragment": "#Detail", "classification": "resolved", "reason": "heading_exists", "candidates": ["Notes/A.md"]}},
+      {"id": "R08", "input": {"type": "text", "text": "[二重](../Notes/%2541.md)"}, "expected": {"field": "text", "raw": "[二重](../Notes/%2541.md)", "classification": "unresolved", "reason": "missing_file"}},
+      {"id": "R09", "input": {"type": "text", "text": "[一回](../Notes/%41.md)"}, "expected": {"field": "text", "raw": "[一回](../Notes/%41.md)", "classification": "resolved", "reason": "file_exists", "candidates": ["Notes/A.md"]}},
+      {"id": "R10", "input": {"type": "file", "file": "Assets/absent.png"}, "expected": {"raw": "Assets/absent.png", "classification": "unresolved", "reason": "missing_file"}},
+      {"id": "R11", "input": {"type": "file", "file": "Notes"}, "expected": {"raw": "Notes", "reason": "not_regular_file"}},
+      {"id": "R12", "input": {"type": "file", "file": "Notes/Broken.md"}, "extra_vault": {"Notes/Broken.md": "---\n: [\n---\n"}, "expected": {"raw": "Notes/Broken.md", "reason": "target_parse_incomplete", "candidates": ["Notes/Broken.md"]}},
+      {"id": "R13", "input": {"type": "file", "file": "../outside.md"}, "expected": {"raw": "../outside.md", "reason": "forbidden_path", "policy_forbidden": true}},
+      {"id": "R14", "input": {"type": "group", "background": ".OBSIDIAN/config"}, "expected": {"field": "background", "raw": ".OBSIDIAN/config", "reason": "forbidden_path", "policy_forbidden": true}},
+      {"id": "R15", "input": {"type": "link", "url": "javascript:ignored"}, "expected": {"field": "url", "raw": "javascript:ignored", "reason": "forbidden_url", "policy_forbidden": true}},
+      {"id": "R16", "input": {"type": "text", "text": "[[.obsidian/config]]"}, "expected": {"field": "text", "raw": "[[.obsidian/config]]", "reason": "forbidden_path"}},
+      {"id": "R17", "input": {"type": "text", "text": "[範囲外](../../outside.md)"}, "expected": {"field": "text", "raw": "[範囲外](../../outside.md)", "reason": "forbidden_path"}},
+      {"id": "R18", "input": {"type": "text", "text": "[同一](#Detail)"}, "expected": {"field": "text", "raw": "[同一](#Detail)", "fragment": "#Detail", "reason": "unsupported_reference"}},
+      {"id": "R19", "input": {"type": "file", "file": "Notes/A.md", "subpath": "#Detail"}, "extra_vault": {"Notes/A.md": "# A\n\n## Detail\n\n## Detail\n"}, "expected": {"raw": "Notes/A.md", "fragment": "#Detail", "reason": "ambiguous_heading", "candidates": ["Notes/A.md"]}}
+    ]
+  },
+  "mixed_diagnostic_case": {
+    "document": "rich",
+    "replacements": [{"action": "set", "path": ["extension"], "value": {}}, {"action": "set", "path": ["nodes", 1, "x"], "value": true}],
+    "expected": {"structure": "invalid", "references": [], "issues": [
+      {"path": "Maps/sample.canvas", "category": "unsupported", "code": "unknown_attribute", "entity": "document", "id": null, "field": "extension", "related_ids": []},
+      {"path": "Maps/sample.canvas", "category": "format", "code": "invalid_type", "entity": "node", "id": "n", "field": "x", "related_ids": []}
+    ], "render_check": "not_performed"}
+  },
+  "geometry_cases": {
+    "materialize": "Start with nodes a at (0,0,100,100), b at (100,0,100,100), both type=text,text=x. Overlay null removes a property; other values replace it. Expected overlap pairs list [later_id,earlier_id] in output order; expand to exact overlap Diagnostic. Nonpositive nodes are excluded. For complete Diagnostics: supported, references=[], issues from these exact pairs/nonpositive attributes, render_check=not_performed.",
+    "cases": [
+      {"id": "G01", "overlay": {}, "expected_overlap_pairs": [], "expected_nonpositive": []},
+      {"id": "G02", "overlay": {"b": {"x": 0}}, "expected_overlap_pairs": [["b", "a"]], "expected_nonpositive": []},
+      {"id": "G03", "overlay": {"a": {"type": "group", "text": null, "width": 300, "height": 300}}, "expected_overlap_pairs": [], "expected_nonpositive": []},
+      {"id": "G04", "overlay": {"a": {"type": "group", "text": null, "width": 150, "height": 150}}, "expected_overlap_pairs": [], "expected_nonpositive": []},
+      {"id": "G05", "overlay": {"a": {"width": 0}, "b": {"x": 0}}, "expected_overlap_pairs": [], "expected_nonpositive": [["a", "width"]]},
+      {"id": "G06", "overlay": {"a": {"type": "group", "text": null, "width": 300, "height": 300}, "b": {"type": "group", "text": null}}, "expected_overlap_pairs": [], "expected_nonpositive": []},
+      {"id": "G07", "overlay": {"b": {"x": 0}}, "prepend_group": {"id": "container", "type": "group", "x": -10, "y": -10, "width": 300, "height": 300}, "expected_overlap_pairs": [["b", "a"]], "expected_nonpositive": []}
+    ]
+  },
+  "mixed_size_layout": {
+    "sizes": {"a": [100, 80], "b": [300, 160], "c": [200, 120]},
+    "node_ids": ["a", "b", "c"], "origin_x": 0, "origin_y": -20, "gap": 40,
+    "cases": [
+      {"mode": "grid", "columns": 2, "expected_xy": {"a": [0, -20], "b": [340, -20], "c": [0, 180]}},
+      {"mode": "horizontal", "columns": 2, "expected_xy": {"a": [0, -20], "b": [340, -20], "c": [680, -20]}},
+      {"mode": "grid", "columns": 10, "expected_xy": {"a": [0, -20], "b": [340, -20], "c": [680, -20]}}
+    ]
+  },
+  "replay_cases": {
+    "matrix": "Enumerate result absent/pending/unknown/saved/corrupt x receipt absent/valid/invalid x target before/after/other. Exact rule table in design; no write except fresh.",
+    "rules_in_order": [
+      {"result": ["corrupt"], "receipt": ["absent", "valid", "invalid"], "target": ["before", "after", "other"], "expected": "replay_mismatch"},
+      {"result": ["absent", "pending", "unknown", "saved"], "receipt": ["valid"], "target": ["after"], "expected": "already_applied"},
+      {"result": ["absent", "pending", "unknown", "saved"], "receipt": ["valid"], "target": ["before", "other"], "expected": "replay_mismatch"},
+      {"result": ["saved"], "receipt": ["absent", "invalid"], "target": ["before", "after", "other"], "expected": "replay_mismatch"},
+      {"result": ["pending", "unknown"], "receipt": ["absent", "invalid"], "target": ["before", "after", "other"], "expected": "prior_outcome_unknown"},
+      {"result": ["absent"], "receipt": ["invalid"], "target": ["before", "after", "other"], "expected": "replay_mismatch"},
+      {"result": ["absent"], "receipt": ["absent"], "target": ["before"], "expected": "fresh"},
+      {"result": ["absent"], "receipt": ["absent"], "target": ["after", "other"], "expected": "target_changed"}
+    ],
+    "create_override": "target_changed becomes target_exists; before means absent. Existing stage overrides fresh with workspace_conflict."
+  },
+  "semantic_examples": [
+    {"check": "actors", "before": "担当者が管理者を確認する。", "after": "管理者が担当者を確認する。", "meaning_preserving_after": "担当者が管理者を確認します。", "expected": false},
+    {"check": "negation", "before": "保存を許可しない。", "after": "保存を許可する。", "meaning_preserving_after": "保存を許可しません。", "expected": false},
+    {"check": "conditions", "before": "承認された場合だけ保存する。", "after": "承認される前に保存する。", "meaning_preserving_after": "承認された場合だけ保存します。", "expected": false},
+    {"check": "modality", "before": "確認してもよい。", "after": "確認しなければならない。", "meaning_preserving_after": "確認してもよいです。", "expected": false},
+    {"check": "scope", "before": "選択したノートだけを読む。", "after": "すべてのノートを読む。", "meaning_preserving_after": "選択したノートだけを読みます。", "expected": false},
+    {"check": "causality", "before": "確認したため保存を停止する。", "after": "保存を停止したため確認する。", "meaning_preserving_after": "確認したため保存を停止します。", "expected": false},
+    {"check": "quantity_bindings", "before": "案Aは2件、案Bは3件を処理する。", "after": "案Aは3件、案Bは2件を処理する。", "meaning_preserving_after": "案Aは2件、案Bは3件を処理します。", "expected": false},
+    {"check": "terminology", "before": "承認と認証を区別する。", "after": "承認を認証と同じ意味で扱う。", "meaning_preserving_after": "承認と認証を区別します。", "expected": false},
+    {"check": "structure", "before": "手順を確認する。次に保存する。", "after": "保存する。次に手順を確認する。", "meaning_preserving_after": "手順を確認します。次に保存します。", "expected": false}
+  ]
+}

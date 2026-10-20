@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {"id": "review", "type": "text", "x": 0, "y": 0, "width": 280, "height": 180, "text": "[提案] 対象と差分を確認する"},
+    {"id": "approved", "type": "text", "x": 360, "y": 0, "width": 280, "height": 180, "text": "[提案] 承認された場合だけ保存する"},
+    {"id": "blocked", "type": "text", "x": 360, "y": 260, "width": 280, "height": 180, "text": "[提案] 承認がなければ保存せず停止する"}
+  ],
+  "edges": [
+    {"id": "yes", "fromNode": "review", "toNode": "approved", "toEnd": "arrow", "label": "[提案] 承認あり"},
+    {"id": "no", "fromNode": "review", "toNode": "blocked", "toEnd": "arrow", "label": "[提案] 承認なし"}
+  ]
+}

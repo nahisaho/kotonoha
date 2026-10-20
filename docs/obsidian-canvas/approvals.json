@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "stage": "requirements",
+      "artifact": "docs/obsidian-canvas/requirements.md",
+      "sha256": "9ccca26b16934cb0bb5d408897c35454b2349c068bf75d21176d5c9a636c121f",
+      "document_version": "0.2",
+      "decision": "approved",
+      "actor": "user",
+      "recorded_by": "GitHub Copilot",
+      "user_message": "承認して設計へ進む"
+    },
+    {
+      "stage": "design",
+      "document_version": "0.3",
+      "decision": "approved",
+      "actor": "user",
+      "recorded_by": "GitHub Copilot",
+      "user_message": "承認して実装へ進む",
+      "manifest": "/tmp/kotonoha-test/obsidian-canvas/design-approval-manifest.json",
+      "manifest_sha256": "1a481fca5062d3a30d216cdf36c35467fb560a57fb603f2cb0cee09eac3d9ebe",
+      "artifacts": [
+        {"path": "docs/obsidian-canvas/design.md", "sha256": "042093b6a7fb91680226d38d2518634114ceb9166bd40fbef35a6f9f020d91db"},
+        {"path": "skills/obsidian-canvas/references/execution-contract.json", "sha256": "a51068df28a347aa9616772f20e00f5b6f2431e127976484f99c73b2dff96a1b"},
+        {"path": "docs/obsidian-canvas/acceptance-cases.json", "sha256": "05107f50c36dad1b85430a8b5264d1c0afc7ae0f0908d1dba3bd190e00c35caf"},
+        {"path": "/tmp/kotonoha-test/obsidian-canvas/feasibility.py", "sha256": "dd7fe25cc6a0aa1ce84d89c961d042d87e5a37c101a24a775ff25da888a8ce35"},
+        {"path": "/tmp/kotonoha-test/obsidian-canvas/feasibility.py.lock", "sha256": "bb8ceaab4a51d04621f805741e1bea583f8ac119a1cd33aa960dbc5ae7687ec5"},
+        {"path": "/tmp/kotonoha-test/obsidian-canvas/feasibility-results.json", "sha256": "6feb04abbcd7fe5e7f1b96bb531e2c8ca412b016a02c4d2df1444174b20509e1"},
+        {"path": "/tmp/kotonoha-test/obsidian-canvas/design-review.json", "sha256": "973f06f5333b3d9ceeb40044ebfae574966bc2a6f37da1f02867e476862cdaa2"},
+        {"path": "/tmp/kotonoha-test/obsidian-canvas/design-v03/prose-review.json", "sha256": "025b6e6768e7793d9bf0b63896e1524a54f7675d3b5b366bc66cceb8b91e797e"}
+      ],
+      "residual_risks_acknowledged": [
+        "Obsidian rendering and real casefold filesystem not performed",
+        "Disposable feasibility evidence is not product acceptance",
+        "Shared-backend regression required after implementation",
+        "Semantic attestations are not proof; last-check external races remain",
+        "Sibling obsidian-vault storage API addition required; no implicit update of published installs"
+      ]
+    }
+  ]
+}

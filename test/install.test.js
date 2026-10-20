@@ -273,6 +273,26 @@ function assertObsidianAssets(skillsRoot) {
   }
 }
 
+function assertCanvasAssets(skillsRoot) {
+  for (const relativePath of [
+    "SKILL.md",
+    "references/workflow.md",
+    "references/execution-contract.json",
+    "scripts/canvas.py",
+    "scripts/canvas.py.lock",
+    "assets/templates/note-map.canvas",
+    "assets/templates/mind-map.canvas",
+    "assets/templates/workflow.canvas",
+    "assets/templates/comparison.canvas",
+  ]) {
+    assert.equal(
+      fs.readFileSync(path.join(skillsRoot, "obsidian-canvas", relativePath), "utf8"),
+      fs.readFileSync(path.join(repositoryRoot, "skills", "obsidian-canvas", relativePath), "utf8"),
+      `Canvas ${relativePath} must be installed byte-identically`,
+    );
+  }
+}
+
 test("Obsidian requests route to a core-compatible template that passes structural lint", () => {
   const skillRoot = path.join(repositoryRoot, "skills", "tech-writer");
   const skill = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
@@ -304,6 +324,48 @@ test("Obsidian requests route to a core-compatible template that passes structur
 
 test("analysis contracts preserve IDs, evidence rules, and incomplete status", () => {
   assertAnalysisContracts(path.join(repositoryRoot, "skills"));
+});
+
+test("Vault instructions distinguish direct editing from CLI plan-approved saving", () => {
+  const vaultRoot = path.join(repositoryRoot, "skills", "obsidian-vault");
+  const skill = fs.readFileSync(path.join(vaultRoot, "SKILL.md"), "utf8");
+  const workflow = fs.readFileSync(
+    path.join(vaultRoot, "references", "workflow.md"),
+    "utf8",
+  );
+  assert.match(skill, /## Direct editing \(default\)/);
+  assert.match(skill, /Use host read\/edit tools/);
+  assert.match(skill, /Both save modes require explicit target\/change\/write authorization/);
+  assert.match(skill, /Read back after saving/);
+  assert.match(skill, /Never retry a failed CLI operation as a direct edit without permission/);
+  assert.doesNotMatch(skill, /[\u3040-\u30ff\u3400-\u9fff]/u);
+  assert.match(workflow, /直接編集でもjapanese-proseの保護検査とハッシュ付き意味レビューを省略しない/);
+  const contract = JSON.parse(
+    fs.readFileSync(path.join(vaultRoot, "references", "execution-contract.json"), "utf8"),
+  );
+  assert.equal(Object.hasOwn(contract["x-commands"], "edit"), false);
+});
+
+test("Vault working directories prefer user targets over session-state copies", () => {
+  const vaultRoot = path.join(repositoryRoot, "skills", "obsidian-vault");
+  const skill = fs.readFileSync(path.join(vaultRoot, "SKILL.md"), "utf8");
+  const workflow = fs.readFileSync(
+    path.join(vaultRoot, "references", "workflow.md"), "utf8",
+  );
+  assert.match(skill, /Use the user-specified directory, or the current directory at request start/);
+  assert.match(skill, /resolve\s+relative targets from the selected working directory/);
+  assert.match(skill, /Preserve explicitly\s+Vault-relative and absolute paths/);
+  assert.match(skill, /Edit the resolved target itself, not a session-state copy/);
+  assert.match(skill, /Never default to\s+`~\/\.copilot\/session-state\/\.\.\.\/files\/` unless the user explicitly selects it/);
+  assert.match(skill, /Working-directory selection grants neither\s+whole-Vault access nor write permission/);
+  assert.match(workflow, /相対指定の作業ディレクトリは開始時のカレントから/);
+  assert.match(workflow, /CLI計画や添削に必要なVault外の場所を使えなければ、別の場所の指定とコピーへの同意を得るまで停止/);
+  assert.match(workflow, /補助ファイルを作る許可は、対象ノートの保存許可ではない/);
+  const handoff = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "tech-writer", "SKILL.md"), "utf8",
+  );
+  assert.match(handoff, /user-specified\s+directory, or the current directory at request start/);
+  assert.match(handoff, /Do not replace the target with a copy in session-state\s+storage/);
 });
 
 test("tech-writer lint detects bold delimiters touching prose", () => {
@@ -436,6 +498,7 @@ test("installs all skills into the default project directory", () => {
   });
   assertAnalysisContracts(path.join(workingDirectory, ".github", "skills"));
   assertObsidianAssets(path.join(workingDirectory, ".github", "skills"));
+  assertCanvasAssets(path.join(workingDirectory, ".github", "skills"));
 
   assert.ok(
     fs.existsSync(
@@ -541,6 +604,27 @@ test("installs obsidian-vault alone without silently adding sibling skills", () 
   }
   assert.equal(fs.existsSync(path.join(root, "japanese-prose")), false);
   assert.equal(fs.existsSync(path.join(root, "tech-writer")), false);
+});
+
+test("installs Canvas alone while preserving an existing sibling", () => {
+  const workingDirectory = createTemporaryDirectory();
+  const target = path.join(workingDirectory, "skills");
+  const sibling = path.join(target, "obsidian-vault");
+  fs.mkdirSync(sibling, { recursive: true });
+  fs.writeFileSync(path.join(sibling, "custom.txt"), "keep existing backend");
+  execFileSync(process.execPath, [cli, "install", "--target", target, "--skill", "obsidian-canvas"], {
+    cwd: workingDirectory, stdio: "pipe",
+  });
+  assertCanvasAssets(target);
+  assert.equal(fs.readFileSync(path.join(sibling, "custom.txt"), "utf8"), "keep existing backend");
+  assert.deepEqual(fs.readdirSync(sibling), ["custom.txt"]);
+  assert.equal(fs.existsSync(path.join(target, "japanese-prose")), false);
+  const aloneTarget = path.join(workingDirectory, "alone");
+  execFileSync(process.execPath, [cli, "install", "--target", aloneTarget, "--skill", "obsidian-canvas"], {
+    cwd: workingDirectory, stdio: "pipe",
+  });
+  assertCanvasAssets(aloneTarget);
+  assert.equal(fs.existsSync(path.join(aloneTarget, "obsidian-vault")), false);
 });
 
 test("rejects an unknown selected skill", () => {
@@ -680,6 +764,7 @@ test("the packed npm artifact installs a usable CLI", () => {
     },
   );
   assertObsidianAssets(path.join(consumerDirectory, ".copilot", "skills"));
+  assertCanvasAssets(path.join(consumerDirectory, ".copilot", "skills"));
 
   assert.ok(
     fs.existsSync(
