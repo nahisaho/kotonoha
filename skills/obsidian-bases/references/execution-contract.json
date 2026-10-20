@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/Request",
+  "title": "kotonoha Bases read-only validation contract",
+  "x-contract-version": 1,
+  "x-schema-validation": {"strict": true, "strictRequired": false, "allErrors": true, "allowUnionTypes": true, "ownProperties": true, "metadata": "Remove top-level x-* metadata before compiling; select the desired $defs entry through $ref. Conditional required properties are declared in the shared parent schemas."},
+  "x-runtime": {
+    "node": ">=18",
+    "dependencies": {"ajv": "8.20.0", "jsep": "1.4.0", "jsonc-parser": "3.3.1", "yaml": "2.9.1"},
+    "prepare": "npm ci --prefix <bases-dir>/scripts --ignore-scripts --no-audit --no-fund",
+    "prepare-offline": "npm ci --prefix <bases-dir>/scripts --offline --ignore-scripts --no-audit --no-fund",
+    "invoke": "node <bases-dir>/scripts/check.cjs --stdin",
+    "dependency-resolution": "Only scripts/node_modules; do not fall back to ancestor modules, NODE_PATH, downloads or npx.",
+    "vault_access": false,
+    "writes": false,
+    "expression_evaluation": false
+  },
+  "x-commands": {
+    "--stdin": {"input": "Request", "output": "Report", "stdin_max_bytes": 16777216},
+    "--help": {"input": null, "output": "Usage", "dependencies_required": false},
+    "other": "Missing, duplicate, abbreviated, positional and unknown arguments fail with invalid_input/1."
+  },
+  "x-limits": {
+    "document_bytes": 1048576,
+    "yaml_depth": 64,
+    "yaml_nodes": 10000,
+    "expression_chars": 4096,
+    "expression_nodes": 1024,
+    "expression_depth": 64,
+    "formulas": 256,
+    "diagnostics": 256,
+    "output_bytes": 1048576,
+    "policy": "Hard safety caps, disclosed before use; no unbounded override. Exceeding a cap prohibits saving and must be reported, not silently truncated."
+  },
+  "x-packaging": {
+    "lock": "scripts/package-lock.json is canonical and must be included byte-for-byte in the parent npm tarball and Skill installation.",
+    "exclude": "Exclude all nested node_modules from the parent package files list, the source Skill installer copy, and git tracking.",
+    "no-bootstrap": "Dependency preparation is explicit npm ci; check.cjs never prepares dependencies or writes a lockfile."
+  },
+  "x-expression": {
+    "ast": ["Literal", "Identifier", "ThisExpression", "MemberExpression", "CallExpression", "UnaryExpression", "BinaryExpression", "ArrayExpression"],
+    "unary": ["!", "+", "-"],
+    "binary": ["+", "-", "*", "/", "%", "==", "!=", ">", ">=", "<", "<=", "&&", "||"],
+    "global_calls": {"if": [2, 3], "today": [0, 0], "now": [0, 0], "date": [1, 1], "link": [1, 2], "list": [1, 1], "min": [2, 128], "max": [2, 128]},
+    "method_calls": {
+      "hasTag": [1, 128], "hasLink": [1, 1], "inFolder": [1, 1],
+      "contains": [1, 1], "lower": [0, 0], "trim": [0, 0],
+      "round": [0, 1], "toFixed": [1, 1], "mean": [0, 0],
+      "join": [1, 1], "unique": [0, 0]
+    },
+    "computed_members": "Literal string or nonnegative safe integer only; formula access requires a literal string. Dynamic indices are unsupported.",
+    "literal_types": ["string", "number", "boolean"],
+    "formula_references": "Walk accepted ASTs, not raw text. Collect formula.name and formula[\"name\"]. Bare note properties do not require declarations.",
+    "summary_context": "values is available only in custom summaries. mean() is admitted only on values in custom summaries from the pinned Bases syntax example, despite its omission from the pinned Functions index; no additional undocumented methods are inferred.",
+    "unsupported": "Unparsed expressions, other AST nodes/operators/calls/arities, nonfinite numeric literals, sparse arrays, optional chaining, dynamic call targets and dynamic indices prohibit saving. No eval or function invocation.",
+    "runtime_types": "Not inferred as proven from method names. Actual values, result sets and rendering are not evaluated."
+  },
+  "x-summary-names": ["Average", "Min", "Max", "Sum", "Range", "Median", "Stddev", "Earliest", "Latest", "Checked", "Unchecked", "Empty", "Filled", "Unique"],
+  "x-minimum-app": {"table": "1.9.0", "cards": "1.9.0", "list": "1.10.0", "kanban": "1.14.0"},
+  "x-issue-codes": {"$ref": "#/$defs/IssueCode"},
+  "x-result-policy": [
+    "Precedence: execution failure/1, known invalid/2, known insufficient version/4, unsupported or unknown version/3, complete/0. Do not run secondary version/reference checks when their prerequisites are unsupported.",
+    "Control/argument/UTF-8 input failure: failed/1; no document processing.",
+    "Unexpected execution failure: failed/1; do not expose raw exception or input.",
+    "Missing local dependency: not_performed/4.",
+    "Known invalid YAML/structure or unresolved formula/summary or formula cycle: not_performed/2.",
+    "Known insufficient declared application version: not_performed/4.",
+    "Unsupported content, resource exhaustion, or unknown application version: partial/3.",
+    "Complete supported static checks with only cautions: completed/0.",
+    "static_checks_passed is true only for completed/0 with at least one view; it never establishes authorization, actual application compatibility, proofreading approval, runtime results or successful saving.",
+    "Every report has read_only=true, authorization=not_assessed, write_status=not_requested, render_check=not_performed and expression_evaluation=not_performed."
+  ],
+  "x-host-data-policy": "Do not repurpose source text or diagnostic names for public logs. Do not claim control of the host's own conversation or file retention. Read, model-input, write and external-copy permissions remain distinct.",
+  "x-processing-order": [
+    "Arguments/help, dependency availability, bounded strict UTF-8 JSON control, Request schema, document Unicode and source hash, document byte cap, YAML parse/features, YAML node/depth caps, local structure/value checks, supported expression/reference checks, application version, output caps.",
+    "Collect local known-invalid and unsupported findings in independently inspectable subtrees. Skip references whose definitions or expression AST are incomplete. Never invent missing-reference errors from an unsupported expression.",
+    "Run application-version checks only when structure and expression/reference validation are fully supported and no known-invalid issue exists. Therefore unknown content plus an old declared version reports unsupported/3 without a version issue; invalid plus old version reports invalid/2 without a version issue.",
+    "The View groupOrder/groupBy dependency is an initial-subset restriction: missing groupBy for a non-Kanban groupOrder is unsupported_value/3 at groupOrder. Kanban missing groupBy is missing_required/2 at groupBy. Do not expose duplicate Ajv condition errors.",
+    "Wrong scalar/container types, required type/name/groupBy for Kanban, direction outside ASC/DESC are known-invalid. Empty names/map keys/expressions/display names, nonpositive/out-of-subset integral limit, multi-key/empty filter operator objects, and groupOrder without groupBy on non-Kanban are unsupported_value/3. Unknown filter operator keys are unknown_key/3.",
+    "A merge mapping key << is unsupported_yaml_feature at root, even without an anchor. __proto__, constructor and prototype are ordinary owned data keys in user-name dictionaries and must never mutate prototypes; unknown top-level keys with those names are unknown_key/3.",
+    "Missing views or empty views is an operation constraint, not a YAML shape error. Evaluate it only for otherwise fully supported documents, after local structure/value/expression/reference checks: inspect returns no_views caution/0; create/edit/proofread returns missing_required/2, structure=supported. Do not emit no_views or this operation constraint when invalid/unsupported/resource issues already exist. Other known-invalid issues make structure=invalid. Unsupported content makes structure=unsupported unless invalid dominates.",
+    "Emit only the first YAML parser error by source offset, using root path and 1-based line/column; duplicate key uses duplicate_yaml_key, other parse errors invalid_yaml. Do not continue after this error. Unsupported document-wide YAML features similarly stop secondary checks.",
+    "For each duplicate view name after its first occurrence, emit one duplicate_view_name at the later name path with related containing only the first index as a decimal string. Three equal names produce issues at indexes 1 and 2, both related=[\"0\"]."
+  ],
+  "x-early-report": {
+    "defaults": {
+      "schema_version": 1, "structure": "unprocessed", "source_sha256": null,
+      "static_checks_passed": false, "unprocessed": [],
+      "read_only": true, "authorization": "not_assessed", "write_status": "not_requested",
+      "render_check": "not_performed", "expression_evaluation": "not_performed",
+      "proofread_gate": "not_requested", "application_version": null,
+      "application_version_source": "user_declared"
+    },
+    "invalid_control": "status=failed, exit_code=1; exactly one invalid_input/input issue at [], line/column=null, related=[]. Applies to argument, UTF-8/JSON/Request/JSON-byte-cap failures.",
+    "dependency_failure": "status=not_performed, exit_code=4; exactly one dependency_missing/capability issue at [], line/column=null, related=[]. Applies before control parsing for a missing or wrong-pinned dependency.",
+    "runtime_failure": "status=failed, exit_code=1; exactly one runtime_error/runtime issue at [], line/column=null, related=[]. Clear partially computed report fields to defaults.",
+    "usage": "Exactly the Usage object; compact JSON plus one LF, exit 0, no standard input consumption or dependency loading."
+  },
+  "x-counting": {
+    "yaml_nodes": "Count each Scalar, Alias, YAMLMap and YAMLSeq once, including root, keys, values, scalar null and empty collections. Pair wrappers do not count. Traverse AST before conversion; YAML parser-produced null slots count as one scalar null.",
+    "yaml_depth": "Maximum nested collection count on a root-to-leaf path, with a root collection at 1. Scalars/keys do not increase depth.",
+    "expression_nodes": "Count AST objects with a type field, including callee/member/property identifier/literal nodes; array containers themselves do not count, holes are unsupported. Root node counts once.",
+    "expression_depth": "Maximum AST typed-node count on a root-to-leaf path, root=1. Count property/callee/argument child nodes. Parentheses do not add AST nodes/depth.",
+    "preparse_nesting": "Separate safety cap 64 on simultaneous unquoted (), [] delimiters, ignoring escaped characters in quoted strings. Above 64 gives limit_exceeded before jsep. AST depth is checked independently after parsing.",
+    "json_bytes": "Raw stdin bytes including whitespace; limit inclusive.",
+    "document_bytes": "Exact UTF-8 document bytes including BOM, comments, whitespace and CRLF; limit inclusive.",
+    "output_bytes": "Compact JSON.stringify(Report) plus exactly one LF, UTF-8 byte count. Construct Report properties in the order listed in Report.required; Issue properties code,category,path,line,column,related. No pretty printing.",
+    "diagnostics": "Exactly 256 collected distinct issues is allowed, including cautions. More than 256 or an oversized serialized report triggers the root fallback below. limit_exceeded itself is included in the final issue count.",
+    "cap_fallback": "If diagnostic/output caps overflow, replace issues with exactly one limit_exceeded/unsupported at [], line/column=null, related=[]; unprocessed=[[]], static_checks_passed=false. Preserve prior known-invalid dominance as structure=invalid, not_performed/2; otherwise structure=unsupported, partial/3. Preserve source hash and accepted request metadata. Do not copy oversized paths into the fallback.",
+    "parse_resource_failure": "Unexpected RangeError or parser resource failure yields runtime_error/1 with early defaults, not a claimed measured limit_exceeded. Explicitly measured caps alone produce limit_exceeded/3.",
+    "resource_paths": "Document bytes, YAML depth/nodes use []; formula count uses [formulas]; expression chars/nodes/depth/preparse nesting use the exact expression path. unprocessed contains exactly that path when the resource issue is the only issue.",
+    "resource_precedence": "Stop further document validation on Unicode, document bytes, parser/features, YAML node/depth or formula-count failure. Per-expression measured limit failures emit only limit_exceeded for that expression and skip its AST/reference checks. Formula names remain known. No missing-reference or version secondary issues are emitted after a resource failure."
+  },
+  "$defs": {
+    "Nonempty": {"type": "string", "minLength": 1},
+    "Path": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "integer", "minimum": 0}]}},
+    "Request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "intent", "document", "application_version"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "intent": {"enum": ["inspect", "create", "edit", "proofread"]},
+        "document": {"type": "string"},
+        "application_version": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9]{1,3}\\.[0-9]{1,3}(\\.[0-9]{1,3})?$"}]}
+      }
+    },
+    "Filter": {
+      "oneOf": [
+        {"$ref": "#/$defs/Nonempty"},
+        {
+          "type": "object", "minProperties": 1, "maxProperties": 1, "additionalProperties": false,
+          "properties": {
+            "and": {"type": "array", "items": {"$ref": "#/$defs/Filter"}},
+            "or": {"type": "array", "items": {"$ref": "#/$defs/Filter"}},
+            "not": {"type": "array", "items": {"$ref": "#/$defs/Filter"}}
+          }
+        }
+      ]
+    },
+    "ExpressionMap": {
+      "type": "object", "propertyNames": {"$ref": "#/$defs/Nonempty"},
+      "additionalProperties": {"$ref": "#/$defs/Nonempty"}
+    },
+    "SummaryAssignments": {
+      "type": "object", "propertyNames": {"$ref": "#/$defs/Nonempty"},
+      "additionalProperties": {"$ref": "#/$defs/Nonempty"}
+    },
+    "GroupBy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["property"],
+      "properties": {"property": {"$ref": "#/$defs/Nonempty"}, "direction": {"enum": ["ASC", "DESC"]}}
+    },
+    "View": {
+      "type": "object", "additionalProperties": false, "required": ["type", "name"],
+      "properties": {
+        "type": {"enum": ["table", "cards", "list", "kanban"]},
+        "name": {"$ref": "#/$defs/Nonempty"},
+        "filters": {"$ref": "#/$defs/Filter"},
+        "order": {"type": "array", "items": {"$ref": "#/$defs/Nonempty"}},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "groupBy": {"$ref": "#/$defs/GroupBy"},
+        "groupOrder": {"type": "array", "items": {"type": ["string", "number", "boolean", "null"]}},
+        "summaries": {"$ref": "#/$defs/SummaryAssignments"}
+      },
+      "allOf": [
+        {"if": {"properties": {"type": {"const": "kanban"}}, "required": ["type"]}, "then": {"required": ["groupBy"]}},
+        {"if": {"required": ["groupOrder"]}, "then": {"required": ["groupBy"]}}
+      ]
+    },
+    "Document": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "filters": {"$ref": "#/$defs/Filter"},
+        "formulas": {"$ref": "#/$defs/ExpressionMap"},
+        "summaries": {"$ref": "#/$defs/ExpressionMap"},
+        "properties": {
+          "type": "object", "propertyNames": {"$ref": "#/$defs/Nonempty"},
+          "additionalProperties": {
+            "type": "object", "additionalProperties": false,
+            "properties": {"displayName": {"$ref": "#/$defs/Nonempty"}}
+          }
+        },
+        "views": {"type": "array", "items": {"$ref": "#/$defs/View"}}
+      }
+    },
+    "IssueCode": {
+      "enum": [
+        "invalid_input", "dependency_missing", "invalid_yaml", "duplicate_yaml_key",
+        "multiple_yaml_documents", "unsupported_yaml_feature", "unsupported_unicode",
+        "unsupported_number", "unsupported_value", "unknown_key", "invalid_type", "missing_required",
+        "invalid_enum", "unsupported_view", "unsupported_expression", "unsupported_operator",
+        "unsupported_function", "formula_missing", "formula_cycle", "summary_missing",
+        "application_version_unknown", "application_version_insufficient",
+        "duplicate_view_name", "no_views", "limit_exceeded", "runtime_error"
+      ]
+    },
+    "Issue": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "category", "path", "line", "column", "related"],
+      "properties": {
+        "code": {"$ref": "#/$defs/IssueCode"},
+        "category": {"enum": ["input", "format", "unsupported", "expression", "capability", "caution", "runtime"]},
+        "path": {"$ref": "#/$defs/Path"},
+        "line": {"type": ["integer", "null"], "minimum": 1},
+        "column": {"type": ["integer", "null"], "minimum": 1},
+        "related": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "Report": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "status", "exit_code", "structure", "source_sha256", "static_checks_passed", "issues", "unprocessed", "read_only", "authorization", "write_status", "render_check", "expression_evaluation", "proofread_gate", "application_version", "application_version_source"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "status": {"enum": ["completed", "failed", "not_performed", "partial"]},
+        "exit_code": {"enum": [0, 1, 2, 3, 4]},
+        "structure": {"enum": ["supported", "invalid", "unsupported", "unprocessed"]},
+        "source_sha256": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+        "static_checks_passed": {"type": "boolean"},
+        "issues": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/Issue"}},
+        "unprocessed": {"type": "array", "items": {"$ref": "#/$defs/Path"}},
+        "read_only": {"const": true},
+        "authorization": {"const": "not_assessed"},
+        "write_status": {"const": "not_requested"},
+        "render_check": {"const": "not_performed"},
+        "expression_evaluation": {"const": "not_performed"},
+        "proofread_gate": {"enum": ["not_requested", "external_required"]},
+        "application_version": {"type": ["string", "null"]},
+        "application_version_source": {"const": "user_declared"}
+      },
+      "allOf": [
+        {"if": {"properties": {"exit_code": {"const": 0}}}, "then": {"properties": {"status": {"const": "completed"}, "structure": {"const": "supported"}}}},
+        {"if": {"properties": {"exit_code": {"const": 1}}}, "then": {"properties": {"status": {"const": "failed"}, "structure": {"const": "unprocessed"}, "static_checks_passed": {"const": false}}}},
+        {"if": {"properties": {"exit_code": {"enum": [2, 4]}}}, "then": {"properties": {"status": {"const": "not_performed"}, "static_checks_passed": {"const": false}}}},
+        {"if": {"properties": {"exit_code": {"const": 3}}}, "then": {"properties": {"status": {"const": "partial"}, "static_checks_passed": {"const": false}}}},
+        {"if": {"properties": {"structure": {"const": "invalid"}}}, "then": {"properties": {"exit_code": {"const": 2}, "static_checks_passed": {"const": false}}}},
+        {"if": {"properties": {"structure": {"const": "unsupported"}}}, "then": {"properties": {"exit_code": {"const": 3}, "static_checks_passed": {"const": false}}}},
+        {"if": {"properties": {"static_checks_passed": {"const": true}}}, "then": {"properties": {"status": {"const": "completed"}, "exit_code": {"const": 0}, "structure": {"const": "supported"}, "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}}}
+      ]
+    },
+    "Usage": {
+      "type": "object", "additionalProperties": false, "required": ["usage", "read_only"],
+      "properties": {"usage": {"const": "node <bases-dir>/scripts/check.cjs --stdin"}, "read_only": {"const": true}}
+    }
+  }
+}

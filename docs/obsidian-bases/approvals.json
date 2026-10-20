@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "stage": "requirements",
+      "document_version": "0.2",
+      "decision": "approved",
+      "actor": "user",
+      "recorded_by": "GitHub Copilot",
+      "user_message": "承認して設計へ進む",
+      "selected_value": "approve-design",
+      "manifest": "/tmp/kotonoha-test/obsidian-bases/requirements-approval-manifest.json",
+      "manifest_sha256": "32944c3077d9488f4211cd5a87f32d7960eae80d888b57755e781a6a621ed334",
+      "artifacts": [
+        {
+          "path": "docs/obsidian-bases/requirements.md",
+          "sha256": "fbb003b3ba89f1b0aaea4b2ba4b3035f3a66b15a25275ac4c5843e684d2376e7"
+        },
+        {
+          "path": "docs/obsidian-bases/requirements-review.json",
+          "sha256": "95846c0ad74f99592d687b66918bb9bbd4dec8977d885665b2bc93432a6c3d7f"
+        }
+      ],
+      "residual_risks_acknowledged": [
+        "Concrete supported syntax, settings and resource limits must be fixed during design because official documentation is not a complete machine-readable schema.",
+        "Direct host writes do not provide dedicated CLI locks, atomic commit or receipt replay protections.",
+        "Instruction compliance is not complete enforcement of arbitrary host or model behavior.",
+        "Actual Obsidian rendering and formula results remain unverified.",
+        "Kanban requires Obsidian 1.14 or later."
+      ],
+      "release_authorized": false
+    }
+  ],
+  "pending_design_approval": {
+    "user_message": "Basesの設計を承認",
+    "received_at": "2026-10-20T10:11:15.508+09:00",
+    "status": "approval_received_open_review_findings_require_resolution",
+    "review": "docs/obsidian-bases/design-review.json",
+    "open_findings": ["B-D1", "B-D2", "B-D3", "B-D4", "B-D5", "B-D6", "B-D7", "B-D8"],
+    "note": "The user expressed approval before the outstanding review findings had been presented. Do not interpret this as acknowledgment of those findings or approval of a future revised artifact.",
+    "implementation_started": false,
+    "release_authorized": false
+  },
+  "design_revision_instruction": {
+    "selected_value": "fix-review-reapprove",
+    "actor": "user",
+    "instruction": "Fix the open findings, re-review and request approval of revised design artifacts before implementation.",
+    "revised_design_approved": false
+  },
+  "design_approval": {
+    "stage": "design",
+    "revision": "0.2",
+    "decision": "approved",
+    "actor": "user",
+    "selected_value": "approve-implementation",
+    "manifest": "/tmp/kotonoha-test/obsidian-bases/design-approval-manifest.json",
+    "manifest_sha256": "fce3ea11cd5bf17478dda0259e6d4adfebaf2ce1920d398dc2c9e48459b2fe7c",
+    "artifacts": [
+      {"path": "docs/obsidian-bases/design.md", "sha256": "e7d4962af7d8711e0c47375e4317d8a94b0a1571924560e0ff654fa3fb378749"},
+      {"path": "docs/obsidian-bases/design-addendum.md", "sha256": "e10f22ad82342a1b081401f66d6c72a8bdcdfd414016612a83ca0e1e8da67b70"},
+      {"path": "skills/obsidian-bases/references/execution-contract.json", "sha256": "963e1a7435b19cfc92bda9067efa81d73c626df57d18096dea7bd2506be8fd68"},
+      {"path": "docs/obsidian-bases/acceptance-cases.json", "sha256": "e130375f0db367a6872097223602c994f2faa45db8fc46fc0507cc6b3ffe60be"},
+      {"path": "docs/obsidian-bases/boundary-cases.json", "sha256": "a853fa8de04f2c4bdf8e956455f584b5dfd04d40a56a1a8c1c05eb0420bb0d83"},
+      {"path": "docs/obsidian-bases/boundary-verification.json", "sha256": "38acd967075ac8243391039912af4c3af707a5d50b293be21d6bfae41424fa88"},
+      {"path": "docs/obsidian-bases/design-verification.json", "sha256": "86a7d0f8bb150548020f2b5b991cb6cdf181231c6e78e0339ea05f1cd36bfc57"},
+      {"path": "docs/obsidian-bases/design-review.json", "sha256": "6bc27d7524e98ba5c609168ce7ea613fa945cfd6ef6ec8c29227700cd0a96620"}
+    ],
+    "residual_risks_acknowledged": [
+      "Obsidian rendering, formula evaluation, Node18, macOS, Windows and real casefold filesystems unverified.",
+      "Direct host edits have no CLI lock, atomic transaction or receipt replay, and instructions do not enforce a sandbox.",
+      "Unknown syntax or unknown application version refuses saving.",
+      "Design feasibility is not product acceptance; old temporary evidence is no longer available."
+    ],
+    "release_authorized": false
+  },
+  "boundary_correction_approval": {
+    "decision": "approved",
+    "actor": "user",
+    "selected_value": "approve-correction",
+    "scope": "Only R19/R20/R23 constructors and corresponding source/report hash and byte-count entries are superseded by boundary-correction.json and boundary-correction-verification.json. All original approved artifacts remain unchanged.",
+    "artifacts": [
+      {"path": "docs/obsidian-bases/boundary-correction.json", "sha256": "1739b437b17b3080d21e5fb4efaecac48e474e0d98a685185bee6a4e86c0dacc"},
+      {"path": "docs/obsidian-bases/boundary-correction-verification.json", "sha256": "2c3c316a1b3519e5db4c59eb1722b9a6d485968729ca05786101df6984dfd309"},
+      {"path": "docs/obsidian-bases/boundary-correction-review.json", "sha256": "416ec112fa635ac32019557c9c54a8f90b7e0b78534181646a0c9293e4820b3c"}
+    ],
+    "residual_risks": "Unchanged from design approval.",
+    "release_authorized": false
+  }
+}

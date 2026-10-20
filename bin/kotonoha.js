@@ -145,7 +145,10 @@ function install(args) {
       `.kotonoha-${skill}-${process.pid}-${Date.now()}`,
     );
     try {
-      fs.cpSync(source, temporaryDestination, { recursive: true });
+      fs.cpSync(source, temporaryDestination, {
+        recursive: true,
+        filter: (sourcePath) => path.basename(sourcePath) !== "node_modules",
+      });
       if (options.force) {
         fs.rmSync(destination, { recursive: true, force: true });
       }

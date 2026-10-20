@@ -1,0 +1,34 @@
+{
+  "stage": "independent_boundary_constructor_feasibility",
+  "cases": [
+    {
+      "id": "R19",
+      "document_bytes": 524004,
+      "source_sha256": "1c78223e3d3a82aa255931c98d7e32ff94d85113732de076f471a06690b096e4",
+      "report_sha256": "0f89daa24043778a3fcc29342bd8e7ad8448a40dfa269dde5846bcfcba6e613a",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 1048576
+    },
+    {
+      "id": "R20",
+      "document_bytes": 524004,
+      "source_sha256": "1c78223e3d3a82aa255931c98d7e32ff94d85113732de076f471a06690b096e4",
+      "report_sha256": "44012eff1c82ea13990040f8ca551f75e1b8669b9685c4e8031f4b92e5689a09",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 582
+    },
+    {
+      "id": "R23",
+      "document_bytes": 524039,
+      "source_sha256": "14a218b3f1b47c95e1182ca1e57a6bd4693bb57ac7a57b9c2c62e75095cf41b7",
+      "report_sha256": "aa345525ac5c53eee916da1c742b91a375cffd855503406d2573091cae9ef02a",
+      "expected_exit_code": 2,
+      "expected_structure": "invalid",
+      "expected_report_bytes": 583
+    }
+  ],
+  "no_product_classifier_or_boundary_enforcement_tested": true,
+  "purpose": "Strict-valid explicit-key correction only; independent expected reports, not product output."
+}

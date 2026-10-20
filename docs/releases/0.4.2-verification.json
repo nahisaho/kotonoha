@@ -1,0 +1,44 @@
+{
+  "version": "0.4.2",
+  "tarball_sha256": "df40be38d683404f56620ed09f43bdff2aa2c455889e3a4c1c8d3f2279d02b4f",
+  "exact_artifact_offline_install": "passed",
+  "seven_skills": [
+    "consulting-analyst",
+    "japanese-prose",
+    "obsidian-bases",
+    "obsidian-canvas",
+    "obsidian-vault",
+    "presentation-planner",
+    "tech-writer"
+  ],
+  "initial_dependency_cache_absent": true,
+  "bases_missing_dependency_exit": 4,
+  "explicit_offline_private_preparation": "passed",
+  "four_installed_bases_templates": "passed",
+  "installed_vault_locked_offline_help": "passed",
+  "installed_canvas_locked_offline_inspect": "passed_authored_fixture_unchanged",
+  "release_npm_tests": {
+    "run": 20,
+    "passed": 20
+  },
+  "release_bases_tests": {
+    "run": 212,
+    "passed": 212
+  },
+  "previous_unchanged_runtime_regressions": {
+    "vault": 31,
+    "canvas_passed": 89,
+    "canvas_casefold_skip": 1,
+    "japanese": 17
+  },
+  "unverified": [
+    "Actual Obsidian rendering/formula evaluation",
+    "Node18/non-Linux/casefold FS",
+    "Universal host-policy enforcement"
+  ],
+  "initial_probe_corrections": [
+    "Canvas --help is unsupported and returned invalid_input/1; use documented inspect.",
+    "Canvas inspect with model_context=false refused consent/2; positive test explicitly authorizes only the generated public fixture content."
+  ],
+  "temporary_consumer_cleaned": true
+}

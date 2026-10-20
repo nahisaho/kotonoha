@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "stage": "narrow_design_oracle_correction_review",
+  "configured_model": "claude-sonnet-5.5",
+  "status": "ready_for_human_amendment_approval",
+  "artifacts": [
+    {"path": "docs/obsidian-bases/boundary-correction.json", "sha256": "1739b437b17b3080d21e5fb4efaecac48e474e0d98a685185bee6a4e86c0dacc"},
+    {"path": "docs/obsidian-bases/boundary-correction-verification.json", "sha256": "2c3c316a1b3519e5db4c59eb1722b9a6d485968729ca05786101df6984dfd309"}
+  ],
+  "reviewer_verified_both_hashes": true,
+  "reviewer_recomputed_corrected_source_sizes_and_hashes": true,
+  "must_fix_findings": [],
+  "conclusion": "Explicit mapping keys preserve the intended 1MiB output-boundary oracle without weakening strict parsing, result limits or known-invalid priority.",
+  "nonblocking_note": "The human approval record must explicitly state that the superseding correction applies only to R19/R20/R23 constructors and their source/report hash entries. Retain all original approved artifacts unchanged.",
+  "review_limitations": [
+    "Reviewer did not read the execution contract.",
+    "Reviewer did not independently recompute expected Report hashes or output byte sizes.",
+    "Reviewer cross-checked original boundary cases only for the constructors and expected outcomes."
+  ],
+  "parent_verification": {
+    "reviewer": "GPT-6.1 Sol",
+    "strict_parser_original_implicit_key": "KEY_OVER_1024_CHARS",
+    "strict_parser_corrected_explicit_key": "no_errors",
+    "independent_constructor_report_sizes": {"R19": 1048576, "R20_before_fallback": 1048577},
+    "actual_checker_full_stdout_hash_and_exit_matches": ["R19", "R20", "R23"],
+    "actual_product_suite_before_amendment": {"run": 211, "passed": 208, "failed": 3},
+    "interpretation": "The three failing original oracles remain visible until the correction is approved. Successful separately checked corrected inputs do not change their status retroactively."
+  },
+  "human_approval": false,
+  "release_authorized": false
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "stage": "final_implementation_review",
+  "configured_model": "claude-sonnet-5.5",
+  "status": "implemented_and_reviewed_with_documented_limitations",
+  "manifest": "/tmp/kotonoha-test/obsidian-bases/implementation/review-manifest.json",
+  "manifest_sha256": "c2e5a358c4b98e78d1f9038bb7b38322e22bded35432c57354f022a6aa54b80a",
+  "manifest_artifacts": 20,
+  "reviewer_verified_all_hashes": true,
+  "recommendation": "accept_with_documented_limitations_after_minor_documentation_correction",
+  "must_fix_correctness_findings": [],
+  "findings": [
+    {
+      "id": "B-I1",
+      "severity": "minor",
+      "state": "closed",
+      "paths": ["README.md", "README-ja.md"],
+      "summary": "Directory tree indentation accidentally attributed Canvas scripts and diagram templates to Bases.",
+      "resolution": "Keep Canvas child entries under Canvas; add separate Bases scripts and Table/Cards/List/Kanban template entries.",
+      "resolution_reviewer": "GPT-6.1 Sol",
+      "scope": "Only these README directory-tree lines changed after the fixed reviewer manifest; no runtime or tests changed."
+    }
+  ],
+  "review_scope": {
+    "checker": "Read fully: control, hashing, YAML/numbers, AST, reference graph/cycles, exits/limits, help/bad arguments.",
+    "tests": "Read fully: independent oracles, corrected R19/R20/R23, retained invalid implicit-key negative, tripwires/output assertions.",
+    "integration": "Private manifest/lock, source installer cache filter, npm files exclusion, lock identity and sibling preservation.",
+    "instructions": "Skill, workflow, tech-writer handoff, READMEs and changelog.",
+    "contextual_templates": {
+      "table": "pass",
+      "cards": "pass",
+      "list": "pass",
+      "kanban": "pass",
+      "qualification": "All four use supported keys. Folders/properties are explicitly proposals, not observed real data; group visibility semantics and non-mutating workflow are preserved."
+    },
+    "targeted_runtime_probes": "About 25 reviewer probes covering Kanban grouping, summary/formula refs, cycles, version handling, deep nesting and limits.",
+    "host_verification": "Reviewer read only the first approximately 2.5 KB, not every later setting-edit record; parent executed and independently checked every recorded operation."
+  },
+  "remaining_nonblocking_observations": [
+    "Very deep flow YAML can trigger the parser's RESOURCE_EXHAUSTION error before the checker's post-parse depth measurement. It returns invalid_yaml/2 and blocks saving, rather than asserting a measured checker limit/3.",
+    "When formulas are invalid, summary_missing may be skipped with the incomplete-reference branch; the known invalid result still blocks saving.",
+    "The private npm test script runs verify.cjs, which is repository-only and requires docs data. This is not the documented installed runtime path."
+  ],
+  "unverified": [
+    "Node18, other operating systems, real casefold filesystem",
+    "Actual Obsidian rendering and expression evaluation",
+    "Universal host/model policy enforcement, complete instrumented host refusal cases or concurrency guarantees",
+    "Actual saved Japanese display-name proofreading in this host smoke"
+  ],
+  "mechanical_evidence": "implementation-verification.json",
+  "host_evidence": "host-verification.json",
+  "fixture_retention": "The generated packed-host fixture directory was removed after verification. Hashes and execution records remain in host-verification.json; its workdir is a historical location, not a retained Vault.",
+  "human_release_approval": false,
+  "commit_push_publish_performed": false
+}

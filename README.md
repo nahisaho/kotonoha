@@ -11,9 +11,11 @@ source material into a reusable presentation scenario, slide outline, design
 specification, and handoff for a dedicated PPTX creation skill.
 The `obsidian-vault` skill applies scoped Vault conventions and link diagnostics
 and directly creates or edits authorized Markdown notes using host file tools,
-with optional CLI plan-approved saving. Direct editing is unreleased.
-The unreleased `obsidian-canvas` skill adds scoped diagram diagnosis,
-layout and approval-gated Canvas edits; it is not in published 0.4.1.
+with optional CLI plan-approved saving. Direct editing is included in 0.4.2.
+The `obsidian-canvas` skill adds scoped diagram diagnosis,
+layout and approval-gated Canvas edits in 0.4.2.
+The `obsidian-bases` skill adds direct `.base` configuration editing
+and a read-only static checker for Table, Cards, List and Kanban.
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -124,7 +126,7 @@ for setup, placeholder handling, and limitations.
 
 Use the dedicated `obsidian-vault` skill for Vault conventions, direct Markdown
 creation and editing, related-note proposals, internal-link diagnosis and Japanese
-proofreading. The unreleased direct-edit workflow uses host file tools without
+proofreading. The direct-edit workflow uses host file tools without
 requiring Python, uv, Obsidian, MCP or plugins. Use `tech-writer` for document
 structure and `japanese-prose` for proofreading.
 
@@ -163,7 +165,7 @@ The skill is not a host sandbox.
 The dedicated `obsidian-canvas` skill handles note maps, mind maps, conditional
 workflows and evidence comparisons in JSON Canvas 1.0. It reads, diagnoses,
 lays out and edits `.canvas` files without opening Obsidian or fetching URLs.
-This source/development feature is not included in published `kotonoha@0.4.1`.
+This feature is included in `kotonoha@0.4.2`.
 
 Install `obsidian-vault` alongside it with storage API version 1. A selective
 Canvas install does not silently add or replace siblings; an old backend
@@ -178,6 +180,28 @@ Unknown structure is diagnosis-only. Rendering, arbitrary Obsidian extensions
 and casefold filesystem behavior are not claimed as verified.
 See the [Japanese Canvas workflow](skills/obsidian-canvas/references/workflow.md)
 for scope, copying consent, partial results and uncertain-save recovery.
+
+## Working with Obsidian Bases
+
+`obsidian-bases` creates, reads, diagnoses and directly edits standalone `.base`
+files for Table, Cards, List and Kanban. It does not change source notes,
+Markdown properties or embedded base blocks. This feature is included in
+`kotonoha@0.4.2`.
+
+Authorized host tools save the exact target in the user-selected working
+directory (cwd by default). A Node >=18 stdin checker only validates text:
+no Vault paths, saving, expression evaluation or network. Prepare its private
+fixed dependencies explicitly with separate consent, using
+`npm ci --prefix <bases-dir>/scripts --ignore-scripts --no-audit --no-fund`;
+add `--offline` for a separately selected cache-only preparation.
+Installation ships the private lockfile but excludes dependency caches.
+
+Every filter/formulas change needs exact content/save authority; unfiltered
+display covers the whole Vault when opened. Unknown features, application version
+or incomplete checks block saving. Direct edits have no CLI lock, atomic commit
+or receipt protection. Rendering, real expression results and arbitrary host
+enforcement remain unverified. See the [Bases workflow](skills/obsidian-bases/references/workflow.md)
+for exact-byte preservation, four original templates and failure handling.
 
 ## What consulting-analyst does
 
@@ -248,8 +272,8 @@ npx kotonoha install
 
 `kotonoha install` installs every packaged skill that is not already present.
 The following commands install `consulting-analyst`, `tech-writer`,
-`japanese-prose`, `obsidian-vault`, `obsidian-canvas`, and `presentation-planner`
-into `.github/skills/` in this source/development package:
+`japanese-prose`, `obsidian-vault`, `obsidian-canvas`, `obsidian-bases`, and `presentation-planner`
+into `.github/skills/`:
 
 ```bash
 npm install --save-dev kotonoha
@@ -257,7 +281,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-Confirm that all six skills were installed (published 0.4.1 has five):
+Confirm that all seven skills were installed (0.4.1 had five):
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md
@@ -265,6 +289,7 @@ test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/obsidian-vault/SKILL.md
 test -f .github/skills/obsidian-canvas/SKILL.md
+test -f .github/skills/obsidian-bases/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -331,7 +356,8 @@ run GiNZA-based Japanese prose optimization.`
 
 The default destinations are `.github/skills/consulting-analyst`,
 `.github/skills/tech-writer`, `.github/skills/japanese-prose`,
-`.github/skills/obsidian-vault`, `.github/skills/obsidian-canvas`, and
+`.github/skills/obsidian-vault`, `.github/skills/obsidian-canvas`,
+`.github/skills/obsidian-bases`, and
 `.github/skills/presentation-planner` in the current project. To install only
 one skill, or use another supported skill directory:
 
@@ -429,6 +455,7 @@ cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
 cp -r skills/obsidian-vault /path/to/your-repo/.github/skills/obsidian-vault
 cp -r skills/obsidian-canvas /path/to/your-repo/.github/skills/obsidian-canvas
+cp -r skills/obsidian-bases /path/to/your-repo/.github/skills/obsidian-bases
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -480,12 +507,16 @@ skills/obsidian-vault/       # scoped Markdown notes and shared storage API
 skills/obsidian-canvas/      # JSON Canvas diagnosis, layouts, and approved saves
   scripts/                   # locked offline CLI and original-fixture tests
   assets/templates/          # note map, mind map, workflow, comparison
+skills/obsidian-bases/       # direct Bases configuration and read-only validation
+  scripts/                   # stdin checker, private dependency lock, checkout-only tests
+  assets/templates/          # Table, Cards, List, Kanban
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
 .github/skills/consulting-analyst
 .github/skills/japanese-prose
 .github/skills/presentation-planner
 .github/skills/obsidian-vault
 .github/skills/obsidian-canvas
+.github/skills/obsidian-bases
 ```
 
 ## Known limitations

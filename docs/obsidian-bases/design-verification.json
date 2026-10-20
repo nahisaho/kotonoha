@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "stage": "design_feasibility",
+  "revision": "0.2",
+  "product_implementation_started": false,
+  "environment": {"platform": "linux", "node": "24.21.0", "npm": "12.2.0"},
+  "evidence_directory": "/tmp/kotonoha-test/obsidian-bases/feasibility",
+  "command": "node /tmp/kotonoha-test/obsidian-bases/feasibility/feasibility.cjs",
+  "historical_v01_observed": {
+    "yaml_library_cases": 15,
+    "expression_parse_cases": 11,
+    "expression_rejected_parse_cases": 3,
+    "expression_policy_observations": 5,
+    "miniature_schema_cases": 3,
+    "full_contract_schemas_compiled": ["Request", "Document", "Report", "Usage"],
+    "original_fixture_requests_and_expected_report_shapes_validated": 34,
+    "report_state_combinations_validated": 160,
+    "additional_document_schema_cases": 3,
+    "disposable_launcher_command_shapes": 12,
+    "missing_installed_dependency": "exit_4",
+    "explicit_offline_npm_ci_and_installed_launcher": "passed",
+    "actual_npm_tarball_nested_lock_included": true,
+    "actual_npm_tarball_nested_cache_explicitly_excluded": true,
+    "utf16_range_to_utf8_bytes": "passed",
+    "last_run_seconds": 2.837586898
+  },
+  "revised_checks": {
+    "commands": [
+      "node /tmp/kotonoha-test/obsidian-bases/feasibility/schema-oracles.cjs",
+      "node /tmp/kotonoha-test/obsidian-bases/feasibility/boundaries.cjs"
+    ],
+    "schemas_compiled": ["Request", "Document", "Report", "Usage"],
+    "source_fixtures": 6,
+    "original_request_expected_report_shapes": 62,
+    "report_state_combinations": 160,
+    "independent_boundary_constructors": 23,
+    "boundary_measurements": "docs/obsidian-bases/boundary-verification.json",
+    "actual_expected_output_boundary_bytes": [1048576, 1048577],
+    "multiple_parser_error_first_position": "passed",
+    "special_owned_dictionary_names": "passed",
+    "dependency_restoration": "Original disposable feasibility files were no longer present when work resumed. Restored exact dependencies from the local npm cache with --offline after creating a fresh disposable manifest; no product files or new runtime dependency installation.",
+    "historical_evidence_availability": "Historical v0.1 measurements remain recorded here; original temporary files are not currently available. Revised schema and boundary probes are fresh, not a rerun of the old launcher/packaging probe.",
+    "product_classifier_or_resource_enforcement_tested": false
+  },
+  "interpretation": "Library and command-shape feasibility only. Expected Report objects were independently materialized from authored acceptance data and schema-checked; no product classifier exists and no product diagnostics have passed acceptance. Disposable code must not be reused as product implementation.",
+  "historical_v01_prose_review": {
+    "mode": "full",
+    "diagnostics": ["prose", "reading_load", "outline", "terminology"],
+    "initial_score": 95,
+    "final_score": 95,
+    "necessary_corrections": 0,
+    "optional_rewrites": 0,
+    "decisions": [
+      {
+        "line": 146,
+        "finding": "deep_dependency",
+        "decision": "keep",
+        "reason": "The sentence explicitly lists excluded expression constructs. Its single predicate and adjacent AST definition make the scope clear; splitting or dropping list items would not improve precision."
+      },
+      {
+        "line": 220,
+        "finding": "genitive_chain",
+        "decision": "keep",
+        "reason": "The distinction between simulated-host tests and enforced behavior on the actual host is necessary. The sentence has a clear action and prohibition; no grammatical error was found."
+      }
+    ],
+    "whole_document_contextual_review": {
+      "reviewer": "GPT-6.1 Sol",
+      "result": "Read the entire design, headings, paragraph openings and term output. No additional actionable prose issue; no claim of completed product acceptance or human design approval.",
+      "semantic_edit_review": "not_required_unchanged_authored_text"
+    },
+    "immutable_authored_baseline_sha256": "0e9a1b56eaae87a8ea3af5db8178107c942436720ba29c4810a50bd6e1a2017b",
+    "invariant_gate": "passed",
+    "status": "completed",
+    "private_evidence": "/tmp/kotonoha-test/obsidian-bases/design-prose"
+  },
+  "not_verified": [
+    "Product implementation, actual full diagnostic classification and actual resource-boundary enforcement",
+    "Host direct-edit create/edit/conflict/failure arrangements",
+    "Node.js 18, macOS or Windows execution",
+    "Real casefold filesystem behavior",
+    "Actual Obsidian rendering or expression results",
+    "Enforcement of instructions on arbitrary hosts or models",
+    "Wall-clock deadline guarantees for all future inputs"
+  ],
+  "release_authorized": false
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "stage": "design_review",
+  "status": "ready_for_human_design_reapproval",
+  "agent_id": "babea902-fd17-4c18-aac3-0822102a951d",
+  "configured_model": "claude-sonnet-5.5",
+  "model_evidence": "The task request and runtime agent metadata specify claude-sonnet-5.5. The reviewer did not independently verify its model identity.",
+  "manifest": "/tmp/kotonoha-test/obsidian-bases/design-review-manifest.json",
+  "manifest_sha256": "0fa7df7be3b81f9778f93884ce215d9357c33be7dcbe7191d9dbfde24f08e7a1",
+  "reviewer_verified_manifest_hashes": true,
+  "artifacts": [
+    {"path": "docs/obsidian-bases/design.md", "sha256": "0e9a1b56eaae87a8ea3af5db8178107c942436720ba29c4810a50bd6e1a2017b"},
+    {"path": "skills/obsidian-bases/references/execution-contract.json", "sha256": "fc058d976e4e7250c519f42e357cc59debaf22aa187165c1707bd105afec6d46"},
+    {"path": "docs/obsidian-bases/acceptance-cases.json", "sha256": "34e3751f1bb722d0e368d85aff0b83e5b566ea053caceefe6a08d242c7dbde93"},
+    {"path": "docs/obsidian-bases/design-verification.json", "sha256": "33f2d0589bf937178459d6af51f9fd44944545c4897968650847fefb333eeafc"}
+  ],
+  "original_findings_at_initial_review": [
+    {"id": "B-D1", "severity": "high", "state": "open", "acceptance": ["AC-002", "AC-007"], "summary": "Bind raw source and candidate bytes to validator hashes; reject lossy UTF-8 decoding or stripped BOM and verify exact written/readback bytes."},
+    {"id": "B-D2", "severity": "high", "state": "open", "acceptance": ["AC-004", "AC-012"], "summary": "Explicitly disclose and authorize unfiltered whole-Vault display; distinguish group visibility and unverified counts. Add independent host cases."},
+    {"id": "B-D3", "severity": "high", "state": "open", "acceptance": ["AC-002", "AC-013"], "summary": "Freeze constraint-to-diagnostic mapping and oracles for unsupported values, initial subset restrictions, merge keys and special property names."},
+    {"id": "B-D4", "severity": "high", "state": "open", "acceptance": ["AC-002", "AC-013"], "summary": "Align mixed unsupported/invalid/version processing and state precedence with Report schema; freeze mixed-case oracles."},
+    {"id": "B-D5", "severity": "high", "state": "open", "acceptance": ["AC-013", "AC-014"], "summary": "Define exact resource counting and independent boundary constructors/reports, including issue-cap accounting and actual output-byte overflow."},
+    {"id": "B-D6", "severity": "medium", "state": "open", "acceptance": ["AC-003"], "summary": "Add mean receiver/context/arity negatives, unsupported operator, formula-reference positions and builtin/custom-summary oracles."},
+    {"id": "B-D7", "severity": "medium", "state": "open", "acceptance": ["AC-013", "AC-014"], "summary": "Freeze full pre-parse failure/dependency Report defaults and Usage output rather than command exit codes alone."},
+    {"id": "B-D8", "severity": "medium", "state": "open", "acceptance": ["AC-014"], "summary": "Specify structure classification, duplicate-view related fields for three or more names, and parser-error reporting cardinality."}
+  ],
+  "additional_notes": [
+    "Disclose restricted function and UI-extension support as whole-file editing refusal, not complete Bases syntax support.",
+    "Clarify repository-only acceptance runner data versus files shipped in a packed Skill."
+  ],
+  "revision_review": {
+    "reviewer": "Claude Sonnet 5.5",
+    "manifest": "/tmp/kotonoha-test/obsidian-bases/design-v02-review-manifest.json",
+    "manifest_sha256": "935923bf7413c76b5608c757402272f84a651581ff0ef7e48e0a4354e978775f",
+    "reviewer_verified_all_seven_hashes": true,
+    "B-D1": "closed: addendum strict source/candidate byte hashes and H17/H18",
+    "B-D2": "closed: unfiltered save authority, group visibility and H19/H20",
+    "B-D3": "closed: constraint mapping, special keys and D35-D42/D58-D62",
+    "B-D4": "closed: skip secondary version checks on invalid/unsupported; D43/D44/D57",
+    "B-D5": "closed: exact counting, independent constructors, complete reports and overflow fallback",
+    "B-D6": "closed: mean/operator/reference-position/builtin-summary cases D45-D54",
+    "B-D7": "closed: early Report and Usage defaults",
+    "B-D8": "closed: operation versus structure, duplicate3 and first-parser-error rules",
+    "remaining_blocker": {
+      "id": "B-D9",
+      "state": "closed",
+      "summary": "Specify whether no_views is emitted on unsupported no-view fixtures, to keep exact one-issue/output-byte oracles deterministic.",
+      "fix": "The missing/empty-views operation check runs only for otherwise fully supported documents; do not add no_views when invalid/unsupported/resource findings exist. Contract and addendum explicitly agree."
+    },
+    "review_limitations": "The reviewer inspected artifacts and hand-checked representative boundary counts; it did not execute the disposable probes. Parent mechanical runs are separately recorded.",
+    "human_approval": false
+  },
+  "final_narrow_closure": {
+    "reviewer": "Claude Sonnet 5.5",
+    "scope": "Only the no_views suppression contradiction B-D9; original B-D1 through B-D8 had already passed the previous closure.",
+    "manifest": "/tmp/kotonoha-test/obsidian-bases/design-final-review-manifest.json",
+    "manifest_sha256": "6b381d4b25ad77de12adb83b2a08f39393cee81d0fefdb1c0c406be94d9eae58",
+    "reviewer_verified_all_seven_hashes": true,
+    "B-D9": "closed",
+    "evidence": [
+      "skills/obsidian-bases/references/execution-contract.json:81",
+      "docs/obsidian-bases/design-addendum.md:66-68",
+      "docs/obsidian-bases/boundary-cases.json:8,14-17,30-31"
+    ],
+    "recommendation": "The one correction clears the previously reported final blocker; revised-artifact user approval remains required.",
+    "remaining_must_fix_findings": [],
+    "review_limitations": "The final narrow reviewer did not inspect D06/D07; closure rests on the contract, addendum and independently fixed boundary cases. Product behavior was not tested by the reviewer.",
+    "human_approval": false
+  },
+  "residual_unverified": [
+    "Node.js 18, macOS, Windows and real casefold filesystems",
+    "Actual Obsidian rendering and expression evaluation",
+    "Enforcement of instructions on arbitrary hosts or models"
+  ],
+  "product_implementation_started": false,
+  "release_authorized": false
+}

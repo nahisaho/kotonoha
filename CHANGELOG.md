@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-10-20
+
 ### Added
 
+- Add `obsidian-bases` for Table, Cards, List and Kanban configuration with direct
+  authorized host edits, four original templates and a read-only stdin checker.
+  Ship a private dependency lock, excluding dependency caches from installation.
 - Add `obsidian-canvas` for scoped JSON Canvas diagnosis, four diagram
   templates, explicit edits, layout proposals and approval-gated saves.
 - Add per-string semantic reviews for selected Canvas text and labels,
@@ -184,4 +189,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.0]: https://github.com/nahisaho/kotonoha/releases/tag/v0.1.0
 [0.1.4]: https://github.com/nahisaho/kotonoha/compare/v0.1.2...v0.1.4
 [0.1.5]: https://github.com/nahisaho/kotonoha/compare/v0.1.4...v0.1.5
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.1.5...HEAD
+[0.4.2]: https://github.com/nahisaho/kotonoha/compare/d76ef4a...v0.4.2
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.4.2...HEAD

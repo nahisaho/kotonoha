@@ -1,7 +1,7 @@
 {
   "name": "kotonoha",
-  "version": "0.4.1",
-  "description": "GitHub Copilot CLI skills for consulting analysis, technical writing, Japanese prose, Obsidian vaults and Canvas, and PPTX planning.",
+  "version": "0.4.2",
+  "description": "GitHub Copilot CLI skills for consulting analysis, technical writing, Japanese prose, Obsidian vaults, Canvas and Bases, and PPTX planning.",
   "license": "MIT",
   "author": "nahisaho",
   "repository": {
@@ -19,7 +19,8 @@
     "test": "node --test",
     "test:ginza": "uv run skills/japanese-prose/scripts/test_engine.py",
     "test:obsidian-vault": "uv run --offline --locked --python 3.12 skills/obsidian-vault/scripts/test_vault.py",
-    "test:obsidian-canvas": "uv run --offline --locked --python 3.12 skills/obsidian-canvas/scripts/test_canvas.py"
+    "test:obsidian-canvas": "uv run --offline --locked --python 3.12 skills/obsidian-canvas/scripts/test_canvas.py",
+    "test:obsidian-bases": "node --test skills/obsidian-bases/scripts/verify.cjs"
   },
   "engines": {
     "node": ">=18"
@@ -45,6 +46,7 @@
     "README-ja.md",
     "bin/",
     "skills/",
+    "!skills/**/node_modules/",
     "!skills/**/__pycache__/",
     "!skills/**/*.pyc"
   ]

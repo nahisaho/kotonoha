@@ -64,7 +64,7 @@ Obsidianでは、[`obsidian.md`](skills/tech-writer/assets/templates/obsidian.md
 ## Obsidian Vaultの操作
 
 専用の`obsidian-vault`は、Vaultの規約確認、Markdownノートの直接作成・編集、関連ノート候補、内部リンク診断、日本語添削を担当します。
-直接編集は開発版の機能であり、公開済みの`kotonoha@0.4.1`には含まれません。
+直接編集は`kotonoha@0.4.2`に含まれます。
 対象と変更内容への許可を確認し、ホストのファイルツールで本文・プロパティ・タグ・リンクを変更できます。
 直接編集には専用CLIの計画ファイル、Python、uvは不要です。Obsidianアプリ、MCP、プラグインにも依存しません。
 文書構成にはtech-writer、日本語添削にはjapanese-proseを利用します。
@@ -91,7 +91,7 @@ LLMの誤判断を完全には防げず、ホストを隔離する機能でも�
 
 専用の`obsidian-canvas`は、ノート関係図、アイデア整理、条件付きの手順、資料比較を扱います。
 JSON Canvas 1.0の読み取り・診断・配置提案・編集に対応し、Obsidianの起動やURLへの通信は行いません。
-この機能は開発版の内容であり、公開済みの`kotonoha@0.4.1`には含まれません。
+この機能は`kotonoha@0.4.2`に含まれます。
 
 同じ場所に共用API版1のobsidian-vaultを導入します。Canvasだけの選択導入では兄弟を自動更新しません。
 添削ではjapanese-proseも必要です。初期対応はLinux、CPython 3.12、固定依存によるオフライン実行です。
@@ -102,6 +102,21 @@ JSON Canvas 1.0の読み取り・診断・配置提案・編集に対応し、Ob
 保存は利用者が明示承認した1Canvasだけに限定し、参照元ノートや添付を変更しません。
 未知の構造は診断のみとし、実表示や任意の拡張、casefoldファイルシステムの検証済み対応は保証しません。
 同意、コマンド、部分実施、保存結果が不明な場合の復旧は[Canvas操作ガイド](skills/obsidian-canvas/references/workflow.md)を参照してください。
+
+## Obsidian Basesの操作
+
+専用の`obsidian-bases`は、Table・Cards・List・Kanbanの`.base`を作成・診断・直接編集します。
+この機能は`kotonoha@0.4.2`に含まれます。
+作業ディレクトリはユーザー指定を優先し、未指定ならカレントディレクトリを使います。
+許可済みの対象自体をホストツールで編集し、ノートのプロパティや埋め込みbaseブロックは変更しません。
+
+読み取り専用のNode検査器へ正確な文字列を渡し、保存するバイト列と検査結果のハッシュを照合します。
+Node 18以上と固定依存が必要です。依存の準備は別途許可を得たnpm ciで行い、検査中の自動取得はしません。
+導入時には専用のロックファイルを含め、node_modulesはコピーしません。
+式の実行やObsidian表示は確認せず、未知の機能・アプリ版不明・未完了の検査では保存を拒否します。
+条件・数式の変更は正確な差分と保存の許可を確認し、条件なしでは全Vaultが表示されることを説明します。
+直接編集にはCLIのロック・原子的確定・再実行記録はありません。
+依存の準備、4種類の独自テンプレート、原文保持、失敗時の扱いは[Bases操作ガイド](skills/obsidian-bases/references/workflow.md)を参照してください。
 
 ## consulting-analystの機能
 
@@ -155,14 +170,14 @@ npx kotonoha install
 
 ### 同梱スキルをまとめてインストール
 
-`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。開発版では、`consulting-analyst`、`tech-writer`、`japanese-prose`、`obsidian-vault`、`obsidian-canvas`、`presentation-planner`を`.github/skills/`へインストールします。
+`kotonoha install`は、まだ存在しない同梱スキルをすべてインストールします。`consulting-analyst`、`tech-writer`、`japanese-prose`、`obsidian-vault`、`obsidian-canvas`、`obsidian-bases`、`presentation-planner`を`.github/skills/`へインストールします。
 
 ```bash
 npm install --save-dev kotonoha
 npx kotonoha install --skill all
 ```
 
-`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。開発版では6つのスキルがインストールされたことを確認します。公開済み0.4.1はCanvasを含まない5つです。
+`--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。7つのスキルがインストールされたことを確認します。0.4.1はCanvasとBasesを含まない5つでした。
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md
@@ -170,6 +185,7 @@ test -f .github/skills/tech-writer/SKILL.md
 test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/obsidian-vault/SKILL.md
 test -f .github/skills/obsidian-canvas/SKILL.md
+test -f .github/skills/obsidian-bases/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -210,7 +226,7 @@ README-ja.mdの日本語を自然で読みやすい表現に修正して
 新しい日本語文書では、`このリポジトリの日本語READMEを作成して`のように依頼すると、`tech-writer`が下書きと構造レビューを行い、rubber-duck reviewの前にGiNZAベースの文章最適化を実行します。文章最適化を確実に指定する場合は、`<ファイル名>を技術文書として作成または修正し、GiNZAによる日本語表現最適化まで実施して`と指示します。
 
 既定のインストール先は、現在のプロジェクトの`.github/skills/`です。
-consulting-analyst、tech-writer、japanese-prose、obsidian-vault、obsidian-canvas、presentation-plannerをそれぞれのサブディレクトリに配置します。
+consulting-analyst、tech-writer、japanese-prose、obsidian-vault、obsidian-canvas、obsidian-bases、presentation-plannerをそれぞれのサブディレクトリに配置します。
 スキルを1つだけインストールする場合や、対応している別のディレクトリを使用する場合は、次のように指定します。
 
 ```bash
@@ -294,6 +310,7 @@ cp -r skills/tech-writer /path/to/your-repo/.github/skills/tech-writer
 cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
 cp -r skills/obsidian-vault /path/to/your-repo/.github/skills/obsidian-vault
 cp -r skills/obsidian-canvas /path/to/your-repo/.github/skills/obsidian-canvas
+cp -r skills/obsidian-bases /path/to/your-repo/.github/skills/obsidian-bases
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -344,12 +361,16 @@ skills/obsidian-vault/       # 許可範囲のMarkdown操作と共用保存API
 skills/obsidian-canvas/      # JSON Canvas診断、配置、承認付き保存
   scripts/                   # 固定依存のオフラインCLIと独自受入データの試験
   assets/templates/          # 関係図、アイデア、手順、比較の構成例
+skills/obsidian-bases/       # Basesの直接編集と読み取り専用検査
+  scripts/                   # 標準入力の検査器、専用依存のlock、作業コピー用の試験
+  assets/templates/          # Table、Cards、List、Kanban
 .github/skills/tech-writer   # Copilot CLIが読み込むskills/tech-writerへのシンボリックリンク
 .github/skills/consulting-analyst
 .github/skills/japanese-prose
 .github/skills/presentation-planner
 .github/skills/obsidian-vault
 .github/skills/obsidian-canvas
+.github/skills/obsidian-bases
 ```
 
 ## 既知の制約

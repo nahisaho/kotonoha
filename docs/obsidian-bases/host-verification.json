@@ -1,0 +1,162 @@
+{
+  "stage": "actual_packed_installed_offline_and_host_smoke",
+  "workdir": "/tmp/kotonoha-test/obsidian-bases/implementation/packed-host-eyzjfmki",
+  "packed_missing_dependency_exit": 4,
+  "explicit_offline_dependency_preparation": "passed",
+  "installed_template_checks": 4,
+  "actual_host_create_edit": [
+    {
+      "view": "table",
+      "created": true,
+      "edited": true,
+      "readback_verified": true,
+      "source_sha256": "4413bc088801b913b9e98775eab7028664707cdfaf07c6c21dc81fc7a9b4eb12",
+      "candidate_sha256": "fcf9784c614c257bbbf147ebec7616e3939ae4c69ba71c5b51861f74d89d03ba",
+      "unspecified_CRLF_comments_and_bytes_preserved": true
+    },
+    {
+      "view": "cards",
+      "created": true,
+      "edited": true,
+      "readback_verified": true,
+      "source_sha256": "d2d8335c333e3bc378a3c70a9cddfd4aa8e423750389ce36c2e86066a4a65f11",
+      "candidate_sha256": "f14c39fc5f646c2c66d0fdd385128b45c0b839e8a3b728c7da413850acbccbe0",
+      "unspecified_CRLF_comments_and_bytes_preserved": true
+    },
+    {
+      "view": "list",
+      "created": true,
+      "edited": true,
+      "readback_verified": true,
+      "source_sha256": "1220c68302293bba653090595bc38acbb6d13ffde5869d2fedc21b1a540db04e",
+      "candidate_sha256": "cd8b150bbf142488ceed2a29bae47c5224a48708fe09644c65e21dcd55a50bda",
+      "unspecified_CRLF_comments_and_bytes_preserved": true
+    },
+    {
+      "view": "kanban",
+      "created": true,
+      "edited": true,
+      "readback_verified": true,
+      "source_sha256": "44e5e7b5f051a3b3899ed93f233ac0a0acae5badf1c193ff8e233bdf83169a8e",
+      "candidate_sha256": "ce2d08eea9c9dcd43dd365b1ab73de9f6c6a3834b35d3b81d68f2d1a7e2ce732",
+      "unspecified_CRLF_comments_and_bytes_preserved": true
+    }
+  ],
+  "source_notes_unchanged": true,
+  "limitations": [
+    "Actual host normal creation/name/order/filter edits cover all four views; Kanban group edits and selected map/view add-remove-reorder paths also exercised. Refusal/uncertainty groups require separate contextual policy assessment; no arbitrary host enforcement proof.",
+    "No arbitrary host/model authorization enforcement, concurrent-race elimination, or Obsidian rendering/evaluation proof."
+  ],
+  "no_release": true,
+  "actual_host_additional_setting_edits": [
+    {
+      "before_sha256": "fcf9784c614c257bbbf147ebec7616e3939ae4c69ba71c5b51861f74d89d03ba",
+      "after_sha256": "fe61a226634fc8d3201e01bc5636bc060b1443dd22ddf43524ed8149ee199d41",
+      "readback_and_attributes": "passed",
+      "view": "table",
+      "setting": "order"
+    },
+    {
+      "before_sha256": "fe61a226634fc8d3201e01bc5636bc060b1443dd22ddf43524ed8149ee199d41",
+      "after_sha256": "9388294106e6f6a5072154254e337b43308a7d549a85fefc34a2b7f4050b330a",
+      "readback_and_attributes": "passed",
+      "view": "table",
+      "setting": "filters",
+      "authority": "Test-only exact before/after and save; possible display widening acknowledged, not treated as host read access."
+    },
+    {
+      "before_sha256": "f14c39fc5f646c2c66d0fdd385128b45c0b839e8a3b728c7da413850acbccbe0",
+      "after_sha256": "26a74a37b1b93fc86777c3049de99aaad835618855aeceb49b2f809754936367",
+      "readback_and_attributes": "passed",
+      "view": "cards",
+      "setting": "order"
+    },
+    {
+      "before_sha256": "26a74a37b1b93fc86777c3049de99aaad835618855aeceb49b2f809754936367",
+      "after_sha256": "695c981ee02b3b17f8f0837eb307c33387f6eb28f8cb9cb6668a5050bfa1d6ae",
+      "readback_and_attributes": "passed",
+      "view": "cards",
+      "setting": "filters",
+      "authority": "Test-only exact before/after and save; possible display widening acknowledged, not treated as host read access."
+    },
+    {
+      "before_sha256": "cd8b150bbf142488ceed2a29bae47c5224a48708fe09644c65e21dcd55a50bda",
+      "after_sha256": "1d0e69feadccd22a108760f14f09cb544eaafb180446b5f62bb3a10815437249",
+      "readback_and_attributes": "passed",
+      "view": "list",
+      "setting": "order"
+    },
+    {
+      "before_sha256": "1d0e69feadccd22a108760f14f09cb544eaafb180446b5f62bb3a10815437249",
+      "after_sha256": "6ddb46e27c721a0eb27897f81af8bb6a553f38167d0e457b8a17a185dce7f296",
+      "readback_and_attributes": "passed",
+      "view": "list",
+      "setting": "filters",
+      "authority": "Test-only exact before/after and save; possible display widening acknowledged, not treated as host read access."
+    },
+    {
+      "before_sha256": "ce2d08eea9c9dcd43dd365b1ab73de9f6c6a3834b35d3b81d68f2d1a7e2ce732",
+      "after_sha256": "d6cb436f6ccfc9ad323ebbbafb08dc88f7fd5323358ca9e8fabde7fcc6527687",
+      "readback_and_attributes": "passed",
+      "view": "kanban",
+      "setting": "order"
+    },
+    {
+      "before_sha256": "d6cb436f6ccfc9ad323ebbbafb08dc88f7fd5323358ca9e8fabde7fcc6527687",
+      "after_sha256": "1deb42897cc1d3b1b3eb2dc845a473a23ee338591cf4465c03394050a3b3820f",
+      "readback_and_attributes": "passed",
+      "view": "kanban",
+      "setting": "filters",
+      "authority": "Test-only exact before/after and save; possible display widening acknowledged, not treated as host read access."
+    },
+    {
+      "before_sha256": "1deb42897cc1d3b1b3eb2dc845a473a23ee338591cf4465c03394050a3b3820f",
+      "after_sha256": "3f3cf218e56da14047025eaa44be5ab779496c9e122f68e80203e38ad74ec63f",
+      "readback_and_attributes": "passed",
+      "view": "kanban",
+      "setting": "groupBy"
+    },
+    {
+      "before_sha256": "3f3cf218e56da14047025eaa44be5ab779496c9e122f68e80203e38ad74ec63f",
+      "after_sha256": "90c8e82bb973e0e1a237112994a3c33ae8a5ed8763bcb5dd4cc8ab71290fa538",
+      "readback_and_attributes": "passed",
+      "view": "kanban",
+      "setting": "groupOrder"
+    },
+    {
+      "before_sha256": "9388294106e6f6a5072154254e337b43308a7d549a85fefc34a2b7f4050b330a",
+      "after_sha256": "5242b7836b80ac39d939a442f973c190cc4fc8621f7e18d5e4970c9cdd889d77",
+      "readback_and_attributes": "passed",
+      "view": "table",
+      "setting": "formulas_and_summaries_add"
+    },
+    {
+      "before_sha256": "5242b7836b80ac39d939a442f973c190cc4fc8621f7e18d5e4970c9cdd889d77",
+      "after_sha256": "9388294106e6f6a5072154254e337b43308a7d549a85fefc34a2b7f4050b330a",
+      "readback_and_attributes": "passed",
+      "view": "table",
+      "setting": "formulas_and_summaries_remove"
+    },
+    {
+      "before_sha256": "9388294106e6f6a5072154254e337b43308a7d549a85fefc34a2b7f4050b330a",
+      "after_sha256": "2a11a8f0ca2703c205670bd69a6d4015190f99299c49fdf9393189f894e5dff0",
+      "readback_and_attributes": "passed",
+      "view": "table",
+      "setting": "view_add"
+    },
+    {
+      "before_sha256": "2a11a8f0ca2703c205670bd69a6d4015190f99299c49fdf9393189f894e5dff0",
+      "after_sha256": "0d26ba427ea3ad95e960a99c8bdc62ceba82164e51b065e83b3252c0389d7272",
+      "readback_and_attributes": "passed",
+      "view": "table",
+      "setting": "view_reorder"
+    },
+    {
+      "before_sha256": "0d26ba427ea3ad95e960a99c8bdc62ceba82164e51b065e83b3252c0389d7272",
+      "after_sha256": "9388294106e6f6a5072154254e337b43308a7d549a85fefc34a2b7f4050b330a",
+      "readback_and_attributes": "passed",
+      "view": "table",
+      "setting": "view_remove"
+    }
+  ]
+}

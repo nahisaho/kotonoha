@@ -1,0 +1,8 @@
+filters: 'file.inFolder("Reading") && file.ext == "md"'
+properties:
+  note.author:
+    displayName: Author
+views:
+  - type: cards
+    name: Reading candidates
+    order: [file.name, note.author, note.description]

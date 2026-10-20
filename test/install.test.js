@@ -293,6 +293,32 @@ function assertCanvasAssets(skillsRoot) {
   }
 }
 
+function assertBasesAssets(skillsRoot) {
+  for (const relativePath of [
+    "SKILL.md",
+    "references/workflow.md",
+    "references/execution-contract.json",
+    "scripts/check.cjs",
+    "scripts/package.json",
+    "scripts/package-lock.json",
+    "assets/templates/table.base",
+    "assets/templates/cards.base",
+    "assets/templates/list.base",
+    "assets/templates/kanban.base",
+  ]) {
+    assert.deepEqual(
+      fs.readFileSync(path.join(skillsRoot, "obsidian-bases", relativePath)),
+      fs.readFileSync(path.join(repositoryRoot, "skills/obsidian-bases", relativePath)),
+      `Bases ${relativePath} must be installed byte-identically`,
+    );
+  }
+  assert.equal(
+    fs.existsSync(path.join(skillsRoot, "obsidian-bases/scripts/node_modules")),
+    false,
+    "dependency preparation must remain an explicit separate operation",
+  );
+}
+
 test("Obsidian requests route to a core-compatible template that passes structural lint", () => {
   const skillRoot = path.join(repositoryRoot, "skills", "tech-writer");
   const skill = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
@@ -499,6 +525,7 @@ test("installs all skills into the default project directory", () => {
   assertAnalysisContracts(path.join(workingDirectory, ".github", "skills"));
   assertObsidianAssets(path.join(workingDirectory, ".github", "skills"));
   assertCanvasAssets(path.join(workingDirectory, ".github", "skills"));
+  assertBasesAssets(path.join(workingDirectory, ".github", "skills"));
 
   assert.ok(
     fs.existsSync(
@@ -625,6 +652,52 @@ test("installs Canvas alone while preserving an existing sibling", () => {
   });
   assertCanvasAssets(aloneTarget);
   assert.equal(fs.existsSync(path.join(aloneTarget, "obsidian-vault")), false);
+});
+
+test("installs Bases alone with its lock but without siblings or runtime preparation", (t) => {
+  const workingDirectory = createTemporaryDirectory();
+  t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+  const root = path.join(workingDirectory, "skills");
+  const sibling = path.join(root, "obsidian-vault");
+  fs.mkdirSync(sibling, { recursive: true });
+  fs.writeFileSync(path.join(sibling, "custom.txt"), "preserve");
+  execFileSync(process.execPath, [cli, "install", "--skill", "obsidian-bases", "--target", root], {
+    cwd: workingDirectory, stdio: "pipe",
+  });
+  assertBasesAssets(root);
+  assert.deepEqual(fs.readdirSync(root).sort(), ["obsidian-bases", "obsidian-vault"]);
+  assert.equal(fs.readFileSync(path.join(sibling, "custom.txt"), "utf8"), "preserve");
+  const checker = path.join(root, "obsidian-bases/scripts/check.cjs");
+  const result = spawnSync(process.execPath, [checker, "--stdin"], {
+    input: JSON.stringify({ schema_version: 1, intent: "inspect", document: "{}", application_version: "1.14.0" }),
+    encoding: "utf8",
+  });
+  assert.equal(result.status, 4);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.issues[0].code, "dependency_missing");
+  assert.equal(report.write_status, "not_requested");
+  assert.equal(fs.existsSync(path.join(root, "obsidian-bases/scripts/node_modules")), false);
+});
+
+test("source installation excludes dependency caches at every nested level", (t) => {
+  const root = createTemporaryDirectory();
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, "bin"));
+  fs.copyFileSync(cli, path.join(root, "bin/kotonoha.js"));
+  fs.copyFileSync(path.join(repositoryRoot, "package.json"), path.join(root, "package.json"));
+  const skill = path.join(root, "skills/obsidian-bases");
+  fs.mkdirSync(path.join(skill, "scripts/node_modules/local-cache"), { recursive: true });
+  fs.mkdirSync(path.join(skill, "nested/node_modules/another-cache"), { recursive: true });
+  fs.writeFileSync(path.join(skill, "SKILL.md"), "# Fixture");
+  fs.writeFileSync(path.join(skill, "scripts/package-lock.json"), '{"fixture":true}');
+  fs.writeFileSync(path.join(skill, "scripts/node_modules/local-cache/private.txt"), "must not copy");
+  execFileSync(process.execPath, [path.join(root, "bin/kotonoha.js"), "install", "--target", "installed"], {
+    cwd: root, stdio: "pipe",
+  });
+  const installed = path.join(root, "installed/obsidian-bases");
+  assert.equal(fs.existsSync(path.join(installed, "scripts/node_modules")), false);
+  assert.equal(fs.existsSync(path.join(installed, "nested/node_modules")), false);
+  assert.equal(fs.readFileSync(path.join(installed, "scripts/package-lock.json"), "utf8"), '{"fixture":true}');
 });
 
 test("rejects an unknown selected skill", () => {
@@ -765,6 +838,21 @@ test("the packed npm artifact installs a usable CLI", () => {
   );
   assertObsidianAssets(path.join(consumerDirectory, ".copilot", "skills"));
   assertCanvasAssets(path.join(consumerDirectory, ".copilot", "skills"));
+  assertBasesAssets(path.join(consumerDirectory, ".copilot", "skills"));
+  const installedBasesChecker = path.join(
+    consumerDirectory, ".copilot/skills/obsidian-bases/scripts/check.cjs",
+  );
+  const basesHelp = spawnSync(process.execPath, [installedBasesChecker, "--help"], {
+    encoding: "utf8",
+  });
+  assert.equal(basesHelp.status, 0);
+  assert.equal(JSON.parse(basesHelp.stdout).read_only, true);
+  const basesMissing = spawnSync(process.execPath, [installedBasesChecker, "--stdin"], {
+    input: '{"schema_version":1,"intent":"inspect","document":"{}","application_version":"1.14.0"}',
+    encoding: "utf8",
+  });
+  assert.equal(basesMissing.status, 4);
+  assert.equal(JSON.parse(basesMissing.stdout).issues[0].code, "dependency_missing");
 
   assert.ok(
     fs.existsSync(

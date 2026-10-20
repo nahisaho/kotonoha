@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "stage": "mechanical_verification_before_final_review",
+  "product_implemented": true,
+  "human_design_approval": "approvals.json design_approval and boundary_correction_approval",
+  "approved_artifact_hashes_unchanged": true,
+  "environment": {"platform": "linux", "node": "24.21.0", "npm": "12.2.0"},
+  "checks": [
+    {"command": "npm run test:obsidian-bases", "run": 212, "passed": 212, "failed": 0, "skipped": 0, "duration_seconds": 75.85782003},
+    {"command": "npm test", "run": 20, "passed": 20, "failed": 0, "includes": ["actual source and packed installation", "nested private lock identity", "cache exclusion", "missing installed dependency refusal", "existing sibling preservation"]},
+    {"command": "npm run test:obsidian-vault", "run": 31, "passed": 31, "failed": 0},
+    {"command": "npm run test:obsidian-canvas", "run": 90, "passed": 89, "failed": 0, "skipped": 1, "skip_reason": "Actual casefold filesystem unavailable"},
+    {"command": "uv run --offline skills/japanese-prose/scripts/test_engine.py", "run": 17, "passed": 17, "failed": 0},
+    {"command": "git diff --check", "result": "passed"},
+    {"command": "python3 skills/tech-writer/scripts/lint.py --json skills/obsidian-bases/SKILL.md", "findings": 0},
+    {"command": "python3 skills/tech-writer/scripts/lint.py --json skills/obsidian-bases/references/workflow.md", "findings": 0}
+  ],
+  "independent_oracles": {
+    "diagnostic_cases": 62,
+    "resource_cases": 23,
+    "correction": "Only R19/R20/R23 use the separately approved strict-valid explicit YAML keys; original implicit overlong key retained as invalid_yaml/2 negative regression.",
+    "source": ["acceptance-cases.json", "boundary-cases.json", "boundary-verification.json", "boundary-correction.json", "boundary-correction-verification.json"],
+    "not_derived_from_product_output": true
+  },
+  "packed_offline_and_actual_host": {
+    "evidence": "host-verification.json",
+    "missing_dependency_exit": 4,
+    "explicit_offline_npm_ci_then_installed_checker": "passed",
+    "original_templates_static_checked": ["table", "cards", "list", "kanban"],
+    "actual_host_creates": 4,
+    "actual_host_name_edits": 4,
+    "actual_host_additional_edits": 15,
+    "coverage": "Display-order and filter edits on all four views; Kanban groupBy/groupOrder; Table formula/summary add-remove and view add-reorder-remove.",
+    "byte_hash_CRLF_comments_owner_group_mode_and_readback": "passed",
+    "source_notes_unchanged": true,
+    "host_tool": "Actual Bash-invoked Python file operations on expressly generated disposable fixture Vaults; not a product save engine."
+  },
+  "prose": {
+    "new_skill_and_workflow_language": "English",
+    "japanese_readme_wording_diagnostic_score": 84,
+    "findings": 4,
+    "all_keep": "Two pre-existing Canvas/dependency passages and two exact bundled-Skill inventories.",
+    "semantic_equivalence_gate_claim": false,
+    "reason": "This is intentional feature documentation and count/section/command additions, not a meaning-preserving proofreading operation.",
+    "private_decisions": "/tmp/kotonoha-test/obsidian-bases/implementation/readme-prose-review.json"
+  },
+  "remaining_limits": [
+    "Final Claude Sonnet 5.5 implementation review was not yet performed when this evidence snapshot was written.",
+    "Host refusal/uncertainty and permission groups are instruction-level policy; no universal host/model enforcement proof or complete instrumented exercise of H04-H15/H17-H20 is claimed.",
+    "No contextual display-name proofreading was saved in this host smoke; actual Japanese gates remain required on real requests.",
+    "No Obsidian rendering or expression evaluation.",
+    "Node18, macOS, Windows and actual casefold filesystem execution unverified.",
+    "No atomic host transaction, cooperative lock, receipt replay protection or race elimination."
+  ],
+  "release_authorized": false
+}

@@ -1,0 +1,10 @@
+filters: 'file.inFolder("Tasks") && file.ext == "md"'
+properties:
+  note.status:
+    displayName: Status
+views:
+  - type: table
+    name: Task overview
+    order: [file.name, note.status, note.due, note.owner]
+    groupBy: {property: note.status, direction: ASC}
+    limit: 50

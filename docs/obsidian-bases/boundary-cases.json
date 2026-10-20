@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "independent_design_oracles_not_product_results",
+  "notation": "JavaScript-style string repetition, joins and JSON.stringify are constructor notation, not product calls. All raw strings use LF. Default Request: schema_version=1,intent=inspect,application_version=1.14.0. source_sha256 is independently SHA256(UTF8(exact constructed document)); early-control failures use null. Base document B='views: [{type: table, name: A}]\\n'. Base expression document E(e)='formulas:\\n  x: '+JSON.stringify(e)+'\\n'+B.",
+  "expected_report_rules": {
+    "complete": "exit_code=0,status=completed,structure=supported,static_checks_passed=true,issues=[],unprocessed=[]",
+    "resource": "exit_code=3,status=partial,structure=unsupported,static_checks_passed=false,issues=[{code:limit_exceeded,category:unsupported,path:P,line:null,column:null,related:[]}],unprocessed=[P]",
+    "unknown_x": "exit_code=3,status=partial,structure=unsupported,static_checks_passed=false,issues=[{code:unknown_key,category:unsupported,path:[x],line:null,column:null,related:[]}],unprocessed=[[x]]",
+    "metadata": "Read-only fields and request metadata follow the contract. source_sha256 is exact independently computed document hash, never product output. proofread_gate=not_requested. Compare all fields, exact canonical JSON bytes where output size is measured."
+  },
+  "cases": [
+    {"id": "R01", "constructor": "B+'#'+'a'.repeat(1048576-UTF8ByteLength(B)-2)+'\\n'", "measure": "document bytes=1048576", "expected": "complete"},
+    {"id": "R02", "constructor": "R01 document+' '", "measure": "document bytes=1048577", "expected": "resource", "P": []},
+    {"id": "R03", "constructor": "'x: '+'['.repeat(63)+'0'+']'.repeat(63)+'\\n'", "measure": "collection depth=64", "expected": "unknown_x"},
+    {"id": "R04", "constructor": "'x: '+'['.repeat(64)+'0'+']'.repeat(64)+'\\n'", "measure": "collection depth=65", "expected": "resource", "P": []},
+    {"id": "R05", "constructor": "'x: ['+Array(9997).fill('0').join(',')+']\\n'", "measure": "nodes=1 root map+1 key+1 seq+9997 scalars=10000", "expected": "unknown_x"},
+    {"id": "R06", "constructor": "'x: ['+Array(9998).fill('0').join(',')+']\\n'", "measure": "nodes=10001", "expected": "resource", "P": []},
+    {"id": "R07", "constructor": "E('\"'+'a'.repeat(4094)+'\"')", "measure": "expression UTF16 chars=4096", "expected": "complete"},
+    {"id": "R08", "constructor": "E('\"'+'a'.repeat(4095)+'\"')", "measure": "expression UTF16 chars=4097", "expected": "resource", "P": ["formulas", "x"]},
+    {"id": "R09", "constructor": "E('['+Array(1023).fill('1').join(',')+']')", "measure": "expression nodes=1 ArrayExpression+1023 Literal=1024", "expected": "complete"},
+    {"id": "R10", "constructor": "E('['+Array(1024).fill('1').join(',')+']')", "measure": "expression nodes=1025", "expected": "resource", "P": ["formulas", "x"]},
+    {"id": "R11", "constructor": "E('1+'.repeat(63)+'1')", "measure": "left-associative expression AST depth=64", "expected": "complete"},
+    {"id": "R12", "constructor": "E('1+'.repeat(64)+'1')", "measure": "expression AST depth=65", "expected": "resource", "P": ["formulas", "x"]},
+    {"id": "R13", "constructor": "E('('.repeat(64)+'1'+')'.repeat(64))", "measure": "preparse nesting=64, AST depth=1", "expected": "complete"},
+    {"id": "R14", "constructor": "E('('.repeat(65)+'1'+')'.repeat(65))", "measure": "preparse nesting=65", "expected": "resource", "P": ["formulas", "x"]},
+    {"id": "R15", "constructor": "'formulas:\\n'+Array.from({length:256},(_,i)=>'  f'+i+': \"1\"\\n').join('')+B", "measure": "formulas=256", "expected": "complete"},
+    {"id": "R16", "constructor": "'formulas:\\n'+Array.from({length:257},(_,i)=>'  f'+i+': \"1\"\\n').join('')+B", "measure": "formulas=257", "expected": "resource", "P": ["formulas"]},
+    {"id": "R17", "constructor": "'views:\\n'+'  - {type: table, name: A}\\n'.repeat(257)", "measure": "warnings=256", "expected": "complete except issues=[duplicate_view_name/caution at [views,i,name],related=[0 as string]] for i=1..256, ordered numerically"},
+    {"id": "R18", "constructor": "'views:\\n'+'  - {type: table, name: A}\\n'.repeat(258)", "measure": "warnings=257", "expected": "resource", "P": []},
+    {"id": "R19", "constructor": "'a'.repeat(523997)+': 0\\n'", "measure": "one unknown-key Report with canonical property order and LF is exactly 1048576 bytes", "expected": "unknown_x with x='a'.repeat(523997); no truncation"},
+    {"id": "R20", "constructor": "R19 with application_version='01.14.0'", "measure": "unbounded canonical Report would be 1048577 bytes", "expected": "resource", "P": []},
+    {"id": "R21", "constructor": "JSON.stringify(default Request for B) then trailing spaces to exactly 16777216 UTF8 bytes", "measure": "stdin cap inclusive", "expected": "complete"},
+    {"id": "R22", "constructor": "R21 raw control plus one trailing space", "measure": "stdin bytes=16777217", "expected": "exact x-early-report invalid_control defaults, failed/1, hash=null"},
+    {"id": "R23", "constructor": "R19 document+'views: [{type: table, name: true}]\\n'", "measure": "known invalid name plus oversized unknown-key Report", "expected": "resource except exit_code=2,status=not_performed,structure=invalid; only root limit_exceeded retained,unprocessed=[[]],exact source hash retained"}
+  ],
+  "command_reports": {
+    "invalid_input": "Every invalid argument/control command expands to exactly the contract x-early-report defaults plus failed/1 and one invalid_input/input at root. Use no prior document metadata.",
+    "dependency_missing": "Every missing/wrong version dependency command expands to exactly the defaults plus not_performed/4 and one dependency_missing/capability at root.",
+    "help": {"usage": "node <bases-dir>/scripts/check.cjs --stdin", "read_only": true}
+  }
+}

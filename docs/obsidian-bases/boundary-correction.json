@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "purpose": "Narrow design correction: replace invalid implicit long YAML keys with strict-valid explicit mapping keys in R19/R20/R23, without relaxing the parser or changing output limits.",
+  "approval": "Requires a separate human approval recorded in approvals.json. This file does not grant approval.",
+  "supersedes": [
+    "Only the R19/R20/R23 constructors in boundary-cases.json",
+    "Only their source_sha256/report_sha256/document_bytes entries in boundary-verification.json"
+  ],
+  "reason": "yaml 2.9.1 strict:true reports KEY_OVER_1024_CHARS for the original 523997-character implicit key before diagnostic/output-size checks. Those original constructors cannot test unknown-key output caps under the approved first-parser-error rule.",
+  "unchanged": [
+    "All Request/Report schemas and first-parser-error behavior",
+    "Strict YAML parsing, 1048576-byte output cap and its exact inclusive boundary",
+    "523997-character unknown key and resulting Report path length",
+    "R19 unsupported/3 unknown_key with exactly 1048576 output bytes",
+    "R20 application_version=01.14.0 and pre-fallback output size 1048577, yielding root limit_exceeded/3",
+    "R23 known invalid name plus oversized unknown-key report, yielding root limit_exceeded with invalid/2 dominance",
+    "All other diagnostic, command, host and resource cases"
+  ],
+  "constructors": [
+    {"id": "R19", "document": "'? '+'a'.repeat(523997)+'\\n: 0\\n'", "application_version": "1.14.0", "expected": "Same full expected Report as before except independently recomputed exact source hash; output bytes remain 1048576."},
+    {"id": "R20", "document": "Corrected R19 document", "application_version": "01.14.0", "expected": "Same root fallback as before except independently recomputed exact source hash; pre-fallback bytes remain 1048577."},
+    {"id": "R23", "document": "Corrected R19 document+'views: [{type: table, name: true}]\\n'", "application_version": "1.14.0", "expected": "Same invalid/2 root fallback as before except independently recomputed exact source hash."}
+  ],
+  "independent_measurements": "boundary-correction-verification.json",
+  "implementation_requirement": "Use the corrected strict-valid inputs as independent oracles. Retain an explicit test that the original implicit overlong key yields invalid_yaml/2. Do not special-case parser errors to force original fixtures through.",
+  "product_pass_claim": false,
+  "release_authorized": false
+}

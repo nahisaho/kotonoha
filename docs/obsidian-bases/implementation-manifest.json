@@ -1,0 +1,92 @@
+{
+  "stage": "final_implementation_snapshot",
+  "initial_review_manifest_sha256": "c2e5a358c4b98e78d1f9038bb7b38322e22bded35432c57354f022a6aa54b80a",
+  "post_review_changes": "Only README directory-tree correction B-I1 and the final review record. No reviewed runtime/test changes.",
+  "artifacts": [
+    {
+      "path": ".gitignore",
+      "sha256": "235f1fb09aff391a0d326e977a7675cafd2aee644c75928fdb3e3aa125b7998e"
+    },
+    {
+      "path": "bin/kotonoha.js",
+      "sha256": "c4043cf5072725f8c0b2a390d425a62768cd4e0db2b341b35a13c1daa8503212"
+    },
+    {
+      "path": "package.json",
+      "sha256": "53d5159f0871035674c171650ff33ba8ed92c1956ccdbb81cbde38f0ab3c29a7"
+    },
+    {
+      "path": "test/install.test.js",
+      "sha256": "c2d0b3363b4dbd77b6e6d3dd0462909ed83e3766d38709ad5dcadce25800711a"
+    },
+    {
+      "path": "README.md",
+      "sha256": "692cf37d2b639b4a63d767c3df0c1b5b34ca46a830e9c2dce448984b27bdfcc6"
+    },
+    {
+      "path": "README-ja.md",
+      "sha256": "cea46245faede10906f4c0bb68e4de7bd13ad90cacd629288823c8ae5cd36327"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "ac2bd0251897f37caeca772cccf5f638f960e8a51d86c84ea4b9b11ec5d380cd"
+    },
+    {
+      "path": "skills/tech-writer/SKILL.md",
+      "sha256": "069030a0ddc46a372fe19a7ceed739d280b0fd566758f806e6bc7f0c613d5f7f"
+    },
+    {
+      "path": "skills/obsidian-bases/SKILL.md",
+      "sha256": "a3dae32da6dd3fa280535e9ee5e9179ef4a8c4d09244260d0609514755cd4217"
+    },
+    {
+      "path": "skills/obsidian-bases/references/workflow.md",
+      "sha256": "be9a417c14827b4467fda379d27f5aef90a64001cef2ecf4d28218eae331d93d"
+    },
+    {
+      "path": "skills/obsidian-bases/scripts/check.cjs",
+      "sha256": "bf451760ae45c4f4afb3655528335e29e551cb9c0fb13c4d0543b351a6d3a4d3"
+    },
+    {
+      "path": "skills/obsidian-bases/scripts/verify.cjs",
+      "sha256": "f605637c99304f6c32df16b97700643dbb853778067e74486c4475e8aaedd988"
+    },
+    {
+      "path": "skills/obsidian-bases/scripts/package.json",
+      "sha256": "93654e97748db38dcd899fc14dbad76405c3477b3096ff7d82f8bff4b80c1d0a"
+    },
+    {
+      "path": "skills/obsidian-bases/scripts/package-lock.json",
+      "sha256": "a65d17ae0cd0efa758920dbfbafacc024598c87fc59b90b13405eec4952b4928"
+    },
+    {
+      "path": "skills/obsidian-bases/assets/templates/table.base",
+      "sha256": "2859b5bf0fd9b2f4340171923af992495ce4392a74ba6db483c0353af2569dbc"
+    },
+    {
+      "path": "skills/obsidian-bases/assets/templates/cards.base",
+      "sha256": "9da53215a9ad31740667e402af46a168528a273ef60e300772ef4ba770094ddd"
+    },
+    {
+      "path": "skills/obsidian-bases/assets/templates/list.base",
+      "sha256": "4976bf84bc7a34496d63a58615c37dd95e3feed5387f8d8a960b4a152bdc996d"
+    },
+    {
+      "path": "skills/obsidian-bases/assets/templates/kanban.base",
+      "sha256": "c014b4e5f8eb84584ddd7db45ac7cb218a3245a68e927c4d3e419f671e94afb9"
+    },
+    {
+      "path": "docs/obsidian-bases/implementation-verification.json",
+      "sha256": "01ded68f6067e40407982400d03b5231bca3e9c5ef93a2fbcf06b7f77e9835b5"
+    },
+    {
+      "path": "docs/obsidian-bases/host-verification.json",
+      "sha256": "faa3ebe45339f467893257e39504810515cf16a6d48a932ce8ced2e8bac99cc5"
+    },
+    {
+      "path": "docs/obsidian-bases/implementation-review.json",
+      "sha256": "bc713f0e239227878867458d2d1ae78791a6136275fa6db6b94aaef57de8a37a"
+    }
+  ],
+  "release_authorized": false
+}

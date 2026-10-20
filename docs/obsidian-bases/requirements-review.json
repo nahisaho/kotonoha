@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "stage": "requirements_review",
+  "artifact": "docs/obsidian-bases/requirements.md",
+  "document_version": "0.2",
+  "sha256": "fbb003b3ba89f1b0aaea4b2ba4b3035f3a66b15a25275ac4c5843e684d2376e7",
+  "status": "ready_for_human_approval",
+  "human_approval": false,
+  "model": "claude-sonnet-5.5",
+  "passes": ["bases-requirements-review", "bases-requirements-closure"],
+  "original_document_sha256": "caeb11c0185ae87642d07b92eaf4dbc393283575424bbd741562da14861e4484",
+  "findings": [
+    {
+      "id": "B-R1",
+      "severity": "medium",
+      "state": "closed",
+      "summary": "Deferred supported schemas must not silently reduce four-view creation and editing to a vacuous subset.",
+      "resolution": "Require the officially evidenced minimum key inventory and meaningful create/edit operations for every view; require requirements reapproval for any reduction; explicitly test unsupported fixture refusal.",
+      "acceptance": ["AC-004", "AC-005"]
+    },
+    {
+      "id": "B-R2",
+      "severity": "medium",
+      "state": "closed",
+      "summary": "Unbounded semantic filter-weakening detection cannot be an authorization gate.",
+      "resolution": "Conservatively treat every filter or formulas change as possible widening; require exact before/after and save authority without imposing CLI plans; test conjunction, removal and operator changes.",
+      "acceptance": ["AC-012"]
+    },
+    {
+      "id": "B-R3",
+      "severity": "low",
+      "state": "closed",
+      "summary": "Permission separation needs explicit refusal scenarios.",
+      "resolution": "Add read-allowed/model-input-denied, unauthorized external model, and in-data scope-escalation cases; require zero unauthorized acquisition, transmission and writes.",
+      "acceptance": ["AC-001", "AC-012"]
+    }
+  ],
+  "new_material_findings_after_closure": [],
+  "mechanical_checks": {
+    "structural_lint_findings": 0,
+    "requirements": 19,
+    "acceptance_conditions": 14,
+    "requirement_to_acceptance_mapping": "complete",
+    "full_japanese_diagnostics": ["prose", "reading_load", "outline", "terminology"],
+    "prose_score": 82,
+    "authored_invariant_gate": "passed_unchanged",
+    "prose_evidence": "/tmp/kotonoha-test/obsidian-bases/requirements-v02/prose-review.json"
+  },
+  "source_revision": "cd6c9f3c7d5492bbbec94e8f403572b84eeb325b",
+  "user_selected_scope": {
+    "operations": "create-read-diagnose-edit",
+    "save_mode": "direct-tools",
+    "views": ["table", "cards", "list", "kanban"]
+  },
+  "residuals": [
+    "Official documentation is not a complete machine-readable schema; concrete supported grammar, keys, values and limits must be fixed and feasibility-checked during design.",
+    "Direct host edits have no dedicated CLI root lock, atomic commit or receipt replay protections.",
+    "Instruction compliance and fixed acceptance fixtures cannot prove arbitrary hosts or models enforce the policy.",
+    "Actual Obsidian rendering and formula runtime results are not verified by this requirements review.",
+    "Kanban requires Obsidian 1.14 or later; older application versions need an explicit unsupported-capability report."
+  ],
+  "product_design_started": false,
+  "product_implementation_started": false,
+  "release_authorized": false
+}

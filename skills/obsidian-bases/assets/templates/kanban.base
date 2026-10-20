@@ -1,0 +1,7 @@
+filters: 'file.inFolder("Tasks") && file.ext == "md"'
+views:
+  - type: kanban
+    name: Work by status
+    order: [file.name, note.owner]
+    groupBy: {property: note.status, direction: ASC}
+    groupOrder: [Backlog, Active, Done, null]

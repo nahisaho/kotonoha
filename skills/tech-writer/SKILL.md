@@ -68,6 +68,9 @@ directory, or the current directory at request start if none was specified.
 Resolve the final target there without reinterpreting an explicitly absolute or
 Vault-relative path. Do not replace the target with a copy in session-state
 storage; retain Vault scope checks and separate consent for any auxiliary copies.
+Route standalone `.base` configuration to `obsidian-bases`, not the Markdown
+template or Vault Markdown writer; its host workflow validates without evaluating
+formulas and never mutates source-note properties.
 
 ## Division of labor
 

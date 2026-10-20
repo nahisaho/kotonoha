@@ -1,0 +1,213 @@
+{
+  "stage": "independent_boundary_constructor_feasibility",
+  "cases": [
+    {
+      "id": "R01",
+      "document_bytes": 1048576,
+      "source_sha256": "926f00751b4e9c2a28b1c189e620d113f7cd00f1eabd36b44b0877a1c3fa7d4c",
+      "report_sha256": "4131ca0f678f6bc527f08019e85fe044636c31984d49455f3484805db0b7cb01",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 479
+    },
+    {
+      "id": "R02",
+      "document_bytes": 1048577,
+      "source_sha256": "575ce1d8c0d4701e378731a4a936bf6eea5af124e533f17afff94578a2e547c3",
+      "report_sha256": "aaecbc775414c448712256caa3c2ab1d9a1fc58c9e15d580929824b8d40ab0bf",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 581
+    },
+    {
+      "id": "R03",
+      "document_bytes": 131,
+      "source_sha256": "36ec3efbb163b459318bffc743da1cade6ad089712d1806a04b57c523936207a",
+      "report_sha256": "f55986ce070de47ac8374f36540d987e4d4a52128dcb6c51040354dd37107417",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 584
+    },
+    {
+      "id": "R04",
+      "document_bytes": 133,
+      "source_sha256": "3ed290b6bde2b5c8858d5395358a6b04380324eea8f3f5e8a912bdad01d0ecd8",
+      "report_sha256": "3d63ea60f6680c0343567a22fe9b81788594fcd68f64fbc8fb564fccc324b8b8",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 581
+    },
+    {
+      "id": "R05",
+      "document_bytes": 19999,
+      "source_sha256": "6d44d45f67812981d05c5c9e8033721e3be3b11a24864ffc8a76274a630e3ab3",
+      "report_sha256": "9e7b6c57de625d2d5d6919e9b3b535f0055f9ea161801d9d72dc05b8374f6267",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 584
+    },
+    {
+      "id": "R06",
+      "document_bytes": 20001,
+      "source_sha256": "a5ba1ac705c5b3167a2be46586c91eb745f940a0486d9f3986bb8acef26dafb9",
+      "report_sha256": "bb19f0fc03ca2e25a7d5ec9bd516f0e641d55ef2f444e20d4c0d193c852a214b",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 581
+    },
+    {
+      "id": "R07",
+      "document_bytes": 4148,
+      "source_sha256": "7a3934100c792d18ea556d63722192d6adca53dd4ab72046bb5866e377a539fb",
+      "report_sha256": "0c8d5a5758b2487170cc4501a303c263f156871deb73977c4ec5015d0ac5cd4f",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 479
+    },
+    {
+      "id": "R08",
+      "document_bytes": 4149,
+      "source_sha256": "dff6ab0598cb20fd488520c6676b42788539305b27efb1097480919a2a3720da",
+      "report_sha256": "69739c4619fd7e34c5885fdd5e5d3ddaceae0558445629b1196c412f0f835e4a",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 609
+    },
+    {
+      "id": "R09",
+      "document_bytes": 2097,
+      "source_sha256": "40aa6e5701618bd1adf375a05a0022fb17ae2a75ae83c700811c35c346b935f3",
+      "report_sha256": "d780c880932e0aeb13952e22efe7e7ee4d2c71df85e141519d125212da1c8632",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 479
+    },
+    {
+      "id": "R10",
+      "document_bytes": 2099,
+      "source_sha256": "b728636d7fd020e2c1dca6deccdba6ee35aabb20dd9970cee1591abff09d5ce3",
+      "report_sha256": "c953320b54bc9a1f524483e9f60982223f335368a42b84837e60ea422e621d9a",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 609
+    },
+    {
+      "id": "R11",
+      "document_bytes": 177,
+      "source_sha256": "6ac16ec438f2818c6336c6ed01ea50d390e52d3049e5334c67ac80dba2f69dc4",
+      "report_sha256": "03d6947232d04d6f730e53c8d254c52fa641f2eaec6861f8dedc20c651956f03",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 479
+    },
+    {
+      "id": "R12",
+      "document_bytes": 179,
+      "source_sha256": "ddf4b53631f3983a3ffa4103b832451640ebbd944adc14d50bccf399d836db8c",
+      "report_sha256": "72885d86da4b952f418e9d488a388d6d17895fe9ccc472b06bf96cb6e2f0ea55",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 609
+    },
+    {
+      "id": "R13",
+      "document_bytes": 179,
+      "source_sha256": "753e83a797a1d65304e11283be4ffb538baaf92a1dc2ce5e9bab129d8a45e4fc",
+      "report_sha256": "957b5bf4ccdf30062882266f2003f22010c22d39c77a2c60d45e5c81e37255a9",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 479
+    },
+    {
+      "id": "R14",
+      "document_bytes": 181,
+      "source_sha256": "f3f4d79434a9ad7719bce530054a6bd76242f028507b1c206bbdefaecc55eeb1",
+      "report_sha256": "b6dc8a097826c3f42b7d5a95a8f73aee64852df6375c5b5689bc1e081e3b8af4",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 609
+    },
+    {
+      "id": "R15",
+      "document_bytes": 3004,
+      "source_sha256": "bea668618a1ae82fef572acde7d87d9d9d342f78df21f8edbb85459ceecb5027",
+      "report_sha256": "c2ffee1d8b00b202285bc359c22c0a5c69b19549f55cfa32bdd06b3ac3def871",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 479
+    },
+    {
+      "id": "R16",
+      "document_bytes": 3016,
+      "source_sha256": "c0ccee5b9b6fc711d80378c52260cf0bd62a21032ce546ceb1ccd1c2afe24d28",
+      "report_sha256": "79ee2b4f5f178c7396f725977917b9bbdcca357ad020d6d69d4d9b4240063cc7",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 601
+    },
+    {
+      "id": "R17",
+      "document_bytes": 6946,
+      "source_sha256": "a2a46d754e98517db12a49fb7cd9e9f37a17e5a4a9381868988067843f3ee5cd",
+      "report_sha256": "a52e374bcadb80da0d67120b4575b86a5aef4e446bef4aa2bfce51d91f2412ce",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 31602
+    },
+    {
+      "id": "R18",
+      "document_bytes": 6973,
+      "source_sha256": "3c0b8694752d0319ec29f40c107e8ceee52f3b284d0756a3b822301189018f8f",
+      "report_sha256": "f02d38792eb6713edd4d5da00c4aba605e6ab1083228cd70e839449eb19175d7",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 581
+    },
+    {
+      "id": "R19",
+      "document_bytes": 524001,
+      "source_sha256": "f8cbd2ba9b9979216a7680f4ef94bd946a299968bc6fab91e88768f1553560a4",
+      "report_sha256": "7755bd36eb18495dc57e56de053c088157491c4b3d276649e25483d0a18bb040",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 1048576
+    },
+    {
+      "id": "R20",
+      "document_bytes": 524001,
+      "source_sha256": "f8cbd2ba9b9979216a7680f4ef94bd946a299968bc6fab91e88768f1553560a4",
+      "report_sha256": "68b45ffcc3afc89a2ad357a046dbf73e19353d9b1d817036fc27c44998a58d77",
+      "expected_exit_code": 3,
+      "expected_structure": "unsupported",
+      "expected_report_bytes": 582
+    },
+    {
+      "id": "R21",
+      "document_bytes": 32,
+      "source_sha256": "a58574f6fe1ef868fcf915d292d0748501dab95ef577f2d8c3df2ed58f6bbea8",
+      "report_sha256": "a9a2b4e127a3f0e1ddb93227550ebd2cf0f2f42ccb6b2939d990fbf9c6cbeb7a",
+      "expected_exit_code": 0,
+      "expected_structure": "supported",
+      "expected_report_bytes": 479
+    },
+    {
+      "id": "R22",
+      "document_bytes": 32,
+      "source_sha256": null,
+      "report_sha256": "33f13ec76b8ad0aaa89aa4900e4195d05cfec7722c0edb07d633ec584d2dff62",
+      "expected_exit_code": 1,
+      "expected_structure": "unprocessed",
+      "expected_report_bytes": 505
+    },
+    {
+      "id": "R23",
+      "document_bytes": 524036,
+      "source_sha256": "a2591453a01cf9e3164843f0d83ec37a7d12c4db5975b6a6140d307766002197",
+      "report_sha256": "776707cb85ce66f9755919426c1ed553d208654013ec7e5b9f0dd7a6ba38e553",
+      "expected_exit_code": 2,
+      "expected_structure": "invalid",
+      "expected_report_bytes": 583
+    }
+  ],
+  "no_product_classifier_or_boundary_enforcement_tested": true
+}

@@ -1,0 +1,8 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.hasTag("guide")'
+views:
+  - type: list
+    name: Guide index
+    order: [file.name, note.description]
