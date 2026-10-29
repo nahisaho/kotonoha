@@ -2,9 +2,9 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#   "ginza>=5.2.0,<5.3",
-#   "ja-ginza>=5.2.0,<5.3",
-#   "spacy>=3.8.0,<4",
+#   "ginza>=5.3.0,<5.4",
+#   "ja-ginza>=5.3.0,<5.4",
+#   "spacy>=3.8.16,<4",
 #   "markdown-it-py>=3,<5",
 # ]
 # ///
