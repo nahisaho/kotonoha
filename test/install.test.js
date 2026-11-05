@@ -492,6 +492,39 @@ test("Obsidian authoring routes to Markdown while Vault only stores supplied can
   }
 });
 
+test("WSL Windows-drive support is limited to verified host direct saves", () => {
+  const vaultRoot = path.join(repositoryRoot, "skills", "obsidian-vault");
+  const skill = fs.readFileSync(path.join(vaultRoot, "SKILL.md"), "utf8");
+  const profile = skill.match(
+    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n## )/,
+  )?.[1];
+  assert.ok(profile, "direct saving must expose the WSL-specific profile");
+  assert.match(profile, /`drvfs`, `9p` or `v9fs`/);
+  assert.match(profile, /not a mapped network drive or UNC\/SMB share/);
+  assert.match(profile, /a `\/mnt\/c\/\.\.\.`\s+spelling alone is not evidence/);
+  assert.match(profile, /reparse points, including junctions/);
+  assert.match(profile, /not `:stream` or device paths/);
+  assert.match(profile, /verified in-place write to the same file object/);
+  assert.match(profile, /Open without\s+truncation, compare the original bytes and identity on that handle/);
+  assert.match(profile, /truncate to its exact length/);
+  assert.match(profile, /Do not use a host edit tool whose replacement behavior is unknown/);
+  assert.match(profile, /Synthetic Linux uid\/gid\/modes or unavailable POSIX\s+xattr enumeration alone are not reasons to reject/);
+  assert.match(profile, /read back exact bytes and verify file identity/);
+  assert.match(profile, /does not extend Python CLI, Canvas or Bases saving support/);
+  assert.match(profile, /Do not silently redirect a refused save to `\/tmp`/);
+  assert.match(skill, /does not relax CLI plan\/apply checks/);
+  const workflow = fs.readFileSync(
+    path.join(vaultRoot, "references", "workflow.md"), "utf8",
+  );
+  assert.match(workflow, /## WSLからWindowsドライブへ直接保存/);
+  assert.match(workflow, /既存ノートは同じファイル実体へ書き込む/);
+  assert.match(workflow, /保存を拒否した場合も、`\/tmp`等の別ファイルへ勝手に出力しない/);
+  const markdown = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-markdown", "SKILL.md"), "utf8",
+  );
+  assert.match(markdown, /For a WSL local Windows drive, use its host direct-save profile/);
+});
+
 test("Vault working directories prefer user targets over session-state copies", () => {
   const vaultRoot = path.join(repositoryRoot, "skills", "obsidian-vault");
   const skill = fs.readFileSync(path.join(vaultRoot, "SKILL.md"), "utf8");

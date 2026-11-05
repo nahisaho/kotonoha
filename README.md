@@ -14,7 +14,7 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Version: **0.5.3** (updated 2026-11-05), with eleven bundled Skills, including
+Version: **0.5.4** (updated 2026-11-05), with eleven bundled Skills, including
 `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
 Install the npm package or use the
 [source-checkout installation](#install-skills-from-this-source-checkout).
@@ -172,9 +172,16 @@ replay protection, and must not be an automatic fallback from CLI failures.
 See the [Japanese workflow guide](skills/obsidian-vault/references/workflow.md)
 for requests, command examples, data retention and recovery.
 
-Saving requires verifiable local regular files and preserved ownership/modes;
-symlinks, multiple hard links and unsupported attributes are refused.
-CLI saving additionally requires a verified filesystem and refuses all xattrs,
+Saving requires verifiable local regular files; symlinks and multiple hard
+links are refused. Native Linux saves preserve ownership/modes.
+Host direct saves also support confirmed local Windows drives through WSL
+(`drvfs`/`9p`/`v9fs`), not network shares. Existing notes must be updated in place,
+preserving Windows ACLs/attributes rather than replacing the file or requiring
+synthetic Linux permissions. Path/identity checks and exact readback remain
+mandatory; an unknown host replacement method is not sufficient.
+No silent `/tmp` output may substitute for an authorized Vault update.
+This profile, added in 0.5.4, does not extend Python CLI, Canvas or Bases support.
+CLI saving still requires a verified Linux filesystem and refuses all xattrs,
 including SELinux labels. Never remove attributes to bypass a refusal.
 Direct-edit failure and concurrency limitations are disclosed before saving;
 neither mode eliminates post-check external edits or LLM mistakes.
@@ -225,7 +232,7 @@ for exact-byte preservation, four original templates and failure handling.
 
 ## Obsidian syntax, app commands and data-driven notes
 
-The 0.5.3 Skills cover all six capability families in
+The 0.5.4 Skills cover all six capability families in
 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills), with original
 kotonoha instructions and examples. Reference snapshot:
 [`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98),
@@ -417,7 +424,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-The selected package determines which Skills are available; version 0.5.3
+The selected package determines which Skills are available; version 0.5.4
 includes all eleven. In the destination project, confirm they were installed:
 
 ```bash

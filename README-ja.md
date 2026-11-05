@@ -6,7 +6,7 @@ kotonohaは、GitHub CopilotとClaude Code向けのスキルを提供します�
 
 Obsidian向けには、Markdown記法、許可されたVault内のノート操作、JSON Canvas、Bases、公式アプリCLIを扱います。DefuddleによるWeb・HTML本文の抽出と、KnapによるJSON・CSVからのテンプレート生成にも対応します。操作ごとに、参照範囲・依存関係・保存の許可を確認します。
 
-バージョンは **0.5.3** です（2026-11-05更新）。`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`を含む11のスキルを同梱しています。npmパッケージを使うか、[ソースからスキルを導入する手順](#このチェックアウトからスキルを導入)を参照してください。
+バージョンは **0.5.4** です（2026-11-05更新）。`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`を含む11のスキルを同梱しています。npmパッケージを使うか、[ソースからスキルを導入する手順](#このチェックアウトからスキルを導入)を参照してください。
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -95,8 +95,14 @@ CLI計画保存モードも選べます。こちらはLinux、CPython 3.12、uv�
 CLI処理はオフライン・lock付きで起動します。依存関係の初回準備は別途の許可が必要です。
 依頼例、コマンド、コピーの保持と復旧は[操作ガイド](skills/obsidian-vault/references/workflow.md)を参照してください。
 
-保存は必要な確認ができるローカル通常ファイルに限定し、シンボリックリンク、維持できない属性、複数ハードリンクを拒否します。
-拡張属性付きファイルも保存非対応であり、SELinuxラベルなどの削除を回避策にしません。
+保存は必要な確認ができるローカル通常ファイルに限定し、シンボリックリンクや複数ハードリンクを拒否します。
+Linuxでは所有者・グループ・権限を維持します。
+0.5.4から、通常の直接保存はWSL上のローカルWindowsドライブ（drvfs・9p・v9fs）にも対応します。
+既存ノートは置換せず同じ実体へ書き込み、WindowsのACL・属性を保持します。仮想的なLinux権限だけでは拒否しません。
+ネットワーク共有は対象外とし、パス・実体・保存後のバイト列を検証します。保存方式が不明な編集ツールは使いません。
+`/tmp`等への別出力を、許可済みVaultの更新の代わりにはしません。
+Python CLI・Canvas・Basesの対応範囲は広げません。CLIでは引き続きWSLのWindowsドライブや拡張属性付き対象を拒否します。
+SELinuxラベルなどの削除を回避策にしません。
 直接編集はCLIの原子的確定、ルートロック、成功記録による再実行保護を利用しません。
 保存後に読み戻して確認しますが、途中失敗や同時編集の完全な防止は保証しません。
 LLMの誤判断を完全には防げず、ホストを隔離する機能でもありません。
@@ -134,7 +140,7 @@ Node 18以上と固定依存が必要です。依存の準備は別途許可を�
 
 ## Obsidian記法・アプリ操作・データからのノート生成
 
-0.5.3は、[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)の6つの機能分野を、kotonoha独自の手順と例で扱います。
+0.5.4は、[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)の6つの機能分野を、kotonoha独自の手順と例で扱います。
 参照した版は[`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98)です（2026-11-05確認）。
 対応する実行環境や保存方法が参照先と同一という意味ではありません。既存のCanvas・Basesの検査範囲と保存制約を維持します。
 
@@ -278,7 +284,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。導入できるスキルは、使用したパッケージに依存します。
-0.5.3には11のスキルを同梱しています。導入先プロジェクトで、すべて配置されたことを確認します。
+0.5.4には11のスキルを同梱しています。導入先プロジェクトで、すべて配置されたことを確認します。
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md

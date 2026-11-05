@@ -25,6 +25,9 @@ Coordinate content and review, not a second storage backend. Read the
 - For an existing Vault, request only authorized local input and static
   validation from `obsidian-vault`; hand it a finalized candidate for saving.
   Preserve the selected direct-save or optional plan-approved workflow.
+  For a WSL local Windows drive, use its host direct-save profile; do not
+  reject `v9fs` alone or route a normal content edit through Python CLI planning.
+  Do not silently substitute `/tmp` output for the authorized Vault target.
   If it is unavailable, report the missing sibling and provide an unsaved draft.
 - Use `tech-writer` for note structure and its existing
   `assets/templates/obsidian.md` for core Templates; do not duplicate that

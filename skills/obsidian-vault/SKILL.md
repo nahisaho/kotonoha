@@ -106,9 +106,11 @@ not performed, not an unverified substitute.
    proposal-only or pre-save-confirmation requests require approval before writing.
 4. Immediately before saving, recheck source bytes and identity. Stop on external
    changes; never overwrite from stale content. Identical bytes mean no write.
-5. Save the exact candidate with host tools, preserving owner, group and
-   permissions. Refuse multiple hard links, xattrs or other unsupported attributes;
-   never remove attributes, including SELinux labels, to bypass refusal.
+5. Save the exact candidate with host tools. On native Linux filesystems,
+   preserve owner/group/modes and refuse xattrs or unsupported attributes.
+   For WSL Windows drives, use the direct-save profile below instead.
+   Both profiles refuse multiple hard links and attribute-removing workarounds,
+   including removal of SELinux labels.
 6. Read back after saving; require exact candidate bytes and unchanged unspecified content.
    Report the exact target and outcome, never success on failure or uncertainty.
 
@@ -120,6 +122,44 @@ plan-hash approval and receipt replay protection. Report only verified readback,
 not invented CLI JSON/receipts. If the user needs CLI guarantees, await selection.
 Never retry a failed CLI operation as a direct edit without permission; inspect
 the target first when its save state is unknown.
+
+### WSL Windows-drive direct saves
+
+Support authorized Markdown saves on a confirmed local Windows drive mounted
+through WSL as `drvfs`, `9p` or `v9fs`. Do not reject it solely because of that
+filesystem name or apply the Python CLI's filesystem allowlist to host saves.
+This profile does not extend Python CLI, Canvas or Bases saving support.
+
+1. Verify WSL, the actual mount and its Windows path mapping; a `/mnt/c/...`
+   spelling alone is not evidence. Confirm the Windows backing drive is local,
+   not a mapped network drive or UNC/SMB share. Stop if that cannot be established.
+2. Keep the authorized root/target, byte hashes, no-symlink and link-count checks.
+   Check for Windows reparse points, including junctions, along the resolved path;
+   reject them. Respect Windows read-only attributes and ACL access denials.
+   Target only the ordinary `.md` data stream, not `:stream` or device paths.
+   Never run chmod/chown, remove attributes or change mount/Windows settings.
+3. For an existing note, use a verified in-place write to the same file object,
+   not a temporary-file replacement, rename or delete/recreate. Open without
+   truncation, compare the original bytes and identity on that handle immediately
+   before writing, then write the candidate and truncate to its exact length.
+   Do not use a host edit tool whose replacement behavior is unknown.
+4. Preserve Windows ACLs, attributes, alternate streams and any WSL metadata by
+   retaining that object. Synthetic Linux uid/gid/modes or unavailable POSIX
+   xattr enumeration alone are not reasons to reject this profile; do not claim
+   those Linux values represent a verified Windows security descriptor.
+   For a new note, create exclusively without overwriting an equivalent name,
+   allowing normal Windows parent ACL inheritance.
+5. Flush/close, then read back exact bytes and verify file identity and observable
+   attributes, allowing only normal write timestamps/archive-bit updates.
+   Report saved only on a match. Disclose non-atomic writes,
+   possible partial writes and concurrent Obsidian/Sync/Windows edits before saving;
+   after a possible write failure report unknown, without retry or rollback.
+
+Missing path checks or a known in-place method still block saving; report the
+specific missing capability, not a blanket v9fs prohibition.
+Do not silently redirect a refused save to `/tmp` or another file. An alternate
+output needs explicit exact-path consent and is never a successful Vault update.
+Proofreading gates and the session-storage prohibition still apply.
 
 ## Validation and proofreading save gates
 
@@ -153,6 +193,8 @@ uv run --offline --locked --python 3.12 <obsidian-vault-dir>/scripts/vault.py in
 
 CLI mode requires Linux local regular files, CPython 3.12 and uv. Obtain Vault
 content only through `inspect`/`read`; write only through `apply`.
+Its existing filesystem allowlist still excludes WSL Windows-drive mounts;
+the host direct-save profile does not relax CLI plan/apply checks.
 The v1 request intent values remain compatibility fields for the backend,
 not independent authoring, convention-analysis or discovery entrypoints.
 Never bypass scope checks with generic tools.
@@ -179,7 +221,7 @@ automatically re-save or roll back a possibly saved operation. Confirm unknown
 records/temp files and their diffs with the user before acting. Do not commit,
 push, publish, delete, move or rename notes.
 
-Require verifiable local regular files and attribute preservation; refuse
+Require verifiable local regular files and the selected profile's attribute preservation; refuse
 unsupported capabilities rather than weakening checks. Neither mode guarantees
 all Obsidian rendering/resolution rules or perfect LLM meaning/relevance.
 Same-privilege malicious processes remain outside the defense boundary;
