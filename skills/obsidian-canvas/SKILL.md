@@ -16,8 +16,19 @@ argument-hint: "[create|inspect|edit|proofread|layout] <Vault and scope>"
 
 許可された資料をCanvasに整理し、指定したカードと接続だけを変更する。
 ノートの関係図、アイデア整理、条件付きの手順、調査資料の比較に対応する。
-Markdownノートの操作はobsidian-vault、Basesの操作は別の責務として扱う。
+Markdownノートの作成・編集はobsidian-markdown、Basesの操作は別の責務として扱う。
+obsidian-vaultはローカル読み取り・検証・保存の共用基盤として利用する。
 本SkillはCanvaサービスの操作や、画像・PDFへの出力を行わない。
+
+## JSON Canvas syntax reference
+
+Use the [JSON Canvas field guide](references/json-canvas.md) for node kinds,
+edge endpoints, colors, layering and group geometry. Requests naming
+`json-canvas` map to this existing Skill, not a second installer name or writer.
+The execution contract and approval workflow remain authoritative; a
+specification-valid diagram is not automatically an authorized save.
+Markdown inside text cards may use `obsidian-markdown` syntax guidance without
+granting access to linked notes or changing the storage workflow.
 
 ## 受付と許可
 

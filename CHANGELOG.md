@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Development target: `0.5.3` (`0.5.3-dev.0`), updated 2026-11-05.
+This version has not been published.
+
+### Added
+
+- Add `obsidian-markdown` for note authoring/editing, Obsidian-specific syntax,
+  Japanese proofreading coordination and protected local-storage handoffs.
+- Add `obsidian-cli` for explicitly selected official application commands,
+  scoped note/task/property operations and authorized development diagnostics.
+- Add `defuddle` for optional web/HTML-to-Markdown or JSON extraction, with
+  separate network consent and reviewed handoffs instead of direct Vault writes.
+- Add `knap` for optional JSON/CSV template rendering, batch previews and
+  Vault-external staging, with original templates and example data.
+- Add JSON Canvas field and Bases expression/view references, preserving the
+  existing validation subsets and save workflows.
+- Expose the Obsidian suite through source-checkout Skill links and verify
+  selective installation plus npm-tarball delivery for both hosts.
+
+### Changed
+
+- Start 0.5.3 development as `0.5.3-dev.0`; no release or publication yet.
+- Reduce `obsidian-vault` to scoped local reads, static validation and exact
+  candidate saving. Remove standalone authoring, convention inference,
+  related-note recommendations, link analysis and proofreading orchestration.
+  Route note content to `obsidian-markdown`, Japanese wording to
+  `japanese-prose` and explicitly selected live-app operations to `obsidian-cli`.
+  Retain the v1 backend request format, validation/save gates and Canvas storage
+  API version 1; legacy intent labels do not restore the removed workflows.
+- Route all six capability families from `kepano/obsidian-skills` through
+  eleven bundled kotonoha Skills without introducing a second Canvas writer.
+  External tools remain optional and are not installed by kotonoha.
+- Document source-checkout installation for the unpublished development Skills.
+  Keep the Node.js >=18 installer requirement; the optional Knap CLI needs >=20.
+- Preserve existing Vault, Canvas and Bases save workflows, one-note handoffs
+  and the prohibition on session-storage outputs. Official app commands require
+  separate authority and never bypass a refused storage operation.
+
 ## [0.5.1] - 2026-10-21
 
 ### Fixed

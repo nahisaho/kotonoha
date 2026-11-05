@@ -1,21 +1,23 @@
 # kotonoha
 
-kotonoha provides skills for GitHub Copilot and Claude Code: consulting analysis, technical
-documents, Japanese prose, and presentation planning. `consulting-analyst`
-structures ambiguous problems into issue trees, hypotheses, evidence, option
-comparisons, and recommendations. `tech-writer` turns that reasoning into
-README, design documents, Blueprints, White Papers, proposals, and other
-technical documents without losing the reader. `japanese-prose` improves
-Japanese wording with GiNZA-based diagnostics. `presentation-planner` turns
-source material into a reusable presentation scenario, slide outline, design
-specification, and handoff for a dedicated PPTX creation skill.
-The `obsidian-vault` skill applies scoped Vault conventions and link diagnostics
-and directly creates or edits authorized Markdown notes using host file tools,
-with optional CLI plan-approved saving. Direct editing is included in 0.4.2.
-The `obsidian-canvas` skill adds scoped diagram diagnosis,
-layout and approval-gated Canvas edits in 0.4.2.
-The `obsidian-bases` skill adds direct `.base` configuration editing
-and a read-only static checker for Table, Cards, List and Kanban.
+kotonoha provides skills for GitHub Copilot and Claude Code: consulting analysis,
+technical writing, Japanese prose, Obsidian workflows and presentation planning.
+Turn evidence into documents, work with scoped Vault content, and prepare
+presentations without mixing drafting with unauthorized saves.
+
+`consulting-analyst` structures problems and evidence; `tech-writer` creates
+reader-focused technical documents; `japanese-prose` improves Japanese wording
+with GiNZA diagnostics. `presentation-planner` prepares scenarios, slide outlines
+and design specifications for a dedicated PPTX creation skill.
+
+The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
+Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
+Each workflow keeps its own scope, dependency and save requirements.
+
+Current development version: **0.5.3-dev.0** (updated 2026-11-05), with eleven
+bundled Skills. This version is not published; use the
+[source-checkout installation](#try-the-unpublished-053-skills-from-this-checkout)
+to try the four new Skills rather than assuming npm `latest` includes them.
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -79,6 +81,10 @@ review.
   message body (plain text by convention) and code comments/docstrings
   (the target programming language's own syntax)
 - Japanese as the primary target language, with English document support
+- Draft Obsidian syntax and work with authorized Vault notes, Canvas diagrams
+  and Bases configuration without changing unrelated content
+- Use explicitly selected official Obsidian commands, optional Defuddle
+  extraction and Knap data-driven rendering with separate consent and save gates
 
 ## Supported document types
 
@@ -124,11 +130,19 @@ for setup, placeholder handling, and limitations.
 
 ## Working with an Obsidian Vault
 
-Use the dedicated `obsidian-vault` skill for Vault conventions, direct Markdown
-creation and editing, related-note proposals, internal-link diagnosis and Japanese
-proofreading. The direct-edit workflow uses host file tools without
-requiring Python, uv, Obsidian, MCP or plugins. Use `tech-writer` for document
-structure and `japanese-prose` for proofreading.
+Use `obsidian-markdown` to create or edit Markdown notes and templates. It uses
+`tech-writer` for structure and coordinates Japanese proofreading with
+`japanese-prose`. `obsidian-vault` is now only the shared backend for scoped
+local reads, static validation and saving an already prepared candidate.
+Its direct-save path uses host file tools without Python, uv, Obsidian, MCP
+or plugins.
+
+Standalone convention inference, related-note recommendations, link analysis
+and proofreading orchestration have been removed from `obsidian-vault`.
+Use an explicitly selected `obsidian-cli` workflow for live-app search and
+link inspection; it does not replace editorial recommendations.
+The backend retains static observations/link evidence, the v1 request format
+and Canvas storage API version 1 for compatibility, not the removed workflows.
 
 The user explicitly selects the Vault, read scopes and model-context consent.
 Direct editing requires authorization for the exact target and changes, preserves
@@ -139,7 +153,7 @@ at request start by default. Relative targets resolve there unless explicitly
 Vault-relative; absolute targets stay unchanged. Edit the authorized target
 itself, not a session-state copy. This does not broaden the permitted Vault scope;
 auxiliary copies still need separate consent and a suitable location.
-All three Obsidian skills prohibit saving operation files in session storage,
+All Obsidian workflows prohibit saving operation files in session storage,
 including originals, candidates, diagnostics, reviews, plans and temporary files.
 If a selected directory resolves there, they ask for another location before
 writing. Delegated skills receive the same restriction. CLI workspaces still
@@ -209,6 +223,62 @@ or receipt protection. Rendering, real expression results and arbitrary host
 enforcement remain unverified. See the [Bases workflow](skills/obsidian-bases/references/workflow.md)
 for exact-byte preservation, four original templates and failure handling.
 
+## Obsidian syntax, app commands and data-driven notes
+
+The 0.5.3 development Skills cover all six capability families in
+[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills), with original
+kotonoha instructions and examples. Reference snapshot:
+[`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98),
+checked 2026-11-05. This is capability coverage, not identical runtime support:
+the existing Canvas/Bases validation subsets and approval rules remain intact.
+
+| Capability | kotonoha Skill | Runtime and save boundary |
+|---|---|---|
+| Markdown notes and syntax | [`obsidian-markdown`](skills/obsidian-markdown/SKILL.md) | No external CLI; owns authoring/editing, coordinates Japanese proofreading and hands local I/O to `obsidian-vault` |
+| JSON Canvas | [`obsidian-canvas`](skills/obsidian-canvas/SKILL.md) | Existing locked Python backend and approved single-Canvas plans; no new `json-canvas` install name |
+| Bases | [`obsidian-bases`](skills/obsidian-bases/SKILL.md) | Existing read-only Node checker and authorized host saves |
+| Official application CLI | [`obsidian-cli`](skills/obsidian-cli/SKILL.md) | Registered desktop CLI and app; explicit Vault/file targets and separate live-app authority |
+| Web/HTML extraction | [`defuddle`](skills/defuddle/SKILL.md) | Optional Defuddle CLI, network consent including possible third-party requests; stdout or authorized external workspace |
+| JSON/CSV templates | [`knap`](skills/knap/SKILL.md) | Optional Knap CLI with Node >=20; validate, render, preview and stage outside the Vault |
+
+The application CLI is not `vault.py` and is never a fallback for a refused
+storage operation. Its official setup currently requires installer 1.12.7+
+and CLI registration in Settings > General. Commands can launch Obsidian;
+launches, plugins, screenshots and developer execution need explicit authority.
+Live Bases queries require consent for the effective result scope.
+Canvas/Bases static checks do not prove application rendering or runtime results.
+
+Defuddle can make asynchronous third-party requests even for local HTML.
+It is not an assumed offline parser. Knap rendering does not fetch a source,
+verify facts or authorize a save. Its batch workflow previews all output paths
+and stages into an approved empty directory. `obsidian-markdown` prepares each
+selected note, then hands local saving individually to `obsidian-vault`.
+No new workflow permits session-storage outputs.
+The installer prepares none of these optional tools or application settings.
+
+Example requests:
+
+```text
+Explain heading/block links, nested callouts and YAML properties in this text.
+Do not read a Vault or save a note.
+```
+
+```text
+Using the official Obsidian app CLI, read Notes/Trial.md in my selected Vault.
+Confirm the Vault identity and app-launch permission before running commands.
+```
+
+```text
+Preview one Markdown note per CSV row with Knap. Use a consented staging
+directory outside my Vault; show output paths before generating or saving.
+```
+
+See the [Markdown syntax](skills/obsidian-markdown/references/syntax.md),
+[app commands](skills/obsidian-cli/references/commands.md),
+[Canvas fields](skills/obsidian-canvas/references/json-canvas.md),
+[Bases expressions](skills/obsidian-bases/references/expressions.md) and
+[Knap examples](skills/knap/references/rendering.md).
+
 ## What consulting-analyst does
 
 - Defines the decision-maker, decision question, outcome, scope, and evidence
@@ -259,16 +329,38 @@ handoff without inventing missing evidence.
 
 - GitHub Copilot (CLI or a supported IDE agent mode) or Claude Code installed
 - Node.js 18+ and npm for the installer
+- Optional tools only for their selected workflows: registered Obsidian
+  desktop CLI, Defuddle, or Knap (Knap CLI requires Node.js 20+)
 - Python 3.9+ for tech-writer's structural lint
 - Python 3.10+ and `uv` for the edit-invariant gate and bundled GiNZA
   diagnostics such as prose lint,
   reading-load analysis, outline extraction, and terminology checks; `uv`
   resolves GiNZA, `ja_ginza`, and spaCy on first use
 
-### Install from npm
+### Try the unpublished 0.5.3 Skills from this checkout
+
+The new `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap` Skills are
+available in this source checkout, not a published `0.5.3` npm release.
+From the repository root, replace `/path/to/your-project` with the destination
+project's absolute path and choose one command:
+
+```bash
+node bin/kotonoha.js install --agent copilot --target /path/to/your-project/.github/skills
+node bin/kotonoha.js install --agent claude --target /path/to/your-project/.claude/skills
+```
+
+Both commands select all eleven Skills by default and preserve existing Skill
+directories. To update an existing copy, review local changes first and add
+`--force` only when replacement is intended. To select one Skill, add
+`--skill obsidian-markdown` or another bundled name.
+This copies Skill files only; it does not install Obsidian, Defuddle, Knap,
+Python dependencies or the Bases checker's dependencies.
+
+### Install a published package from npm
 
 Install the package, then copy all packaged skills into a skill directory
-with the included CLI:
+with the included CLI. These commands use the published package and do not
+include unpublished development changes:
 
 ```bash
 npm install --save-dev kotonoha
@@ -320,17 +412,16 @@ and [Claude Code Skills](https://code.claude.com/docs/en/skills).
 ### Install all bundled skills together
 
 `kotonoha install` installs every packaged skill that is not already present.
-The following commands install `consulting-analyst`, `tech-writer`,
-`japanese-prose`, `obsidian-vault`, `obsidian-canvas`, `obsidian-bases`, and `presentation-planner`
-into `.github/skills/`:
+For an installed published package, the explicit form is:
 
 ```bash
-npm install --save-dev kotonoha
 npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-Confirm that all seven skills were installed (0.4.1 had five):
+The selected package determines which Skills are available. For the unpublished
+0.5.3 set, use the source-checkout instructions above. In the destination
+project, confirm all eleven Skills were installed:
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md
@@ -339,6 +430,10 @@ test -f .github/skills/japanese-prose/SKILL.md
 test -f .github/skills/obsidian-vault/SKILL.md
 test -f .github/skills/obsidian-canvas/SKILL.md
 test -f .github/skills/obsidian-bases/SKILL.md
+test -f .github/skills/obsidian-markdown/SKILL.md
+test -f .github/skills/obsidian-cli/SKILL.md
+test -f .github/skills/defuddle/SKILL.md
+test -f .github/skills/knap/SKILL.md
 test -f .github/skills/presentation-planner/SKILL.md
 ```
 
@@ -511,6 +606,10 @@ cp -r skills/japanese-prose /path/to/your-repo/.github/skills/japanese-prose
 cp -r skills/obsidian-vault /path/to/your-repo/.github/skills/obsidian-vault
 cp -r skills/obsidian-canvas /path/to/your-repo/.github/skills/obsidian-canvas
 cp -r skills/obsidian-bases /path/to/your-repo/.github/skills/obsidian-bases
+cp -r skills/obsidian-markdown /path/to/your-repo/.github/skills/obsidian-markdown
+cp -r skills/obsidian-cli /path/to/your-repo/.github/skills/obsidian-cli
+cp -r skills/defuddle /path/to/your-repo/.github/skills/defuddle
+cp -r skills/knap /path/to/your-repo/.github/skills/knap
 cp -r skills/presentation-planner /path/to/your-repo/.github/skills/presentation-planner
 ```
 
@@ -558,13 +657,17 @@ skills/presentation-planner/ # storyline, design-spec, and PPTX handoff skill
   references/                # boundary, scenario/design guidance, customization, handoff contract
   assets/scenario-templates/ # executive, technical, and data-report narrative scenarios
   assets/design-templates/   # executive, technical, and data-report YAML designs
-skills/obsidian-vault/       # scoped Markdown notes and shared storage API
+skills/obsidian-vault/       # scoped local read/validate/save backend and shared API
 skills/obsidian-canvas/      # JSON Canvas diagnosis, layouts, and approved saves
   scripts/                   # locked offline CLI and original-fixture tests
   assets/templates/          # note map, mind map, workflow, comparison
 skills/obsidian-bases/       # direct Bases configuration and read-only validation
   scripts/                   # stdin checker, private dependency lock, checkout-only tests
   assets/templates/          # Table, Cards, List, Kanban
+skills/obsidian-markdown/    # note authoring/editing; local I/O uses obsidian-vault
+skills/obsidian-cli/         # explicitly selected official live-app commands
+skills/defuddle/             # optional web/HTML extraction, no direct Vault writes
+skills/knap/                 # optional JSON/CSV rendering, preview and external staging
 .github/skills/tech-writer   # symlink to skills/tech-writer (where Copilot CLI reads it)
 .github/skills/consulting-analyst
 .github/skills/japanese-prose
@@ -572,6 +675,10 @@ skills/obsidian-bases/       # direct Bases configuration and read-only validati
 .github/skills/obsidian-vault
 .github/skills/obsidian-canvas
 .github/skills/obsidian-bases
+.github/skills/obsidian-markdown
+.github/skills/obsidian-cli
+.github/skills/defuddle
+.github/skills/knap
 ```
 
 ## Known limitations

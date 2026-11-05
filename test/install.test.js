@@ -25,6 +25,20 @@ test("bundled Skill descriptions fit the host discovery limit", () => {
   }
 });
 
+test("the source checkout exposes every bundled Skill to host discovery", () => {
+  const skillsRoot = path.join(repositoryRoot, "skills");
+  for (const name of fs.readdirSync(skillsRoot)) {
+    const source = path.join(skillsRoot, name, "SKILL.md");
+    if (!fs.existsSync(source)) continue;
+    const discovered = path.join(repositoryRoot, ".github", "skills", name, "SKILL.md");
+    assert.equal(
+      fs.realpathSync(discovered),
+      fs.realpathSync(source),
+      `${name} should be discoverable without a second copy of its instructions`,
+    );
+  }
+});
+
 test("tech-writer workflow section references stay aligned", () => {
   const skill = fs.readFileSync(
     path.join(repositoryRoot, "skills", "tech-writer", "SKILL.md"),
@@ -294,6 +308,7 @@ function assertCanvasAssets(skillsRoot) {
     "SKILL.md",
     "references/workflow.md",
     "references/execution-contract.json",
+    "references/json-canvas.md",
     "scripts/canvas.py",
     "scripts/canvas.py.lock",
     "assets/templates/note-map.canvas",
@@ -314,6 +329,7 @@ function assertBasesAssets(skillsRoot) {
     "SKILL.md",
     "references/workflow.md",
     "references/execution-contract.json",
+    "references/expressions.md",
     "scripts/check.cjs",
     "scripts/package.json",
     "scripts/package-lock.json",
@@ -334,6 +350,63 @@ function assertBasesAssets(skillsRoot) {
     "dependency preparation must remain an explicit separate operation",
   );
 }
+
+const obsidianExtensionAssets = {
+  "obsidian-markdown": ["SKILL.md", "references/syntax.md"],
+  "obsidian-cli": ["SKILL.md", "references/commands.md"],
+  defuddle: ["SKILL.md"],
+  knap: [
+    "SKILL.md",
+    "references/rendering.md",
+    "assets/templates/source-note.knap.md",
+    "assets/examples/source.json",
+    "assets/examples/sources.csv",
+  ],
+};
+
+function assertObsidianExtensions(skillsRoot, names = Object.keys(obsidianExtensionAssets)) {
+  for (const name of names) {
+    const root = path.join(skillsRoot, name);
+    for (const relativePath of obsidianExtensionAssets[name]) {
+      assert.deepEqual(
+        fs.readFileSync(path.join(root, relativePath)),
+        fs.readFileSync(path.join(repositoryRoot, "skills", name, relativePath)),
+        `${name}/${relativePath} must be installed byte-identically`,
+      );
+      if (!relativePath.endsWith(".md")) continue;
+      const text = fs.readFileSync(path.join(root, relativePath), "utf8")
+        .replace(/`[^`\r\n]+`/g, "");
+      for (const match of text.matchAll(/\[[^\]\n]*\]\(([^)\s]+)\)/g)) {
+        const target = match[1];
+        if (/^[a-z][a-z0-9+.-]*:|^#/i.test(target)) continue;
+        const resolved = path.resolve(path.dirname(path.join(root, relativePath)), target);
+        assert.ok(
+          resolved.startsWith(root + path.sep) && fs.existsSync(resolved),
+          `${name}/${relativePath} has a missing or out-of-bundle reference: ${target}`,
+        );
+      }
+    }
+    assert.equal(fs.existsSync(path.join(root, "node_modules")), false);
+  }
+}
+
+test("new Obsidian Skills install selectively with complete references and no implicit siblings", async (t) => {
+  for (const name of Object.keys(obsidianExtensionAssets)) {
+    await t.test(name, (t) => {
+      const workingDirectory = createTemporaryDirectory();
+      t.after(() => fs.rmSync(workingDirectory, { recursive: true, force: true }));
+      execFileSync(process.execPath, [
+        cli, "install", "--agent", "all", "--skill", name,
+      ], { cwd: workingDirectory, stdio: "pipe" });
+      for (const agentRoot of [".github/skills", ".claude/skills"]) {
+        const root = path.join(workingDirectory, agentRoot);
+        assert.deepEqual(fs.readdirSync(root), [name]);
+        assertObsidianExtensions(root, [name]);
+      }
+      assert.equal(fs.existsSync(path.join(workingDirectory, "node_modules")), false);
+    });
+  }
+});
 
 test("Obsidian requests route to a core-compatible template that passes structural lint", () => {
   const skillRoot = path.join(repositoryRoot, "skills", "tech-writer");
@@ -386,6 +459,37 @@ test("Vault instructions distinguish direct editing from CLI plan-approved savin
     fs.readFileSync(path.join(vaultRoot, "references", "execution-contract.json"), "utf8"),
   );
   assert.equal(Object.hasOwn(contract["x-commands"], "edit"), false);
+});
+
+test("Obsidian authoring routes to Markdown while Vault only stores supplied candidates", () => {
+  const read = (name) => fs.readFileSync(
+    path.join(repositoryRoot, "skills", name, "SKILL.md"), "utf8",
+  );
+  const vault = read("obsidian-vault");
+  assert.match(vault, /argument-hint: "\[read\|validate\|save\]/);
+  assert.match(vault, /Do not draft or revise prose/);
+  assert.match(vault, /Route note creation\/editing to `obsidian-markdown`/);
+  assert.match(vault, /Save the exact candidate with host tools/);
+  assert.match(vault, /Return a refused candidate unchanged to its caller/);
+  assert.match(vault, /v1 request intent values remain compatibility fields/);
+  assert.doesNotMatch(vault, /## Operation rules|## Japanese proofreading/);
+  assert.doesNotMatch(vault, /\*\*(Conventions|Create|Edit|Related|Links):\*\*/);
+
+  const markdown = read("obsidian-markdown");
+  assert.match(markdown, /## Author or edit a note/);
+  assert.match(markdown, /Coordinate Japanese proofreading directly with `japanese-prose`/);
+  assert.match(markdown, /For selected local saving, pass the finalized candidate/);
+  assert.match(markdown, /return the candidate and applicable\s+proofreading gates for its app-save workflow/);
+  assert.match(markdown, /Never save any operation files in session storage/);
+  const cli = read("obsidian-cli");
+  assert.match(cli, /Hand note authoring and Japanese proofreading to `obsidian-markdown`/);
+  assert.doesNotMatch(cli, /handing proofreading to\s+`obsidian-vault`/);
+  assert.match(read("tech-writer"), /Do not delegate convention inference, related-note/);
+  assert.match(read("tech-writer"), /Hand local Vault writes through `obsidian-markdown` to `obsidian-vault`/);
+  assert.match(read("obsidian-bases"), /Source-note property edits belong to `obsidian-markdown`/);
+  for (const name of ["defuddle", "knap"]) {
+    assert.match(read(name), /`obsidian-markdown`/);
+  }
 });
 
 test("Vault working directories prefer user targets over session-state copies", () => {
@@ -561,6 +665,7 @@ test("installs all skills into the default project directory", () => {
   assertObsidianAssets(path.join(workingDirectory, ".github", "skills"));
   assertCanvasAssets(path.join(workingDirectory, ".github", "skills"));
   assertBasesAssets(path.join(workingDirectory, ".github", "skills"));
+  assertObsidianExtensions(path.join(workingDirectory, ".github", "skills"));
   assert.equal(fs.existsSync(path.join(workingDirectory, ".claude")), false);
 
   assert.ok(
@@ -628,6 +733,7 @@ test("installs identical skill bundles for the selected agents", async (t) => {
         assertObsidianAssets(root);
         assertCanvasAssets(root);
         assertBasesAssets(root);
+        assertObsidianExtensions(root);
         const skills = fs.readdirSync(path.join(repositoryRoot, "skills"))
           .filter((skill) => fs.existsSync(path.join(repositoryRoot, "skills", skill, "SKILL.md")))
           .sort();
@@ -1007,6 +1113,7 @@ test("the packed npm artifact installs a usable CLI", (t) => {
     assertObsidianAssets(root);
     assertCanvasAssets(root);
     assertBasesAssets(root);
+    assertObsidianExtensions(root);
     const help = execFileSync(process.execPath, [
       path.join(root, "obsidian-bases/scripts/check.cjs"), "--help",
     ], { encoding: "utf8" });

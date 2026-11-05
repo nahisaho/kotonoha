@@ -35,12 +35,19 @@ docstring syntax). Qiita and Zenn use Markdown with a platform-specific
 YAML frontmatter and a few platform extensions on top — see their doctype
 reference files. Obsidian uses YAML properties, wikilinks, and callouts;
 see `references/doctypes/obsidian.md` for core Templates compatibility.
-For an existing Vault's conventions, related-note suggestions, link diagnosis,
-or authorized direct edits or CLI plan-approved saves, use the sibling
-`obsidian-vault` skill when available.
-Tech-writer still owns document structure and the reusable template; it must
-hand Vault writes back to that skill's selected workflow, not bypass its scope
-checks or write into the Vault on its own.
+Use the sibling `obsidian-markdown` to coordinate note authoring, content edits
+and Japanese proofreading, and `knap`
+for explicitly requested JSON/CSV rendering rather than core Templates
+expansion. Reviewed `defuddle` output is source material, not verified claims
+or permission to save. `obsidian-markdown` delegates scoped local reads,
+validation and exact candidate saving to the `obsidian-vault` backend.
+Official live-application search and operations require the separately selected
+`obsidian-cli` workflow. Do not delegate convention inference, related-note
+recommendations, independent link analysis or prose generation to the backend.
+Tech-writer still owns document structure and the reusable template.
+Hand local Vault writes through `obsidian-markdown` to `obsidian-vault`,
+preserving the backend's selected save mode and scope checks; do not write
+into the Vault on your own.
 Preserve the user's working directory when handing off: use a user-specified
 directory, or the current directory at request start if none was specified.
 Resolve the final target there without reinterpreting an explicitly absolute or
@@ -52,7 +59,7 @@ authorized non-session locations and this restriction to every delegated Skill
 or tool. If a location is missing or resolves to session storage, ask for a
 non-session location before writing; do not silently substitute another path.
 Route standalone `.base` configuration to `obsidian-bases`, not the Markdown
-template or Vault Markdown writer; its host workflow validates without evaluating
+template or Markdown storage backend; its host workflow validates without evaluating
 formulas and never mutates source-note properties.
 
 ## Division of labor

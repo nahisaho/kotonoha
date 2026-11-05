@@ -1,7 +1,7 @@
 {
   "name": "kotonoha",
-  "version": "0.5.2",
-  "description": "Skills for GitHub Copilot and Claude Code: consulting analysis, technical writing, Japanese prose, Obsidian vaults, Canvas and Bases, and PPTX planning.",
+  "version": "0.5.3-dev.0",
+  "description": "Skills for GitHub Copilot and Claude Code: consulting, technical writing, Japanese prose, Obsidian Markdown, Canvas, Bases and CLI, Defuddle, Knap, and PPTX planning.",
   "license": "MIT",
   "author": "nahisaho",
   "repository": {

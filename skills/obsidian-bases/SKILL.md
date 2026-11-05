@@ -18,6 +18,15 @@ authorized direct edits and the [contract](references/execution-contract.json)
 for static validation. Read [workflow.md](references/workflow.md) before saving
 or preparing dependencies. No dedicated save CLI, mandatory plan or receipt.
 
+Use the [expression and view guide](references/expressions.md) for scoped
+filters, formula namespaces, summaries and the checker's supported functions.
+The execution contract wins over broader application or third-party examples.
+For explicitly requested live result queries use `obsidian-cli` with separate
+result-scope consent; never present this static checker as a query engine.
+Source-note property edits belong to `obsidian-markdown`, with `obsidian-vault`
+only supplying local storage, or an independently
+authorized app workflow, not this Skill.
+
 ## Scope and authority
 
 Ask for missing information one question at a time: absolute Vault root, purpose,
