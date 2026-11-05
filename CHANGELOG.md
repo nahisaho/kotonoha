@@ -7,8 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Development target: `0.5.3` (`0.5.3-dev.0`), updated 2026-11-05.
-This version has not been published.
+## [0.5.3] - 2026-11-05
+
+### Breaking changes
+
+- Reduce `obsidian-vault` to scoped local reads, static validation and exact
+  candidate saving. Remove standalone authoring, convention inference,
+  related-note recommendations, link analysis and proofreading orchestration.
+  Route note content to `obsidian-markdown`, Japanese wording to
+  `japanese-prose` and explicitly selected live-app operations to `obsidian-cli`.
+  Retain the v1 backend request format, validation/save gates and Canvas storage
+  API version 1; legacy intent labels do not restore the removed workflows.
+  See the [migration and storage guide](skills/obsidian-vault/references/workflow.md).
 
 ### Added
 
@@ -27,18 +37,11 @@ This version has not been published.
 
 ### Changed
 
-- Start 0.5.3 development as `0.5.3-dev.0`; no release or publication yet.
-- Reduce `obsidian-vault` to scoped local reads, static validation and exact
-  candidate saving. Remove standalone authoring, convention inference,
-  related-note recommendations, link analysis and proofreading orchestration.
-  Route note content to `obsidian-markdown`, Japanese wording to
-  `japanese-prose` and explicitly selected live-app operations to `obsidian-cli`.
-  Retain the v1 backend request format, validation/save gates and Canvas storage
-  API version 1; legacy intent labels do not restore the removed workflows.
+- Promote `0.5.3-dev.0` to stable `0.5.3`.
 - Route all six capability families from `kepano/obsidian-skills` through
   eleven bundled kotonoha Skills without introducing a second Canvas writer.
   External tools remain optional and are not installed by kotonoha.
-- Document source-checkout installation for the unpublished development Skills.
+- Document npm and source-checkout installation for all eleven Skills.
   Keep the Node.js >=18 installer requirement; the optional Knap CLI needs >=20.
 - Preserve existing Vault, Canvas and Bases save workflows, one-note handoffs
   and the prohibition on session-storage outputs. Official app commands require
@@ -257,4 +260,5 @@ This version has not been published.
 [0.1.5]: https://github.com/nahisaho/kotonoha/compare/v0.1.4...v0.1.5
 [0.4.2]: https://github.com/nahisaho/kotonoha/compare/d76ef4a...v0.4.2
 [0.5.0]: https://github.com/nahisaho/kotonoha/compare/v0.4.2...v0.5.0
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.0...HEAD
+[0.5.3]: https://github.com/nahisaho/kotonoha/compare/d665884...v0.5.3
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.3...HEAD

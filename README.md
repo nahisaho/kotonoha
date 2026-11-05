@@ -14,10 +14,10 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Current development version: **0.5.3-dev.0** (updated 2026-11-05), with eleven
-bundled Skills. This version is not published; use the
-[source-checkout installation](#try-the-unpublished-053-skills-from-this-checkout)
-to try the four new Skills rather than assuming npm `latest` includes them.
+Version: **0.5.3** (updated 2026-11-05), with eleven bundled Skills, including
+`obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
+Install the npm package or use the
+[source-checkout installation](#install-skills-from-this-source-checkout).
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -225,7 +225,7 @@ for exact-byte preservation, four original templates and failure handling.
 
 ## Obsidian syntax, app commands and data-driven notes
 
-The 0.5.3 development Skills cover all six capability families in
+The 0.5.3 Skills cover all six capability families in
 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills), with original
 kotonoha instructions and examples. Reference snapshot:
 [`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98),
@@ -337,10 +337,9 @@ handoff without inventing missing evidence.
   reading-load analysis, outline extraction, and terminology checks; `uv`
   resolves GiNZA, `ja_ginza`, and spaCy on first use
 
-### Try the unpublished 0.5.3 Skills from this checkout
+### Install Skills from this source checkout
 
-The new `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap` Skills are
-available in this source checkout, not a published `0.5.3` npm release.
+All eleven Skills are available in this source checkout.
 From the repository root, replace `/path/to/your-project` with the destination
 project's absolute path and choose one command:
 
@@ -359,8 +358,7 @@ Python dependencies or the Bases checker's dependencies.
 ### Install a published package from npm
 
 Install the package, then copy all packaged skills into a skill directory
-with the included CLI. These commands use the published package and do not
-include unpublished development changes:
+with the included CLI:
 
 ```bash
 npm install --save-dev kotonoha
@@ -419,9 +417,8 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-The selected package determines which Skills are available. For the unpublished
-0.5.3 set, use the source-checkout instructions above. In the destination
-project, confirm all eleven Skills were installed:
+The selected package determines which Skills are available; version 0.5.3
+includes all eleven. In the destination project, confirm they were installed:
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md

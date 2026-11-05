@@ -6,7 +6,7 @@ kotonohaは、GitHub CopilotとClaude Code向けのスキルを提供します�
 
 Obsidian向けには、Markdown記法、許可されたVault内のノート操作、JSON Canvas、Bases、公式アプリCLIを扱います。DefuddleによるWeb・HTML本文の抽出と、KnapによるJSON・CSVからのテンプレート生成にも対応します。操作ごとに、参照範囲・依存関係・保存の許可を確認します。
 
-現在の開発版は **0.5.3-dev.0** です（2026-11-05更新）。11のスキルを同梱していますが、この版はまだ公開していません。追加した4つのスキルを試す場合は、npmの`latest`ではなく、[開発版をソースから導入する手順](#未公開の053開発版をこのチェックアウトから導入)を使ってください。
+バージョンは **0.5.3** です（2026-11-05更新）。`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`を含む11のスキルを同梱しています。npmパッケージを使うか、[ソースからスキルを導入する手順](#このチェックアウトからスキルを導入)を参照してください。
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -134,7 +134,7 @@ Node 18以上と固定依存が必要です。依存の準備は別途許可を�
 
 ## Obsidian記法・アプリ操作・データからのノート生成
 
-0.5.3開発版は、[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)の6つの機能分野を、kotonoha独自の手順と例で扱います。
+0.5.3は、[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)の6つの機能分野を、kotonoha独自の手順と例で扱います。
 参照した版は[`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98)です（2026-11-05確認）。
 対応する実行環境や保存方法が参照先と同一という意味ではありません。既存のCanvas・Basesの検査範囲と保存制約を維持します。
 
@@ -218,9 +218,9 @@ White Paper向けの分析を作成して
 - tech-writerの構造lintを実行する場合はPython 3.9以上
 - 同梱`japanese-prose`の文章lint、読解負荷分析、アウトライン抽出、用語検査、編集前後の不変条件検査を実行する場合はPython 3.10以上と`uv`。GiNZA、`ja_ginza`、spaCy、Markdown解析用の依存関係は、各スクリプトの初回実行時に`uv`が解決
 
-### 未公開の0.5.3開発版をこのチェックアウトから導入
+### このチェックアウトからスキルを導入
 
-新しい`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`は、このソースチェックアウトに含まれます。`0.5.3`のnpmパッケージとしては未公開です。
+このソースチェックアウトには、11のスキルがすべて含まれます。
 リポジトリのルートから、`/path/to/your-project`を導入先プロジェクトの絶対パスに置き換え、利用するエージェントのコマンドを1つ実行します。
 
 ```bash
@@ -234,7 +234,7 @@ node bin/kotonoha.js install --agent claude --target /path/to/your-project/.clau
 
 ### 公開済みのnpmパッケージをインストール
 
-公開済みのパッケージをインストールし、同梱CLIで各スキルを対象のスキルディレクトリへコピーします。次のコマンドには、未公開の開発内容は含まれません。
+パッケージをインストールし、同梱CLIで各スキルを対象のスキルディレクトリへコピーします。
 
 ```bash
 npm install --save-dev kotonoha
@@ -278,7 +278,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。導入できるスキルは、使用したパッケージに依存します。
-未公開の0.5.3の全スキルを使う場合は、前述のソースからの導入手順を使います。導入先プロジェクトで、11のスキルを確認します。
+0.5.3には11のスキルを同梱しています。導入先プロジェクトで、すべて配置されたことを確認します。
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md

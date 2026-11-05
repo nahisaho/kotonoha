@@ -1,6 +1,6 @@
 {
   "name": "kotonoha",
-  "version": "0.5.3-dev.0",
+  "version": "0.5.3",
   "description": "Skills for GitHub Copilot and Claude Code: consulting, technical writing, Japanese prose, Obsidian Markdown, Canvas, Bases and CLI, Defuddle, Knap, and PPTX planning.",
   "license": "MIT",
   "author": "nahisaho",

@@ -2,7 +2,7 @@
 
 呼出元が指定した範囲の読み取り・静的検証・候補の保存だけを担当する。
 本文の作成・編集の指揮はobsidian-markdown、日本語の校正はjapanese-proseへ分離する。
-対象は0.5.3開発版であり、Canvas用の共用保存API版1は維持する。
+対象は0.5.3であり、Canvas用の共用保存API版1は維持する。
 
 ## 上位ワークフローの移管
 
@@ -74,7 +74,7 @@ CLI操作が失敗した場合も、この経路へ無断で切り替えない�
 ## CLI計画保存モードの導入と起動
 
 既存の同名Skillを無断で置換しない。必要な呼出元と兄弟Skillは別途導入する。
-未公開の開発版を含む導入方法は[README](https://github.com/nahisaho/kotonoha/blob/main/README-ja.md)を参照する。
+導入方法は[README](https://github.com/nahisaho/kotonoha/blob/main/README-ja.md)を参照する。
 既定のルートはCopilotが`.github/skills`、Claude Codeが`.claude/skills`である。
 以下の起動例では、選択したルートにパスを合わせる。
 校正候補の検査にはjapanese-proseが必要だが、通常の直接保存に校正用依存を要求しない。
