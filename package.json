@@ -1,6 +1,6 @@
 {
   "name": "kotonoha",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Skills for GitHub Copilot and Claude Code: consulting, technical writing, Japanese prose, Obsidian Markdown, Canvas, Bases and CLI, Defuddle, Knap, and PPTX planning.",
   "license": "MIT",
   "author": "nahisaho",
@@ -16,7 +16,7 @@
     "kotonoha": "bin/kotonoha.js"
   },
   "scripts": {
-    "test": "node --test",
+    "test": "node --test test/install.test.js",
     "test:ginza": "uv run skills/japanese-prose/scripts/test_engine.py",
     "test:obsidian-vault": "uv run --offline --locked --python 3.12 skills/obsidian-vault/scripts/test_vault.py",
     "test:obsidian-canvas": "uv run --offline --locked --python 3.12 skills/obsidian-canvas/scripts/test_canvas.py",

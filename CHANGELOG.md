@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-11-06
+
+### Fixed
+
+- Separate authorized host reads from save-only checks so a OneDrive parent
+  folder does not cause a blanket refusal. Require verified cloud reparse tags,
+  in-scope file identity and local availability; retain access denials and
+  explicit consent for hydration. Keep save policies unchanged.
+- Scope `npm test` to kotonoha's `test` directory so Node's test runner does not
+  try to execute the separate comparison project's Vitest TypeScript tests.
+
 ## [0.5.4] - 2026-11-05
 
 ### Changed
@@ -272,4 +283,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.0]: https://github.com/nahisaho/kotonoha/compare/v0.4.2...v0.5.0
 [0.5.3]: https://github.com/nahisaho/kotonoha/compare/d665884...v0.5.3
 [0.5.4]: https://github.com/nahisaho/kotonoha/compare/v0.5.3...v0.5.4
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.4...HEAD
+[0.5.5]: https://github.com/nahisaho/kotonoha/compare/v0.5.4...v0.5.5
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.5...HEAD

@@ -14,7 +14,7 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Version: **0.5.4** (updated 2026-11-05), with eleven bundled Skills, including
+Version: **0.5.5** (updated 2026-11-06), with eleven bundled Skills, including
 `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
 Install the npm package or use the
 [source-checkout installation](#install-skills-from-this-source-checkout).
@@ -232,7 +232,7 @@ for exact-byte preservation, four original templates and failure handling.
 
 ## Obsidian syntax, app commands and data-driven notes
 
-The 0.5.4 Skills cover all six capability families in
+The 0.5.5 Skills cover all six capability families in
 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills), with original
 kotonoha instructions and examples. Reference snapshot:
 [`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98),
@@ -424,7 +424,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-The selected package determines which Skills are available; version 0.5.4
+The selected package determines which Skills are available; version 0.5.5
 includes all eleven. In the destination project, confirm they were installed:
 
 ```bash

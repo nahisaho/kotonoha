@@ -492,7 +492,30 @@ test("Obsidian authoring routes to Markdown while Vault only stores supplied can
   }
 });
 
-test("WSL Windows-drive support is limited to verified host direct saves", () => {
+test("authorized OneDrive reads distinguish cloud metadata from path redirection", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
+  );
+  const reads = skill.match(
+    /## Authorized host reads\n([\s\S]*?)(?=\n## )/,
+  )?.[1];
+  assert.ok(reads, "host reads need checks separate from saving");
+  assert.match(reads, /Do not apply direct-save attribute-preservation, in-place\s+write or CLI filesystem requirements to a read/);
+  assert.match(reads, /Do not enumerate a parent\s+folder or read sibling documents/);
+  assert.match(reads, /flag alone is not grounds to refuse reading/);
+  assert.match(reads, /Inspect the actual reparse tag for each flagged component/);
+  assert.match(reads, /`IO_REPARSE_TAG_CLOUD`/);
+  assert.match(reads, /not name surrogates/);
+  assert.match(reads, /final path and identity remain within the authorized root and file scope/);
+  assert.match(reads, /Reject symlinks, junctions, mount-point redirections, unknown tags and scope\s+escapes/);
+  assert.match(reads, /Missing tag\/final-path verification blocks the affected read/);
+  assert.match(reads, /obtain explicit consent for hydration\/network\s+access/);
+  assert.match(reads, /never retry through another tool to bypass them/);
+  assert.match(reads, /one blocked\s+file does not block other verified targets/);
+  assert.match(reads, /the stricter save profiles below remain unchanged/);
+});
+
+test("WSL Windows-drive saving support is limited to verified host direct saves", () => {
   const vaultRoot = path.join(repositoryRoot, "skills", "obsidian-vault");
   const skill = fs.readFileSync(path.join(vaultRoot, "SKILL.md"), "utf8");
   const profile = skill.match(
