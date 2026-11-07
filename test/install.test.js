@@ -789,6 +789,17 @@ test("npm publishing routes prereleases away from latest", () => {
   );
   assert.match(workflow, /TAG=\$\(node bin\/npm-publish-tag\.js\)/);
   assert.match(workflow, /npm publish --access public --tag "\$TAG"/);
+  assert.match(workflow, /dry_run:\s+description: [^\n]+\s+type: boolean\s+default: true/);
+  assert.match(workflow, /group: npm-publish\s+cancel-in-progress: false/);
+  assert.ok(
+    workflow.indexOf("run: npm test") < workflow.indexOf("- name: Publish package"),
+    "publishing must be gated by package tests",
+  );
+  assert.match(workflow, /if \[ -z "\$NODE_AUTH_TOKEN" \]; then[\s\S]*?exit 1/);
+  assert.match(workflow, /npm whoami --registry=https:\/\/registry\.npmjs\.org/);
+  assert.match(workflow, /if \[ "\$DRY_RUN" = "true" \]; then\s+npm publish --dry-run/);
+  assert.match(workflow, /DRY_RUN: \$\{\{ inputs\.dry_run \}\}/);
+  assert.match(workflow, /NODE_AUTH_TOKEN: \$\{\{ secrets\.NPM_TOKEN \}\}/);
 });
 
 function createTemporaryDirectory() {
