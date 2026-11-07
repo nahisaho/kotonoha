@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-11-07
+
+### Added
+
+- Allow authorized host directory creation and regular-file creation, editing
+  and deletion, including verified OneDrive paths. Require exact path/action
+  authority, non-overwriting creation, source rechecks and verified deletion.
+  Disclose synced deletion and uncertain recovery; exclude directory deletion,
+  recursive removal, moves and renames. Retain dedicated content save gates.
+
+### Fixed
+
+- Allow host saves on verified non-redirecting OneDrive cloud paths, including
+  native Windows and WSL, instead of rejecting every reparse point. Retain
+  identity, in-place updates, attribute preservation and hydration consent.
+- Add an explicitly authorized host import workflow for PDF downloads and local
+  Docling outputs in the selected Vault directory. Require exact output paths,
+  non-overwriting creation, scoped scratch/directory consent and per-artifact
+  verification. Keep Python CLI, Canvas and Bases storage support unchanged.
+
 ## [0.5.5] - 2026-11-06
 
 ### Fixed
@@ -284,4 +304,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.3]: https://github.com/nahisaho/kotonoha/compare/d665884...v0.5.3
 [0.5.4]: https://github.com/nahisaho/kotonoha/compare/v0.5.3...v0.5.4
 [0.5.5]: https://github.com/nahisaho/kotonoha/compare/v0.5.4...v0.5.5
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.5...HEAD
+[0.5.6]: https://github.com/nahisaho/kotonoha/compare/v0.5.5...v0.5.6
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.6...HEAD

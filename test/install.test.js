@@ -466,7 +466,7 @@ test("Obsidian authoring routes to Markdown while Vault only stores supplied can
     path.join(repositoryRoot, "skills", name, "SKILL.md"), "utf8",
   );
   const vault = read("obsidian-vault");
-  assert.match(vault, /argument-hint: "\[read\|validate\|save\]/);
+  assert.match(vault, /argument-hint: "\[read\|validate\|save\|mkdir\|create\|edit\|delete\|import\]/);
   assert.match(vault, /Do not draft or revise prose/);
   assert.match(vault, /Route note creation\/editing to `obsidian-markdown`/);
   assert.match(vault, /Save the exact candidate with host tools/);
@@ -512,7 +512,7 @@ test("authorized OneDrive reads distinguish cloud metadata from path redirection
   assert.match(reads, /obtain explicit consent for hydration\/network\s+access/);
   assert.match(reads, /never retry through another tool to bypass them/);
   assert.match(reads, /one blocked\s+file does not block other verified targets/);
-  assert.match(reads, /the stricter save profiles below remain unchanged/);
+  assert.match(reads, /apply the save profiles below with separate write authority/);
 });
 
 test("WSL Windows-drive saving support is limited to verified host direct saves", () => {
@@ -546,6 +546,126 @@ test("WSL Windows-drive saving support is limited to verified host direct saves"
     path.join(repositoryRoot, "skills", "obsidian-markdown", "SKILL.md"), "utf8",
   );
   assert.match(markdown, /For a WSL local Windows drive, use its host direct-save profile/);
+});
+
+test("OneDrive host saves allow verified cloud tags but retain Windows write gates", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
+  );
+  const profile = skill.match(
+    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n## )/,
+  )?.[1];
+  assert.ok(profile);
+  assert.match(profile, /Native Windows host saves use the same path, identity/);
+  assert.match(profile, /alone is not grounds\s+to refuse saving/);
+  assert.match(profile, /Inspect each actual tag, including parent directories/);
+  assert.match(profile, /`IO_REPARSE_TAG_CLOUD`/);
+  assert.match(profile, /not name surrogates/);
+  assert.match(profile, /final path and identity stay inside the authorized root and exact target/);
+  assert.match(profile, /Reject symlinks, junctions, mount-point redirections, unknown tags and escapes/);
+  assert.match(profile, /verify the parent before exclusive creation/);
+  assert.match(profile, /Missing tag\/final-path verification blocks only the\s+affected target/);
+  assert.match(profile, /obtain explicit hydration\/network consent; stop if availability is unknown/);
+  assert.match(profile, /Do not pin files, remove cloud attributes or change sync settings/);
+  assert.doesNotMatch(profile, /reparse points[^.]*;\s*reject them/);
+});
+
+test("PDF and Docling imports require scoped host storage, not Markdown-only CLI saving", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
+  );
+  const imports = skill.match(
+    /## Authorized PDF and conversion artifact imports\n([\s\S]*?)(?=\n## )/,
+  )?.[1];
+  assert.ok(imports);
+  assert.match(imports, /not a new `vault\.py` command/);
+  assert.match(imports, /Neither tool is bundled or auto-installed/);
+  assert.match(imports, /A directory choice\s+alone is not download, conversion, network or write permission/);
+  assert.match(imports, /do not demand Markdown candidates before downloading a PDF/);
+  assert.match(imports, /Do not upload Vault content to external conversion services/);
+  assert.match(imports, /every output path before writing/);
+  assert.match(imports, /non-overwriting creation with exact\/equivalent-name collision checks/);
+  assert.match(imports, /never a converter's unchecked overwrite/);
+  assert.match(imports, /including\s+verified non-redirecting cloud tags/);
+  assert.match(imports, /create missing directories with separate approval for their exact paths/);
+  assert.match(imports, /only the approved outputs/);
+  assert.match(imports, /Never use session\s+storage or silently substitute `\/tmp`/);
+  assert.match(imports, /verify the result is a PDF/);
+  assert.match(imports, /empty or missing result is not success/);
+  assert.match(imports, /Read back exact stored bytes and record their SHA-256 hashes/);
+  assert.match(imports, /A verified PDF can remain saved when conversion fails/);
+  assert.match(imports, /never automatically retry, roll back or delete/);
+  const markdown = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-markdown", "SKILL.md"), "utf8",
+  );
+  assert.match(markdown, /artifact-import workflow with separate source\/network\/output authority/);
+  const workflow = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "references", "workflow.md"), "utf8",
+  );
+  assert.match(workflow, /## PDF・Docling変換成果物の取り込み/);
+  assert.match(workflow, /Vault内やOneDrive上であることだけを理由に.*禁止しない/);
+});
+
+test("host file operations permit scoped creation and editing without bypassing content gates", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
+  );
+  const operations = skill.match(
+    /## Authorized file and directory operations\n([\s\S]*?)(?=\n## )/,
+  )?.[1];
+  assert.ok(operations);
+  assert.match(operations, /directory creation and regular-file creation,\s+editing or deletion/);
+  assert.match(operations, /not new Python CLI commands/);
+  assert.match(operations, /extension is not\s+`\.md`/);
+  assert.match(operations, /Never use generic file writing to bypass those gates/);
+  assert.match(operations, /exact resolved targets/);
+  assert.match(operations, /directory selection is not permission to mutate existing files/);
+  assert.match(operations, /obtain approval for the\s+resulting exact paths\/actions before mutation/);
+  assert.match(operations, /list and authorize each missing parent explicitly/);
+  assert.match(operations, /recheck\s+the new directory's identity and scope/);
+  assert.match(operations, /exclusive non-overwriting creation/);
+  assert.match(operations, /stop on concurrent changes and do not write identical bytes/);
+  assert.match(operations, /existing Linux\/Windows save-preservation and readback rules/);
+  assert.match(operations, /Binary edits require a supplied complete byte candidate/);
+  assert.match(operations, /Stop dependent operations\s+after a prerequisite fails/);
+  assert.match(operations, /Do not bypass host refusals or\s+content exclusions/);
+  const markdown = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-markdown", "SKILL.md"), "utf8",
+  );
+  assert.match(markdown, /Route explicitly requested directory creation or file deletion/);
+  assert.match(markdown, /create missing parents only when those exact\s+directory paths are also authorized/);
+});
+
+test("host deletion requires exact authority, source rechecks and verified absence", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
+  );
+  const operations = skill.match(
+    /## Authorized file and directory operations\n([\s\S]*?)(?=\n## )/,
+  )?.[1];
+  assert.ok(operations);
+  assert.match(operations, /explicit deletion authority for every exact regular\s+file, including notes and attachments/);
+  assert.match(operations, /identity and SHA-256 with authorized local reads/);
+  assert.match(operations, /OneDrive may propagate it to other devices/);
+  assert.match(operations, /Recheck bytes\/hash, identity, parent and scope immediately\s+before unlinking only that file; stop on changes/);
+  assert.match(operations, /Verify absence without following links afterward/);
+  assert.match(operations, /never a reason to delete again/);
+  assert.match(operations, /already absent, not deleted by this operation/);
+  assert.match(operations, /Directory deletion, recursive removal, moves and renames are outside/);
+  assert.match(operations, /Never delete the Vault root, working-directory root or session storage/);
+  assert.match(operations, /never automatically retry\s+or roll back/);
+  assert.doesNotMatch(skill, /Do not commit,\s*push, publish, delete, move or rename notes/);
+  const workflow = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "references", "workflow.md"), "utf8",
+  );
+  assert.match(workflow, /## ディレクトリとファイルのホスト操作/);
+  assert.match(workflow, /削除後はリンクを追わず不在を確認/);
+  const contract = JSON.parse(fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "references", "execution-contract.json"), "utf8",
+  ));
+  for (const command of ["mkdir", "create", "edit", "delete"]) {
+    assert.equal(Object.hasOwn(contract["x-commands"], command), false);
+  }
 });
 
 test("Vault working directories prefer user targets over session-state copies", () => {

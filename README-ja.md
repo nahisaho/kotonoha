@@ -6,7 +6,7 @@ kotonohaは、GitHub CopilotとClaude Code向けのスキルを提供します�
 
 Obsidian向けには、Markdown記法、許可されたVault内のノート操作、JSON Canvas、Bases、公式アプリCLIを扱います。DefuddleによるWeb・HTML本文の抽出と、KnapによるJSON・CSVからのテンプレート生成にも対応します。操作ごとに、参照範囲・依存関係・保存の許可を確認します。
 
-バージョンは **0.5.5** です（2026-11-06更新）。`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`を含む11のスキルを同梱しています。npmパッケージを使うか、[ソースからスキルを導入する手順](#このチェックアウトからスキルを導入)を参照してください。
+バージョンは **0.5.6** です（2026-11-07更新）。`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`を含む11のスキルを同梱しています。npmパッケージを使うか、[ソースからスキルを導入する手順](#このチェックアウトからスキルを導入)を参照してください。
 
 [English](./README.md) | [日本語](./README-ja.md)
 
@@ -71,7 +71,7 @@ Obsidianでは、[`obsidian.md`](skills/tech-writer/assets/templates/obsidian.md
 
 Markdownノートとテンプレートの作成・編集は`obsidian-markdown`が担当します。
 文書構成にはtech-writer、日本語の校正にはjapanese-proseを利用します。
-`obsidian-vault`は、許可範囲のローカル読み取り・静的検証・確定済み候補の保存だけを担う共用基盤に縮小しました。
+`obsidian-vault`は、許可範囲のローカル読み取り・静的検証・確定済み候補の保存、明示許可されたファイル・ディレクトリ操作と成果物の取り込みを担う共用基盤です。
 直接保存はホストのファイルツールを使うため、Python、uv、専用CLIの計画ファイルは不要です。
 Obsidianアプリ、MCP、プラグインにも依存しません。
 
@@ -101,11 +101,26 @@ Linuxでは所有者・グループ・権限を維持します。
 既存ノートは置換せず同じ実体へ書き込み、WindowsのACL・属性を保持します。仮想的なLinux権限だけでは拒否しません。
 ネットワーク共有は対象外とし、パス・実体・保存後のバイト列を検証します。保存方式が不明な編集ツールは使いません。
 `/tmp`等への別出力を、許可済みVaultの更新の代わりにはしません。
+ネイティブWindowsとWSLでは、転送を伴わない確認済みのOneDrive cloud系再解析タグを許可します。
+フォルダー名や属性だけでは保存を拒否せず、未知のタグ・ジャンクション・範囲外への逸脱は拒否します。
+オンライン専用ファイルのローカル取得通信には別途同意が必要です。
 Python CLI・Canvas・Basesの対応範囲は広げません。CLIでは引き続きWSLのWindowsドライブや拡張属性付き対象を拒否します。
 SELinuxラベルなどの削除を回避策にしません。
 直接編集はCLIの原子的確定、ルートロック、成功記録による再実行保護を利用しません。
 保存後に読み戻して確認しますが、途中失敗や同時編集の完全な防止は保証しません。
 LLMの誤判断を完全には防げず、ホストを隔離する機能でもありません。
+
+ホストツールでは、Markdown・PDFに限らず、明示指定したディレクトリの作成と通常ファイルの作成・編集・削除も行えます。
+正確な対象・操作への許可を確認し、ワイルドカードの一括指定は範囲内で列挙した全対象を承認してから実行します。
+作成は非上書き、編集は原文・実体の再照合、削除は対象・ハッシュの直前照合と削除後の不在確認を必須とします。
+OneDriveの削除は他の端末へ同期され得ます。復旧は保証せず、ディレクトリ削除・再帰削除・移動・改名は対象外です。
+Markdown校正とCanvas・Basesの保存検査は維持し、Python CLIに新しい操作コマンドは追加しません。
+
+明示指定したPDFのダウンロードとローカルDocling変換成果物は、検証済みのOneDriveを含むVault内作業ディレクトリへ取り込めます。
+取得元・通信・変換への許可と全出力先を確認し、作業ディレクトリ指定だけでは書き込みません。
+非上書き作成と保存先・属性検査を使い、新規フォルダー、追加出力、補助ファイルには正確な場所への別途同意が必要です。
+Doclingは任意導入であり、同梱・自動導入しません。取得と変換を個別に検証し、成果物のパスとハッシュを報告します。
+詳しくは[取り込み手順](skills/obsidian-vault/references/workflow.md#pdfdocling変換成果物の取り込み)を参照してください。
 
 ## Obsidian Canvasの操作
 
@@ -140,7 +155,7 @@ Node 18以上と固定依存が必要です。依存の準備は別途許可を�
 
 ## Obsidian記法・アプリ操作・データからのノート生成
 
-0.5.5は、[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)の6つの機能分野を、kotonoha独自の手順と例で扱います。
+0.5.6は、[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)の6つの機能分野を、kotonoha独自の手順と例で扱います。
 参照した版は[`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98)です（2026-11-05確認）。
 対応する実行環境や保存方法が参照先と同一という意味ではありません。既存のCanvas・Basesの検査範囲と保存制約を維持します。
 
@@ -284,7 +299,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all`が既定値であるため、`npx kotonoha install`も同じ動作です。導入できるスキルは、使用したパッケージに依存します。
-0.5.5には11のスキルを同梱しています。導入先プロジェクトで、すべて配置されたことを確認します。
+0.5.6には11のスキルを同梱しています。導入先プロジェクトで、すべて配置されたことを確認します。
 
 ```bash
 test -f .github/skills/consulting-analyst/SKILL.md

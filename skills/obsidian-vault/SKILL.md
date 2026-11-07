@@ -1,21 +1,25 @@
 ---
 name: obsidian-vault
 description: >-
-  Provides scoped local reads, static validation and candidate-only Markdown
-  saving for sibling Skills. Use for explicit local storage operations or a
+  Provides scoped local reads, static validation, candidate-only Markdown
+  saving, directory creation, regular-file creation/editing/deletion and
+  authorized PDF/conversion artifact imports, including verified local
+  OneDrive paths. Use for explicit local storage operations or a
   sibling's authorized read/validate/save handoff, not content generation.
   Preserves consent, paths, metadata and source identity, with optional
   plan-approved saving. Also supplies Canvas storage API version 1.
   Requires no Obsidian app, official CLI, MCP or plugins.
 license: MIT
-argument-hint: "[read|validate|save] <authorized target and supplied candidate>"
+argument-hint: "[read|validate|save|mkdir|create|edit|delete|import] <authorized targets>"
 ---
 
 # obsidian-vault
 
 Own local storage, not note content. Read authorized bytes, return static
 validation evidence, and save an already prepared candidate without changing
-it. See [workflow.md](references/workflow.md) for the handoff contract, CLI
+it. Also perform explicitly authorized directory creation and regular-file
+creation, editing or deletion through the host workflow below.
+See [workflow.md](references/workflow.md) for the handoff contract, CLI
 compatibility fields, diagnostic limits and recovery.
 
 ## Responsibility boundary
@@ -32,6 +36,9 @@ to the explicitly selected `obsidian-cli` workflow. Do not silently launch the
 app, broaden scope, switch after failure or bypass a refused save.
 `defuddle` and `knap` prepare candidates outside the Vault; note-level
 integration belongs to `obsidian-markdown`, not this backend.
+Explicit PDF downloads and local Docling conversion outputs use the separate
+host artifact-import workflow below, not Defuddle, Knap or Python CLI saving.
+The caller owns fetching/conversion; this backend owns scoped output storage.
 
 Retain `STORAGE_API_VERSION=1`, authorized reads/enumeration, parsing helpers
 and `commit_bytes` for `obsidian-canvas`. Its own plan/apply workflow remains
@@ -41,13 +48,15 @@ as static validation data, never inferred rules, recommendations or repairs.
 
 ## Candidate handoff
 
-For saving, require the caller to supply the absolute Vault root, authorized read/model
+For content saving, require the caller to supply the absolute Vault root, authorized read/model
 scopes, exact target, creation versus replacement, original bytes/hash for an
 edit, exact candidate, allowed change, save mode and actual save authority.
 Also carry the working directory, auxiliary-copy consent and applicable
 proofreading review. Ask only for missing storage details, one at a time.
 Do not author missing content or infer authority from a sibling's draft.
 Return a refused candidate unchanged to its caller; never repair it to pass.
+Directory creation and file deletion use the operation handoff below; neither
+requires a fabricated content candidate or a Markdown CLI plan.
 
 ## Scope and consent
 
@@ -92,7 +101,7 @@ concurrent changes rather than presenting unstable content as verified.
 Once these checks pass, read each authorized document independently; one blocked
 file does not block other verified targets. Report which documents were actually
 read and the specific reason for any unread document. Read permission does not
-grant save permission: the stricter save profiles below remain unchanged.
+grant save permission: apply the save profiles below with separate write authority.
 
 ## Working directory and copies
 
@@ -108,8 +117,9 @@ This includes deliverables, requests, originals, candidates, diffs, diagnostics,
 reviews, plans, receipts, results and temporary files. Check resolved locations
 before writing; if the working directory or any selected output is in session
 storage, stop and ask for a non-session location. Do not use it as a fallback.
-Stop on out-of-scope, ambiguous or missing-parent targets; do not create folders
-or substitute another location.
+Stop on out-of-scope or ambiguous targets; do not substitute another location.
+For missing parents, use the directory-creation workflow below only with explicit
+authorization for each exact directory; otherwise stop.
 
 Direct editing needs no external copies or plan files. For necessary auxiliary
 files, use a suitable consented location in the current or user-specified
@@ -140,15 +150,19 @@ not performed, not an unverified substitute.
    changes; never overwrite from stale content. Identical bytes mean no write.
 5. Save the exact candidate with host tools. On native Linux filesystems,
    preserve owner/group/modes and refuse xattrs or unsupported attributes.
-   For WSL Windows drives, use the direct-save profile below instead.
+   For native Windows or WSL Windows drives, use the Windows direct-save
+   profile below instead.
    Both profiles refuse multiple hard links and attribute-removing workarounds,
    including removal of SELinux labels.
 6. Read back after saving; require exact candidate bytes and unchanged unspecified content.
    Report the exact target and outcome, never success on failure or uncertainty.
 
 Preserve unspecified frontmatter, links, code, numbers, identifiers, encoding and
-newlines; no unsolicited reformatting. No folder creation, deletion, moves,
-renames, attachments or other formats. Proofreading still needs the gate below.
+newlines; no unsolicited reformatting. Markdown candidate saving does not
+authorize folder creation, deletion, moves, renames, attachments or other
+formats; explicit file/directory operations and artifact imports have their own
+authorization below.
+Proofreading still needs the gate below.
 Before saving, disclose that direct edits lack CLI root locking, atomic commit,
 plan-hash approval and receipt replay protection. Report only verified readback,
 not invented CLI JSON/receipts. If the user needs CLI guarantees, await selection.
@@ -160,14 +174,28 @@ the target first when its save state is unknown.
 Support authorized Markdown saves on a confirmed local Windows drive mounted
 through WSL as `drvfs`, `9p` or `v9fs`. Do not reject it solely because of that
 filesystem name or apply the Python CLI's filesystem allowlist to host saves.
+Native Windows host saves use the same path, identity, attribute-preservation
+and in-place write rules, without the WSL mount checks.
 This profile does not extend Python CLI, Canvas or Bases saving support.
 
 1. Verify WSL, the actual mount and its Windows path mapping; a `/mnt/c/...`
    spelling alone is not evidence. Confirm the Windows backing drive is local,
    not a mapped network drive or UNC/SMB share. Stop if that cannot be established.
 2. Keep the authorized root/target, byte hashes, no-symlink and link-count checks.
-   Check for Windows reparse points, including junctions, along the resolved path;
-   reject them. Respect Windows read-only attributes and ACL access denials.
+   Check for Windows reparse points, including junctions, along the resolved path.
+   A OneDrive folder name or `FILE_ATTRIBUTE_REPARSE_POINT` alone is not grounds
+   to refuse saving. Inspect each actual tag, including parent directories;
+   allow only verified Windows cloud-family tags (`IO_REPARSE_TAG_CLOUD` and
+   documented variants) that are not name surrogates. Verify the opened object's
+   final path and identity stay inside the authorized root and exact target.
+   Reject symlinks, junctions, mount-point redirections, unknown tags and escapes.
+   For new files verify the parent before exclusive creation and the opened
+   file before writing. Missing tag/final-path verification blocks only the
+   affected target; report its exact path and missing capability.
+   Before reading or updating an online-only or recall-on-access placeholder,
+   obtain explicit hydration/network consent; stop if availability is unknown.
+   Do not pin files, remove cloud attributes or change sync settings.
+   Respect Windows read-only attributes and ACL access denials.
    Target only the ordinary `.md` data stream, not `:stream` or device paths.
    Never run chmod/chown, remove attributes or change mount/Windows settings.
 3. For an existing note, use a verified in-place write to the same file object,
@@ -182,7 +210,8 @@ This profile does not extend Python CLI, Canvas or Bases saving support.
    For a new note, create exclusively without overwriting an equivalent name,
    allowing normal Windows parent ACL inheritance.
 5. Flush/close, then read back exact bytes and verify file identity and observable
-   attributes, allowing only normal write timestamps/archive-bit updates.
+   attributes, allowing only normal write timestamps/archive-bit updates and
+   consented hydration state changes, not loss of cloud-provider metadata.
    Report saved only on a match. Disclose non-atomic writes,
    possible partial writes and concurrent Obsidian/Sync/Windows edits before saving;
    after a possible write failure report unknown, without retry or rollback.
@@ -192,6 +221,128 @@ specific missing capability, not a blanket v9fs prohibition.
 Do not silently redirect a refused save to `/tmp` or another file. An alternate
 output needs explicit exact-path consent and is never a successful Vault update.
 Proofreading gates and the session-storage prohibition still apply.
+
+## Authorized file and directory operations
+
+Use host filesystem tools for directory creation and regular-file creation,
+editing or deletion inside the authorized Vault/scopes, including verified
+OneDrive paths. These are host operations, not new Python CLI commands.
+Do not refuse an authorized ordinary file merely because its extension is not
+`.md`. The backend stores supplied bytes, not authored content or executable
+instructions. Markdown authoring/proofreading stays with `obsidian-markdown`;
+Canvas and Bases creation/editing stays with their dedicated workflows and
+existing save gates. Never use generic file writing to bypass those gates.
+
+1. Require the absolute Vault root, working directory, exact resolved targets,
+   operation (`mkdir`, `create`, `edit` or `delete`), permitted changes and actual
+   user authority. For file creation/editing require exact candidate bytes;
+   edits also require current source bytes/hash and identity. A capability
+   request or directory selection is not permission to mutate existing files.
+   Explicit target/action/change authority suffices without repeated approval,
+   unless pre-operation confirmation was requested. Ask for missing details one
+   at a time; pass read/model scopes and copy consent where applicable.
+2. Present the exact operation list. Expand a wildcard or batch only within
+   separately authorized enumeration scopes, then obtain approval for the
+   resulting exact paths/actions before mutation. Do not infer permission for
+   siblings, parent creation, attachment changes or backlink repair.
+   Check resolved paths from root to target, equivalent-name collisions, types,
+   identity, link counts and management-directory exclusions. Reject symlinks,
+   junctions, unknown reparse tags, scope escapes and special/device files.
+   Use the Windows profile's verified cloud-tag, local-drive, ordinary-stream,
+   ACL and hydration checks on Windows/WSL. Do not bypass host refusals or
+   content exclusions; missing verification blocks only the affected operation.
+3. For `mkdir`, list and authorize each missing parent explicitly. Create each
+   directory without overwriting, after verifying its existing parent; recheck
+   the new directory's identity and scope before proceeding to its children.
+   An already-existing verified directory is a no-op, not a newly created one;
+   a file or equivalent-name collision is a conflict, not success.
+4. For `create`, use exclusive non-overwriting creation of the exact supplied
+   bytes. For `edit`, compare current source bytes/hash and identity immediately
+   before writing; stop on concurrent changes and do not write identical bytes.
+   Apply the existing Linux/Windows save-preservation and readback rules to the
+   authorized file type. Binary edits require a supplied complete byte candidate
+   or a separately authorized format-aware producer, not text rewriting.
+5. For `delete`, require explicit deletion authority for every exact regular
+   file, including notes and attachments. Identify and record the current file's
+   identity and SHA-256 with authorized local reads; hashing does not authorize
+   sending its content to a model. Present the deletion and disclose that
+   OneDrive may propagate it to other devices and backups/trash recovery are
+   not guaranteed. Recheck bytes/hash, identity, parent and scope immediately
+   before unlinking only that file; stop on changes. Do not remove attributes,
+   broaden ACLs or use a recursive deletion command. Deletion uses the same
+   path/access checks, not the content-save attribute-preservation/readback
+   requirement. Verify absence without following links afterward; a replacement
+   at that path is a conflict/unknown result, never a reason to delete again.
+   A missing target is reported as already absent, not deleted by this operation.
+6. Report each path/action as created, edited, deleted, unchanged/already absent,
+   blocked, failed or unknown based on observed results. Stop dependent operations
+   after a prerequisite fails and report partial batches accurately. Disclose
+   non-atomicity and concurrent edits before mutation; never automatically retry
+   or roll back a possibly performed operation.
+
+Directory deletion, recursive removal, moves and renames are outside this
+workflow. Never delete the Vault root, working-directory root or session storage.
+Do not automatically repair references after deletion, make backup copies or
+claim recoverability. Backups need separate exact-path/copy authorization.
+Network fetch, tool execution and dependency installation need their own consent.
+
+## Authorized PDF and conversion artifact imports
+
+This is a host-tool storage workflow, not a new `vault.py` command or a
+relaxation of Markdown, Canvas or Bases save gates. Do not treat OneDrive or
+being inside a Vault as a blanket prohibition on an explicitly authorized
+PDF download or Docling conversion. Neither tool is bundled or auto-installed.
+
+1. Obtain the absolute Vault root, selected working directory, exact source
+   URLs/local files, permitted read/model-input scopes and exact output paths.
+   Resolve paths using the working-directory rules above. A directory choice
+   alone is not download, conversion, network or write permission. Ask for
+   missing details one at a time. Explicit source/action/output authorization
+   suffices; do not demand Markdown candidates before downloading a PDF.
+2. Distinguish source fetch consent, cloud hydration, local conversion and
+   sending content to models/services. A download authorizes only its specified
+   source, not arbitrary redirects, linked resources or remote conversion.
+   Do not upload Vault content to external conversion services. Check available
+   download/Docling capabilities and their output behavior before execution;
+   ask before installing dependencies or downloading OCR/model assets.
+3. Present every output path before writing: source `.pdf`, extracted `.md`,
+   and only explicitly requested images/JSON or other conversion sidecars.
+   Use non-overwriting creation with exact/equivalent-name collision checks.
+   Existing files require separate replacement authority and source bytes/hash;
+   use the selected direct-save profile, never a converter's unchecked overwrite.
+   Verify paths, identities, no symlinks, management-directory exclusions and
+   link counts as above. Windows/WSL imports use the Windows profile, including
+   verified non-redirecting cloud tags; apply its ordinary-data-stream rule to
+   each authorized artifact extension, never `:stream` or device paths.
+4. Only create missing directories with separate approval for their exact paths,
+   after verifying the existing ancestor and rechecking each created directory;
+   follow the file/directory operation workflow above.
+   Authorization for an output does not authorize sibling outputs. Configure
+   conversion to produce only the approved outputs; if that cannot be guaranteed,
+   use a separately consented staging location and transfer exact verified bytes.
+   A consented workspace inside the selected Vault directory may hold import
+   scratch files; the Python CLI workspace remains Vault-external. List scratch,
+   cache and temporary locations/retention before running. Never use session
+   storage or silently substitute `/tmp`. Without approved locations or a known
+   safe creation/write method, stop before fetching or converting.
+5. For downloads check command/HTTP failure and verify the result is a PDF, not
+   an HTML error/login page. For conversion check exit status and every expected
+   artifact's existence/content; an empty or missing result is not success.
+   Read back exact stored bytes and record their SHA-256 hashes. Keep provenance
+   from the authorized source; do not claim extraction fidelity without review.
+   Raw extracted Markdown is not meaning-preserving proofreading. Hand requested
+   note authoring or Japanese revisions to `obsidian-markdown`; those edits keep
+   their normal save/review gates.
+6. Report download, conversion and each output's exact path/hash/status separately.
+   A verified PDF can remain saved when conversion fails; report that partial
+   result. After a possible write failure report unknown for the affected output,
+   inspect without rewriting, and never automatically retry, roll back or delete.
+   Respect host refusals, ACL denials and content exclusions; this workflow must
+   not bypass them. Clean up only known scratch files with deletion consent.
+
+Disclose direct-save non-atomicity and concurrent OneDrive/Obsidian edits before
+writing. One blocked artifact does not invalidate other verified outputs; do not
+claim the entire import was completed when any requested step was unperformed.
 
 ## Validation and proofreading save gates
 
@@ -247,11 +398,13 @@ plan and approval.
 
 ## Outcomes and limits
 
-Both modes save one note per operation. Distinguish unsaved, saved, partial,
+Both Markdown save modes save one note per operation. Artifact imports report
+each separately authorized output. Distinguish unsaved, saved, partial,
 failed and unknown outcomes, naming the target and unperformed work. Never
 automatically re-save or roll back a possibly saved operation. Confirm unknown
-records/temp files and their diffs with the user before acting. Do not commit,
-push, publish, delete, move or rename notes.
+records/temp files and their diffs with the user before acting. File deletion
+requires the explicit host-operation authority above; it is never implied by
+editing, importing or cleanup. Do not commit, push, publish, move or rename notes.
 
 Require verifiable local regular files and the selected profile's attribute preservation; refuse
 unsupported capabilities rather than weakening checks. Neither mode guarantees

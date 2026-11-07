@@ -14,7 +14,7 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Version: **0.5.5** (updated 2026-11-06), with eleven bundled Skills, including
+Version: **0.5.6** (updated 2026-11-07), with eleven bundled Skills, including
 `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
 Install the npm package or use the
 [source-checkout installation](#install-skills-from-this-source-checkout).
@@ -132,8 +132,9 @@ for setup, placeholder handling, and limitations.
 
 Use `obsidian-markdown` to create or edit Markdown notes and templates. It uses
 `tech-writer` for structure and coordinates Japanese proofreading with
-`japanese-prose`. `obsidian-vault` is now only the shared backend for scoped
-local reads, static validation and saving an already prepared candidate.
+`japanese-prose`. `obsidian-vault` is the shared backend for scoped local reads,
+static validation, saving an already prepared candidate, authorized file/directory
+operations and artifact imports.
 Its direct-save path uses host file tools without Python, uv, Obsidian, MCP
 or plugins.
 
@@ -174,8 +175,11 @@ for requests, command examples, data retention and recovery.
 
 Saving requires verifiable local regular files; symlinks and multiple hard
 links are refused. Native Linux saves preserve ownership/modes.
-Host direct saves also support confirmed local Windows drives through WSL
-(`drvfs`/`9p`/`v9fs`), not network shares. Existing notes must be updated in place,
+Host direct saves also support native Windows and confirmed local Windows drives
+through WSL (`drvfs`/`9p`/`v9fs`), not network shares. Verified non-redirecting
+OneDrive cloud reparse tags are allowed; folder names/flags alone do not block
+saving. Unknown tags, junctions and scope escapes are still refused; hydration
+requires separate consent. Existing notes must be updated in place,
 preserving Windows ACLs/attributes rather than replacing the file or requiring
 synthetic Linux permissions. Path/identity checks and exact readback remain
 mandatory; an unknown host replacement method is not sufficient.
@@ -186,6 +190,25 @@ including SELinux labels. Never remove attributes to bypass a refusal.
 Direct-edit failure and concurrency limitations are disclosed before saving;
 neither mode eliminates post-check external edits or LLM mistakes.
 The skill is not a host sandbox.
+
+Host operations also allow explicitly authorized directory creation and
+regular-file creation, editing and deletion, not just Markdown/PDF outputs.
+Each exact path/action needs authority; wildcard batches need approval after
+scoped enumeration. Creation is non-overwriting, edits recheck source bytes and
+identity, and deletion rechecks the exact file/hash then verifies absence.
+OneDrive may sync deletions to other devices; recovery is not guaranteed.
+Directory deletion, recursive removal, moves and renames remain outside this
+workflow. Markdown proofreading and dedicated Canvas/Bases write gates remain
+in force; the Python CLI gains no new commands.
+
+Explicit PDF downloads and local Docling conversion outputs can be imported into
+the authorized Vault working directory, including verified OneDrive paths.
+Source/network/conversion authority and every output path must be specified;
+directory selection alone grants no write permission. Imports use non-overwriting
+creation and the same path/attribute checks, with separate consent for exact new
+directories, sidecars and scratch locations. Docling is optional, not bundled or
+auto-installed. Downloads and conversion are verified and reported separately
+with output paths/hashes; Python CLI, Canvas and Bases support is unchanged.
 
 ## Working with Obsidian Canvas
 
@@ -232,7 +255,7 @@ for exact-byte preservation, four original templates and failure handling.
 
 ## Obsidian syntax, app commands and data-driven notes
 
-The 0.5.5 Skills cover all six capability families in
+The 0.5.6 Skills cover all six capability families in
 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills), with original
 kotonoha instructions and examples. Reference snapshot:
 [`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98),
@@ -424,7 +447,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-The selected package determines which Skills are available; version 0.5.5
+The selected package determines which Skills are available; version 0.5.6
 includes all eleven. In the destination project, confirm they were installed:
 
 ```bash

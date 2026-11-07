@@ -27,6 +27,8 @@ Coordinate content and review, not a second storage backend. Read the
   Preserve the selected direct-save or optional plan-approved workflow.
   For a WSL local Windows drive, use its host direct-save profile; do not
   reject `v9fs` alone or route a normal content edit through Python CLI planning.
+  Native Windows and OneDrive saves use the backend's verified Windows profile;
+  cloud folder names/flags alone do not justify a refusal.
   Do not silently substitute `/tmp` output for the authorized Vault target.
   If it is unavailable, report the missing sibling and provide an unsaved draft.
 - Use `tech-writer` for note structure and its existing
@@ -36,6 +38,17 @@ Coordinate content and review, not a second storage backend. Read the
   storage backend to draft or correct content.
 - Route `.canvas` to `obsidian-canvas` and standalone `.base` to
   `obsidian-bases`. Do not replace their checkers with Markdown validation.
+- Explicit PDF downloads and Docling extraction use `obsidian-vault`'s host
+  artifact-import workflow with separate source/network/output authority.
+  A normal note edit does not authorize imports. Do not block an authorized
+  import merely because its outputs are in a Vault or verified OneDrive path.
+  Keep raw extraction separate from requested note authoring and proofreading;
+  neither Defuddle nor Knap is a PDF converter.
+- Route explicitly requested directory creation or file deletion to
+  `obsidian-vault`'s host file/directory workflow with exact paths/actions and
+  user authority. A note save can create missing parents only when those exact
+  directory paths are also authorized. Do not infer deletion or attachment
+  mutation from a content edit, and do not automatically repair deleted links.
 - The official application CLI is a separate, explicitly selected
   `obsidian-cli` workflow, not an automatic fallback for a refused save.
   When it supplies authorized source text, return the candidate and applicable
@@ -101,7 +114,8 @@ Vault-relative paths. Never save any operation files in session storage,
 including `~/.copilot/session-state/`, and pass this rule to delegated tools.
 Auxiliary copies require a separately consented non-session location; otherwise
 keep the draft in the conversation. Target authority never grants whole-Vault
-access, folder creation or attachment changes.
+access, folder creation or attachment changes. Those operations need separate
+exact-path/action authority through the backend's host file/directory workflow.
 
 Report draft-only, reviewed or handed-off status and the unperformed checks.
 Do not claim a save based on a draft or an unexecuted handoff.
