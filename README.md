@@ -512,6 +512,37 @@ scope, and relationship changes. Warnings can be false positives or miss
 changes; the nine-check review and existing exit codes remain unchanged.
 The final candidate must match the reviewed `after_sha256`.
 
+#### Choose the proofreading purpose and diagnostic depth
+
+For the v0.6.0 features, install and load the v0.6.0 or newer
+`japanese-prose` skill in your agent. Updating the npm package alone does
+not refresh previously installed skill copies; use the installation/update
+instructions below. Local diagnostics require Python 3.10 or newer and
+`uv`; the first run resolves the script's GiNZA dependencies.
+
+Specify the purpose separately from the diagnostic depth:
+
+| Purpose | What the agent may do |
+|---------|-----------------------|
+| `proofread` | Make minimal, demonstrable typo/grammar corrections; no optional stylistic rewrites. |
+| `write` | Improve wording and readability while preserving approved facts and structure. |
+| `review` | Report findings and proposed corrections without editing the file. |
+| `score` | Report the diagnostic score without rewriting. |
+
+`quick` runs prose lint and contextual review, with reruns and invariant
+verification when editing. `full` adds reading-load checks, outline
+extraction, terminology extraction, and whole-document review. Diagnostic
+depth does not broaden editing permission: `proofread` with `full` still
+means error corrections only.
+
+Personification, metaphor, and redundant-preface hints run in prose lint
+in both `quick` and `full`. Semantic edit-risk hints run when the immutable
+original is compared with an edited candidate. Neither kind of hint
+authorizes automatic replacement or proves semantic equivalence.
+`full` names the agent workflow, not a `lint.py --full` option.
+
+#### Request Japanese proofreading
+
 You do not need to name GiNZA explicitly in a natural-language request.
 Requests to make a Japanese document more natural, readable, concise, or less
 formulaic invoke the bundled prose-optimization workflow. For example:
@@ -525,14 +556,38 @@ Review this design document for unnatural Japanese, overly long sentences,
 and repetitive AI-like phrasing, then fix the findings.
 ```
 
-You can specify the intended mode more precisely:
+For full diagnostics, use one of these explicit requests. Replace
+`docs/draft.md` with your target file, and specify the audience, protected
+proper names/domain terms, and an authorized working directory for the
+immutable original. For Vault notes, separately authorize writing and any
+auxiliary copies under the Vault workflow.
 
-- Edit the file: `Optimize the Japanese prose in README-ja.md.`
-- Correct errors only: `Proofread README-ja.md; make minimal typo/grammar corrections without stylistic rewrites.`
-- Review without editing: `Review the Japanese in README-ja.md, but do not modify the file.`
-- Score only: `Score the Japanese prose in README-ja.md out of 100.`
-- Run every diagnostic: `Run the full Japanese prose optimization workflow on README-ja.md.`
-- Request GiNZA explicitly: `Analyze README-ja.md with GiNZA and improve dependency depth and reading load.`
+Minimal corrections with full diagnostics:
+
+```text
+Use japanese-prose in proofread mode with full diagnostics on docs/draft.md.
+Correct only demonstrable typos and grammatical errors; do not make optional
+stylistic rewrites. Preserve headings, facts, numbers, code, links, and terminology.
+Report the diagnostic results, corrections, and invariant/semantic-review results.
+```
+
+Readability improvements with full diagnostics:
+
+```text
+Use japanese-prose in write mode with full diagnostics on docs/draft.md.
+Improve Japanese wording and readability while preserving facts and structure.
+Separate necessary corrections from optional wording improvements.
+Report fix/keep decisions, before/after scores, and invariant/semantic-review results.
+```
+
+For findings only, ask `Review the Japanese in README-ja.md with full
+diagnostics, but do not modify the file.` For scoring only, ask
+`Score the Japanese prose in README-ja.md out of 100.`
+
+After editing, check the diagnostic rerun, fix/keep decisions, and the
+invariant-gate result. A pending or rejected semantic review is not
+completion. If a diagnostic or gate could not run, the agent must report
+that limitation rather than claim the full workflow completed.
 
 When creating a new Japanese document, asking `Create a Japanese README for
 this repository` lets `tech-writer` create and structurally review the draft,
