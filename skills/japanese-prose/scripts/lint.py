@@ -80,6 +80,16 @@ DOUBLE_NEGATIVE_RULES = (
 BRACKET_PAIRS = dict(zip("（［｛「『【", "）］｝」』】"))
 POLITE_END_RE = re.compile(r"(?:です|ます|でした|ました|ません(?:でした)?|でしょう|ましょう|ください|下さい)$")
 PLAIN_END_RE = re.compile(r"(?:である|だった|だ|る|た|ない)$")
+QUOTED_RE = re.compile(r'「[^」]*」|『[^』]*』|"[^"\n]*"|“[^”]*”')
+REDUNDANT_PREFACE_RE = re.compile(r"^(?:まず(?:はじめ|初め)に|あらかじめ事前に)")
+NONHUMAN_SUBJECTS = {"AI", "システム", "ツール", "仕様", "設定", "機能"}
+MENTAL_PREDICATES = {"望む", "嫌う", "悩む", "恐れる", "喜ぶ", "悲しむ"}
+METAPHOR_ARGUMENTS = {
+    "溶かす": {"obj": {"時間", "予算"}},
+    "潰す": {"obj": {"課題", "問題"}},
+    "壊れる": {"nsubj": {"信頼", "体験"}},
+    "寄り添う": {"nsubj": {"仕様", "設計", "機能"}},
+}
 
 GENRE_LIMITS = {
     "general": {"length": 90, "critical_length": 150, "commas": 5, "depth": 8},
@@ -160,6 +170,46 @@ def proofread(block, doc, findings: list[Finding]) -> None:
             first_style = style
 
 
+def contextual_style(block, sent, findings: list[Finding]) -> None:
+    quoted = [
+        (sent.start_char + match.start(), sent.start_char + match.end())
+        for match in QUOTED_RE.finditer(sent.text)
+    ]
+    preface = REDUNDANT_PREFACE_RE.match(sent.text.strip())
+    if preface:
+        add(
+            findings, sentence_line(block, sent.start_char), "redundant_preface", "info",
+            "前置きに意味の重なりがあります。順序や事前条件を保ったまま簡潔にできるか確認します。",
+            sent.text, {"matched": preface.group(), "review_only": True},
+        )
+    for token in sent:
+        predicate = token.head
+        if any(
+            start <= token.idx < end or start <= predicate.idx < end
+            for start, end in quoted
+        ):
+            continue
+        category = None
+        if (
+            token.dep_ == "nsubj" and token.lemma_ in NONHUMAN_SUBJECTS
+            and predicate.lemma_ in MENTAL_PREDICATES
+        ):
+            category = "possible_personification"
+        elif token.lemma_ in METAPHOR_ARGUMENTS.get(predicate.lemma_, {}).get(token.dep_, set()):
+            category = "possible_metaphor"
+        if category:
+            add(
+                findings, sentence_line(block, token.idx), category, "info",
+                "人でない主語に心情を表す述語が係っています。専門的な用法や意図した擬人化なら残します。"
+                if category == "possible_personification" else
+                "比喩的な係り受けの候補です。文字どおりの用法や必要な比喩は残し、役割や意味を狭めないよう確認します。",
+                sent.text, {
+                    "argument": token.text, "predicate": predicate.lemma_,
+                    "dependency": token.dep_, "review_only": True,
+                },
+            )
+
+
 def analyze(path: Path, genre: str, reading_load: bool) -> dict:
     text = read_text(path)
     blocks = iter_prose_blocks(text)
@@ -192,6 +242,8 @@ def analyze(path: Path, genre: str, reading_load: bool) -> dict:
             tokens = content_tokens(sent)
             if not tokens:
                 continue
+            if not reading_load:
+                contextual_style(block, sent, findings)
             sent_text = sent.text.strip()
             line = sentence_line(block, sent.start_char)
             length = len(re.sub(r"\s+", "", sent_text))

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add GiNZA dependency-aware personification/metaphor hints and optional
+  redundant-preface review, with literal technical and quotation controls.
+- Expose advisory before/after semantic risks for actors/recipients, negation,
+  conditions, modality, scope, relationships and unmatched sentence groups.
+  Include source lines, excerpts and evidence without changing protected-content
+  violations, the nine-check review schema, gate exit codes or dependencies.
+
+### Changed
+
+- Start v0.6.0 development as `0.6.0-dev.0`; reference yomiyasu's inspection
+  concepts with independently written rules and tests, not imported code.
+- Require contextual style decisions without invented actors or narrowed
+  claims, and verify that the final candidate matches the reviewed hash.
+
 ## [0.5.7] - 2026-11-08
 
 ### Added

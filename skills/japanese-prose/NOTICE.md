@@ -3,6 +3,15 @@
 This skill is an original kotonoha implementation and does not include source
 code from `coji/natural-japanese`.
 
+The v0.6.0 development work references the contextual editing and
+before/after inspection concepts documented by
+[nanaism/yomiyasu](https://github.com/nanaism/yomiyasu/tree/8394e099486aaa2e28cf89992e46f5ebe5ed839d)
+(MIT License), at commit `8394e099486aaa2e28cf89992e46f5ebe5ed839d`.
+Kotonoha's rules, implementation, instructions, and test examples are
+independently written; no yomiyasu source code, prompts, or corpus is bundled.
+Its evaluation results and numerical writing heuristics are not evidence
+for kotonoha's accuracy or adopted diagnostic thresholds.
+
 Morphological and syntactic analysis uses
 [GiNZA](https://github.com/megagonlabs/ginza), its `ja_ginza` model, and
 spaCy. These dependencies are resolved by `uv` when a diagnostic script is

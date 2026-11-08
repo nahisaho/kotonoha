@@ -14,7 +14,8 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Version: **0.5.7** (updated 2026-11-08), with eleven bundled Skills, including
+Source version: **0.6.0-dev.0** (v0.6.0 development; not published by this work),
+with eleven bundled Skills, including
 `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
 Install the npm package or use the
 [source-checkout installation](#install-skills-from-this-source-checkout).
@@ -492,6 +493,12 @@ review targets, not automatic replacements. Use `proofread` mode for minimal
 typo/grammar corrections without optional stylistic rewriting. The 0–100
 score is a triage aid, not correction accuracy or a quality certificate.
 
+The v0.6.0 development diagnostics add dependency-aware personification and
+metaphor hints plus redundant-preface review. Literal technical usage and
+deliberate imagery should be kept; no automatic replacement is performed.
+The ideas reference [nanaism/yomiyasu](https://github.com/nanaism/yomiyasu),
+with an independently written implementation and tests.
+
 Before editing, the workflow saves an immutable original. The bundled
 `scripts/invariants.py` checks protected content and requires a hash-bound
 semantic review of changed prose. Numbers, identifiers, code, tables, links,
@@ -499,6 +506,13 @@ and caller-supplied proper names/domain terms cannot be silently changed.
 Mechanical equality alone does not establish preserved meaning. See
 [`review-workflow.md`](skills/japanese-prose/references/review-workflow.md)
 for the review format and gate exit codes.
+
+The gate also reports advisory before/after semantic risks with line numbers,
+excerpts, and evidence for actor/recipient, negation, condition, modality,
+scope, and relationship changes. Warnings can be false positives or miss
+changes; the nine-check review and existing exit codes remain unchanged.
+The final candidate must match the reviewed `after_sha256`.
+Use the source-checkout installation above to try these unreleased changes.
 
 You do not need to name GiNZA explicitly in a natural-language request.
 Requests to make a Japanese document more natural, readable, concise, or less

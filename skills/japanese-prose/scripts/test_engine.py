@@ -24,7 +24,7 @@ from core import strip_markdown_inline
 from lint import analyze, compare_baseline
 from outline import extract as extract_outline
 from terms import extract as extract_terms
-from invariants import SEMANTIC_CHECKS, check as check_invariants
+from invariants import SEMANTIC_CHECKS, check as check_invariants, check_bytes
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -52,6 +52,55 @@ class DiagnosticTests(unittest.TestCase):
                     category,
                     {item["category"] for item in self.analyze_text(text, True)["findings"]},
                 )
+
+    def test_contextual_style_reports_dependency_evidence_and_lines(self) -> None:
+        for text, category, argument, predicate in (
+            ("ツールは変更を望みます。", "possible_personification", "ツール", "望む"),
+            ("検証に時間を溶かします。", "possible_metaphor", "時間", "溶かす"),
+        ):
+            with self.subTest(text=text):
+                source = "# 説明\n\n設定を確認します。\n\n" + text
+                finding = next(
+                    item for item in self.analyze_text(source)["findings"]
+                    if item["category"] == category
+                )
+                self.assertEqual(finding["line"], 5)
+                self.assertEqual(finding["evidence"]["argument"], argument)
+                self.assertEqual(finding["evidence"]["predicate"], predicate)
+                self.assertTrue(finding["evidence"]["review_only"])
+                self.assertNotIn(category, {
+                    item["category"] for item in self.analyze_text(source, True)["findings"]
+                })
+
+    def test_contextual_style_preserves_literal_technical_and_quoted_usage(self) -> None:
+        for text in (
+            "氷を溶かします。作業者が変更を望みます。",
+            "システムは認証を要求します。AIは結果を予測します。",
+            "ツールは設定を読み取ります。データが壊れます。",
+            "「ツールは変更を望む」と記録します。",
+            "`時間を溶かす`という文字列を確認します。",
+            "`担当者`が変更を望みます。",
+            "```text\nツールは変更を望みます。\n```\n",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse({
+                    item["category"] for item in self.analyze_text(text)["findings"]
+                } & {"possible_personification", "possible_metaphor"})
+
+    def test_redundant_preface_is_optional_and_keeps_conditions_and_quotes(self) -> None:
+        self.assertIn("redundant_preface", {
+            item["category"]
+            for item in self.analyze_text("まずはじめに、設定を確認します。")["findings"]
+        })
+        for text in (
+            "あらかじめ設定を確認してください。",
+            "まず設定を確認します。",
+            "「まずはじめに」と書かれています。",
+        ):
+            with self.subTest(text=text):
+                self.assertNotIn("redundant_preface", {
+                    item["category"] for item in self.analyze_text(text)["findings"]
+                })
 
     def test_proofreading_checks_brackets_and_paragraph_style(self) -> None:
         for text, category in (
@@ -183,6 +232,100 @@ class DiagnosticTests(unittest.TestCase):
 
 
 class InvariantTests(unittest.TestCase):
+    def test_semantic_risks_locate_role_polarity_condition_and_modality_changes(self) -> None:
+        for before, after, category in (
+            ("管理者が利用者を承認します。", "利用者が管理者を承認します。", "actors"),
+            ("設定を保存しません。", "設定を保存します。", "negation"),
+            ("失敗した場合は中止します。", "成功した場合は中止します。", "conditions"),
+            ("管理者は確認する必要があります。", "管理者は確認できます。", "modality"),
+            ("設定を確認してください。", "設定を確認します。", "modality"),
+            ("設定を確認したかもしれない。", "設定を確認した。", "modality"),
+            ("システムが稼働しているらしい。", "システムが稼働している。", "modality"),
+            ("設定を保存する予定です。", "設定を保存します。", "modality"),
+            ("設定を保存しました。", "設定を保存します。", "modality"),
+            ("管理者だけが設定を確認します。", "管理者が設定を確認します。", "scope"),
+            ("確認してから保存します。", "保存してから確認します。", "causality"),
+        ):
+            with self.subTest(category=category, before=before):
+                result = check_bytes(
+                    ("# 説明\n\n" + before).encode(), ("# 説明\n\n" + after).encode(),
+                )
+                self.assertEqual(result["status"], "review_required")
+                self.assertEqual(result["mechanical_violations"], [])
+                risk = next(item for item in result["semantic_risks"] if item["category"] == category)
+                self.assertEqual((risk["before_line"], risk["after_line"]), (3, 3))
+                self.assertEqual(risk["before_excerpt"], before)
+                self.assertEqual(risk["after_excerpt"], after)
+
+    def test_risks_detect_moved_negation_and_added_recipients(self) -> None:
+        for before, after, category in (
+            (
+                "管理者は保存しませんが、利用者は保存します。",
+                "管理者は保存しますが、利用者は保存しません。", "negation",
+            ),
+            ("設定を確認します。", "担当者が設定を確認します。", "actors"),
+            ("管理者が通知します。", "管理者が利用者に通知します。", "actors"),
+            ("設定を確認します。", "設定を確認します。\n\n認証を省略します。", "structure"),
+        ):
+            with self.subTest(category=category, before=before):
+                result = check_bytes(before.encode(), after.encode())
+                self.assertIn(category, {item["category"] for item in result["semantic_risks"]})
+
+    def test_risk_scan_ignores_protected_markdown_and_preserves_gate_status(self) -> None:
+        original = (
+            "---\nsummary: 保存しない\n---\n# 保存しない\n\n"
+            "| 操作 |\n| --- |\n| 保存しない |\n\n"
+            "````text\n```python\n保存しない\n```\n````\n\n"
+            "`保存しない`を確認します。\n\n<!-- 保存しない -->\n"
+        ).encode()
+        result = check_bytes(original, original.replace("保存しない".encode(), "保存する".encode()))
+        self.assertEqual(result["status"], "blocked")
+        self.assertEqual(result["semantic_risks"], [])
+        before = "管理者が利用者を承認します。".encode()
+        after = "利用者が管理者を承認します。".encode()
+        reviewed = check_bytes(before, after, review={
+            "before_sha256": hashlib.sha256(before).hexdigest(),
+            "after_sha256": hashlib.sha256(after).hexdigest(),
+            "reviewer": "test-reviewer",
+            "checks": {name: True for name in SEMANTIC_CHECKS},
+        })
+        self.assertEqual(reviewed["status"], "passed")
+        self.assertGreater(reviewed["semantic_risk_count"], 0)
+
+    def test_risk_scan_handles_links_softbreaks_and_equivalent_surface_roles(self) -> None:
+        before = "---\nowner: admin\n---\n# 説明\n\n設定を確認します。\n\n[管理者](https://example.com)が\n利用者を承認します。"
+        after = before.replace("[管理者](https://example.com)が\n利用者を", "利用者が\n[管理者](https://example.com)を")
+        risk = next(
+            item for item in check_bytes(before.encode(), after.encode())["semantic_risks"]
+            if item["category"] == "actors"
+        )
+        self.assertEqual((risk["before_line"], risk["after_line"]), (8, 8))
+        for before, after in (
+            ("管理者が設定を保存します。", "設定を管理者が保存します。"),
+            ("管理者は設定を確認します。", "管理者が設定を確認します。"),
+            ("設定を保存しない。", "設定を保存しません。"),
+            ("設定を確認したかもしれない。", "設定を確認したかもしれません。"),
+            ("管理者が設定を確認します。", "管理者が\n設定を確認します。"),
+            ("管理者が設定を確認します。", "管理**者**が設定を確認します。"),
+        ):
+            with self.subTest(before=before):
+                self.assertEqual(check_bytes(before.encode(), after.encode())["semantic_risks"], [])
+        before = "# 説明\n\n説明します。<!-- 注記\n保存しない -->\n管理者が利用者を承認します。"
+        after = before.replace("管理者が利用者を", "利用者が管理者を")
+        risk = next(
+            item for item in check_bytes(before.encode(), after.encode())["semantic_risks"]
+            if item["category"] == "actors"
+        )
+        self.assertEqual((risk["before_line"], risk["after_line"]), (3, 3))
+
+        before = "---\rsummary: test\r---\r# 説明\r\r管理者が利用者を承認します。"
+        after = before.replace("管理者が利用者を", "利用者が管理者を")
+        risk = next(
+            item for item in check_bytes(before.encode(), after.encode())["semantic_risks"]
+            if item["category"] == "actors"
+        )
+        self.assertEqual((risk["before_line"], risk["after_line"]), (6, 6))
+
     def test_protected_changes_cannot_be_approved_by_semantic_review(self) -> None:
         original = (
             "---\nowner: admin\n---\n# 概要\n\n"
@@ -259,6 +402,20 @@ class InvariantTests(unittest.TestCase):
                     )
                     self.assertEqual(process.returncode, code, process.stderr)
                     self.assertIn("status", json.loads(process.stdout))
+            before.write_text("管理者が利用者を承認します。", encoding="utf-8")
+            after.write_text("利用者が管理者を承認します。", encoding="utf-8")
+            for flags in (["--json"], []):
+                with self.subTest(flags=flags):
+                    process = subprocess.run(
+                        [sys.executable, str(SCRIPT_DIR / "invariants.py"), str(before), str(after), *flags],
+                        capture_output=True, text=True,
+                    )
+                    self.assertEqual(process.returncode, 3, process.stderr)
+                    if flags:
+                        risks = json.loads(process.stdout)["semantic_risks"]
+                        self.assertIn("actors", {item["category"] for item in risks})
+                    else:
+                        self.assertIn("Semantic risk [actors]", process.stdout)
             process = subprocess.run(
                 [sys.executable, str(SCRIPT_DIR / "invariants.py"), str(before), str(Path(directory) / "missing.md")],
                 capture_output=True, text=True,

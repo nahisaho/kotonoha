@@ -78,6 +78,13 @@ acceptance criteria, approval states, or normative force.
    target; it does not authorize blind replacement. Adjacent duplicate
    particles/words, Japanese bracket mismatches, and within-paragraph style
    mixing are proofreading targets, not proof of an error.
+   The `possible_personification`, `possible_metaphor`, and
+   `redundant_preface` categories are optional style-review targets with
+   linguistic or matched-phrase evidence, not typo/grammar findings.
+   Keep normal technical subjects such as systems requiring authentication.
+   Do not invent a human actor, recipient, motive, or more specific action
+   to remove a nonhuman subject or metaphor. Retain deliberate imagery and
+   unresolved referents; ask the author when a needed relationship is unknown.
 6. Correct demonstrable errors first. In `write` mode, then consider optional
    wording changes that serve the reader's stated goal. Keep these separate
    from necessary corrections. Preserve acceptable wording when a change
@@ -100,9 +107,17 @@ acceptance criteria, approval states, or normative force.
    Follow `references/review-workflow.md` to record the hash-bound review,
    then rerun with `--review <workdir>/semantic-review.json --json`.
    Recheck after every subsequent edit; a stale review cannot approve it.
+   Inspect `semantic_risks` using its before/after line numbers, excerpts,
+   and surface-marker evidence. It highlights possible actor/recipient,
+   negation, condition, modality, scope, and relationship changes, plus
+   unmatched passages. It is advisory: no warning does not prove equivalence,
+   and a warning does not prove an error. Review every changed passage,
+   including changes outside the detector's coverage.
 9. Stop only when every finding has a decision, no new actionable finding
    appears, and the invariant gate returns `passed`. If the gate cannot run,
    report the failure rather than declaring completion.
+   The delivered or saved candidate must match the gate's `after_sha256`;
+   recheck if formatting, copying, or another tool changes it after review.
 
 Allow at most three edit-and-diagnose rounds per invocation. If actionable
 findings or invariant violations remain, report that the optimization did not
@@ -137,4 +152,5 @@ Report:
 - necessary corrections versus optional wording changes
 - semantic review status and any remaining uncertainty; mechanical equality
   is not a guarantee of preserved meaning
+- semantic risks reviewed, deliberately kept, or still unresolved
 - `completed` or `did not converge`

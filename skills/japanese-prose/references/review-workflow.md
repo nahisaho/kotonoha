@@ -64,6 +64,35 @@ passage, compare the original and edited text, including nearby context:
 - `terminology`: proper names and domain concepts are unchanged
 - `structure`: section identity, order, quoted meaning, and traceability are unchanged
 
+### Use semantic risk evidence without treating it as a verdict
+
+The gate adds `semantic_risk_count` and `semantic_risks` to its JSON result.
+Each risk has a category, `before_line`, `after_line`, before/after excerpts,
+and evidence. An absent side of an insertion/deletion has a null line number.
+Lines anchor the first source line of the containing prose block, not an
+exact sentence/column offset. This remains reliable across multiline inline
+code and comments. Excerpts show visible prose with Markdown markup and
+protected inline content omitted.
+
+The scan compares aligned sentences and looks for case-particle bindings
+and surface markers of negation, conditions, modality, scope, and causal or
+temporal relationships. It also highlights unmatched sentence groups.
+It runs without GiNZA or new dependencies, so a Vault or Canvas caller keeps
+the existing lightweight gate requirements.
+
+These are review hints, not mechanical violations. Equivalent rewrites can
+produce hints, and changes in predicates, implicit actors, referents, or
+negation scope may escape them. The risk scan omits metadata, headings,
+code, tables, HTML markup, and comments; the existing protected-content
+checks and full contextual review still apply. Compare the entire diff,
+not just highlighted passages. Do not infer a human actor or a missing cause
+to resolve a hint, and do not affirm an unchecked review item.
+
+An acknowledged risk may remain in a `passed` result when a current review
+affirms all checks. The reviewer, not the detector, makes that judgment;
+unresolved meaning still requires retaining the original or reporting the
+concern. Risk hints never override a protected-content violation.
+
 Record the review as JSON. Copy `before_sha256` and `after_sha256` from the
 gate output, identify the actual reviewer, and set a check to `true` only
 after inspecting it. Do not infer approval from a score, an unchanged token
@@ -94,6 +123,9 @@ Rerun the gate with `--review <review-file>`. Exit codes are 0 for `passed`,
 missing, stale, incomplete, or rejected semantic reviews. Subsequent edits
 invalidate the review. If equivalence is uncertain, keep the original
 wording or report the unresolved concern.
+Immediately before delivering or saving, confirm that the candidate bytes
+still match `after_sha256`. A review of an intermediate draft is not evidence
+for a reformatted, copied, or subsequently edited final candidate.
 
 ## Convergence
 
