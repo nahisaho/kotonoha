@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-08
+
 ### Added
 
 - Add GiNZA dependency-aware personification/metaphor hints and optional
@@ -18,8 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Start v0.6.0 development as `0.6.0-dev.0`; reference yomiyasu's inspection
-  concepts with independently written rules and tests, not imported code.
+- Reference yomiyasu's inspection concepts with independently written rules
+  and tests, not imported code.
 - Require contextual style decisions without invented actors or narrowed
   claims, and verify that the final candidate matches the reviewed hash.
 
@@ -338,4 +340,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.5]: https://github.com/nahisaho/kotonoha/compare/v0.5.4...v0.5.5
 [0.5.6]: https://github.com/nahisaho/kotonoha/compare/v0.5.5...v0.5.6
 [0.5.7]: https://github.com/nahisaho/kotonoha/compare/v0.5.6...v0.5.7
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.7...HEAD
+[0.6.0]: https://github.com/nahisaho/kotonoha/compare/v0.5.7...v0.6.0
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.6.0...HEAD

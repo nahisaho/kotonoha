@@ -14,8 +14,7 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Source version: **0.6.0-dev.0** (v0.6.0 development; not published by this work),
-with eleven bundled Skills, including
+Version: **0.6.0** (updated 2026-11-08), with eleven bundled Skills, including
 `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
 Install the npm package or use the
 [source-checkout installation](#install-skills-from-this-source-checkout).
@@ -259,7 +258,7 @@ for exact-byte preservation, four original templates and failure handling.
 
 ## Obsidian syntax, app commands and data-driven notes
 
-The 0.5.7 Skills cover all six capability families in
+The 0.6.0 Skills cover all six capability families in
 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills), with original
 kotonoha instructions and examples. Reference snapshot:
 [`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98),
@@ -451,7 +450,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-The selected package determines which Skills are available; version 0.5.7
+The selected package determines which Skills are available; version 0.6.0
 includes all eleven. In the destination project, confirm they were installed:
 
 ```bash
@@ -493,7 +492,7 @@ review targets, not automatic replacements. Use `proofread` mode for minimal
 typo/grammar corrections without optional stylistic rewriting. The 0–100
 score is a triage aid, not correction accuracy or a quality certificate.
 
-The v0.6.0 development diagnostics add dependency-aware personification and
+The v0.6.0 diagnostics add dependency-aware personification and
 metaphor hints plus redundant-preface review. Literal technical usage and
 deliberate imagery should be kept; no automatic replacement is performed.
 The ideas reference [nanaism/yomiyasu](https://github.com/nanaism/yomiyasu),
@@ -512,7 +511,6 @@ excerpts, and evidence for actor/recipient, negation, condition, modality,
 scope, and relationship changes. Warnings can be false positives or miss
 changes; the nine-check review and existing exit codes remain unchanged.
 The final candidate must match the reviewed `after_sha256`.
-Use the source-checkout installation above to try these unreleased changes.
 
 You do not need to name GiNZA explicitly in a natural-language request.
 Requests to make a Japanese document more natural, readable, concise, or less

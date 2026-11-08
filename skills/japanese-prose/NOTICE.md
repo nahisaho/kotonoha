@@ -3,7 +3,7 @@
 This skill is an original kotonoha implementation and does not include source
 code from `coji/natural-japanese`.
 
-The v0.6.0 development work references the contextual editing and
+The v0.6.0 diagnostics reference the contextual editing and
 before/after inspection concepts documented by
 [nanaism/yomiyasu](https://github.com/nanaism/yomiyasu/tree/8394e099486aaa2e28cf89992e46f5ebe5ed839d)
 (MIT License), at commit `8394e099486aaa2e28cf89992e46f5ebe5ed839d`.
