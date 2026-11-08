@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-11-08
+
+### Added
+
+- Allow an approved tarball SHA-256 in the manual npm publishing workflow.
+  Pack once, verify the supplied hash and publish that exact archive; stop
+  before publishing if the artifact differs.
+
+### Fixed
+
+- Use WSL-visible path, type and file-identity checks for normal OneDrive host
+  reads/saves instead of requiring Windows reparse-tag or final-path APIs.
+  Cloud reparse metadata alone no longer blocks WSL operations. Keep detected
+  redirection/access denials, source rechecks and in-place updates; retain
+  native Windows tag verification and unchanged Python CLI/Canvas/Bases gates.
+
 ## [0.5.6] - 2026-11-07
 
 ### Added
@@ -305,4 +321,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.4]: https://github.com/nahisaho/kotonoha/compare/v0.5.3...v0.5.4
 [0.5.5]: https://github.com/nahisaho/kotonoha/compare/v0.5.4...v0.5.5
 [0.5.6]: https://github.com/nahisaho/kotonoha/compare/v0.5.5...v0.5.6
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.6...HEAD
+[0.5.7]: https://github.com/nahisaho/kotonoha/compare/v0.5.6...v0.5.7
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.5.7...HEAD

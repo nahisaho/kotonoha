@@ -513,19 +513,22 @@ test("authorized OneDrive reads distinguish cloud metadata from path redirection
   assert.match(reads, /never retry through another tool to bypass them/);
   assert.match(reads, /one blocked\s+file does not block other verified targets/);
   assert.match(reads, /apply the save profiles below with separate write authority/);
+  assert.match(reads, /On WSL Windows drives, use the WSL host path\/type\/identity checks/);
+  assert.match(reads, /their absence alone must not block the read/);
+  assert.match(reads, /On native Windows/);
 });
 
 test("WSL Windows-drive saving support is limited to verified host direct saves", () => {
   const vaultRoot = path.join(repositoryRoot, "skills", "obsidian-vault");
   const skill = fs.readFileSync(path.join(vaultRoot, "SKILL.md"), "utf8");
   const profile = skill.match(
-    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n## )/,
+    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
   )?.[1];
   assert.ok(profile, "direct saving must expose the WSL-specific profile");
   assert.match(profile, /`drvfs`, `9p` or `v9fs`/);
-  assert.match(profile, /not a mapped network drive or UNC\/SMB share/);
+  assert.match(profile, /not a mapped network drive or\s+UNC\/SMB share/);
   assert.match(profile, /a `\/mnt\/c\/\.\.\.`\s+spelling alone is not evidence/);
-  assert.match(profile, /reparse points, including junctions/);
+  assert.match(profile, /Reject WSL symlinks, detected junctions or other path\s+redirections/);
   assert.match(profile, /not `:stream` or device paths/);
   assert.match(profile, /verified in-place write to the same file object/);
   assert.match(profile, /Open without\s+truncation, compare the original bytes and identity on that handle/);
@@ -548,26 +551,55 @@ test("WSL Windows-drive saving support is limited to verified host direct saves"
   assert.match(markdown, /For a WSL local Windows drive, use its host direct-save profile/);
 });
 
-test("OneDrive host saves allow verified cloud tags but retain Windows write gates", () => {
+test("native Windows host saves retain tag verification without imposing it on WSL", () => {
   const skill = fs.readFileSync(
     path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
   );
   const profile = skill.match(
-    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n## )/,
+    /### Native Windows direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
   )?.[1];
   assert.ok(profile);
-  assert.match(profile, /Native Windows host saves use the same path, identity/);
-  assert.match(profile, /alone is not grounds\s+to refuse saving/);
-  assert.match(profile, /Inspect each actual tag, including parent directories/);
+  assert.match(profile, /alone is not grounds to refuse\s+saving/);
+  assert.match(profile, /inspect each actual reparse\s+tag, including parent directories/);
   assert.match(profile, /`IO_REPARSE_TAG_CLOUD`/);
   assert.match(profile, /not name surrogates/);
-  assert.match(profile, /final path and identity stay inside the authorized root and exact target/);
-  assert.match(profile, /Reject symlinks, junctions, mount-point redirections, unknown tags and escapes/);
-  assert.match(profile, /verify the parent before exclusive creation/);
-  assert.match(profile, /Missing tag\/final-path verification blocks only the\s+affected target/);
-  assert.match(profile, /obtain explicit hydration\/network consent; stop if availability is unknown/);
-  assert.match(profile, /Do not pin files, remove cloud attributes or change sync settings/);
-  assert.doesNotMatch(profile, /reparse points[^.]*;\s*reject them/);
+  assert.match(profile, /final path and identity stay inside the authorized\s+root and exact target/);
+  assert.match(profile, /Reject symlinks, junctions, mount-point redirections,\s+unknown tags and escapes/);
+  assert.match(profile, /Missing tag\/final-path verification blocks the affected\s+native Windows target/);
+  assert.match(profile, /Do not apply these Windows-API preconditions to WSL host reads or saves/);
+});
+
+test("WSL OneDrive saves do not require native Windows metadata tools", () => {
+  const skill = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
+  );
+  const profile = skill.match(
+    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
+  )?.[1];
+  assert.ok(profile);
+  assert.match(profile, /WSL OneDrive saves are supported/);
+  assert.match(profile, /including on parent directories/);
+  assert.match(profile, /is not a WSL symbolic link/);
+  assert.match(profile, /Do not require PowerShell, fsutil or Windows drive APIs/);
+  assert.match(profile, /component metadata \(`lstat` or equivalent\)/);
+  assert.match(profile, /Do not require Windows reparse-tag queries, cloud-tag\s+allowlists or Windows final-path APIs/);
+  assert.match(profile, /Missing Windows\s+metadata capabilities alone must not block a normal WSL OneDrive save/);
+  assert.match(profile, /Verify the resolved WSL path and opened file stay inside the authorized root/);
+  assert.match(profile, /do not ignore\s+positive evidence of a redirection/);
+  assert.match(profile, /Missing WSL path\/type\/identity checks block the affected\s+target/);
+  assert.match(profile, /do not demand a cloud-availability API/);
+  assert.match(profile, /unavailable Windows ACL\/cloud-attribute enumeration is not a refusal reason/);
+  assert.match(profile, /Do not use a host edit tool whose replacement behavior is unknown/);
+  assert.doesNotMatch(profile, /allow only verified Windows cloud-family tags|Missing tag\/final-path verification blocks/);
+  const markdown = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-markdown", "SKILL.md"), "utf8",
+  );
+  assert.match(markdown, /WSL OneDrive targets use WSL path\/type\/identity checks, not native Windows/);
+  const workflow = fs.readFileSync(
+    path.join(repositoryRoot, "skills", "obsidian-vault", "references", "workflow.md"), "utf8",
+  );
+  assert.match(workflow, /それらの取得機能がないことだけで.*OneDriveへの保存を拒否しない/);
+  assert.match(workflow, /このWindows API要件をWSL保存へ流用しない/);
 });
 
 test("PDF and Docling imports require scoped host storage, not Markdown-only CLI saving", () => {
@@ -586,7 +618,12 @@ test("PDF and Docling imports require scoped host storage, not Markdown-only CLI
   assert.match(imports, /every output path before writing/);
   assert.match(imports, /non-overwriting creation with exact\/equivalent-name collision checks/);
   assert.match(imports, /never a converter's unchecked overwrite/);
-  assert.match(imports, /including\s+verified non-redirecting cloud tags/);
+  assert.match(imports, /WSL path\/type checks or native Windows verified non-redirecting cloud tags/);
+  const operations = skill.match(
+    /## Authorized file and directory operations\n([\s\S]*?)(?=\n## )/,
+  )?.[1];
+  assert.match(operations, /unknown-tag refusal is native-Windows-only/);
+  assert.match(operations, /Do not reintroduce Windows tag\/API requirements for WSL operations/);
   assert.match(imports, /create missing directories with separate approval for their exact paths/);
   assert.match(imports, /only the approved outputs/);
   assert.match(imports, /Never use session\s+storage or silently substitute `\/tmp`/);
@@ -788,7 +825,7 @@ test("npm publishing routes prereleases away from latest", () => {
     publishTagForVersion(packageVersion),
   );
   assert.match(workflow, /TAG=\$\(node bin\/npm-publish-tag\.js\)/);
-  assert.match(workflow, /npm publish --access public --tag "\$TAG"/);
+  assert.match(workflow, /npm publish "\.\/\$TARBALL" --access public --tag "\$TAG"/);
   assert.match(workflow, /dry_run:\s+description: [^\n]+\s+type: boolean\s+default: true/);
   assert.match(workflow, /group: npm-publish\s+cancel-in-progress: false/);
   assert.ok(
@@ -797,9 +834,65 @@ test("npm publishing routes prereleases away from latest", () => {
   );
   assert.match(workflow, /if \[ -z "\$NODE_AUTH_TOKEN" \]; then[\s\S]*?exit 1/);
   assert.match(workflow, /npm whoami --registry=https:\/\/registry\.npmjs\.org/);
-  assert.match(workflow, /if \[ "\$DRY_RUN" = "true" \]; then\s+npm publish --dry-run/);
+  assert.match(workflow, /if \[ "\$DRY_RUN" = "true" \]; then\s+npm publish "\.\/\$TARBALL" --dry-run/);
+  assert.match(workflow, /EXPECTED_SHA256: \$\{\{ inputs\.expected_sha256 \}\}/);
+  assert.match(workflow, /printf '%s  %s\\n' "\$EXPECTED_SHA256" "\$TARBALL" \| sha256sum --check/);
+  assert.match(workflow, /TARBALL: \$\{\{ steps\.pack\.outputs\.tarball \}\}/);
+  assert.ok(
+    workflow.indexOf("| sha256sum --check") < workflow.indexOf("- name: Publish package"),
+    "approved archive verification must precede publishing",
+  );
   assert.match(workflow, /DRY_RUN: \$\{\{ inputs\.dry_run \}\}/);
   assert.match(workflow, /NODE_AUTH_TOKEN: \$\{\{ secrets\.NPM_TOKEN \}\}/);
+});
+
+test("Actions packaging stops on an invalid or changed approved archive", {
+  skip: process.platform !== "linux",
+}, async (t) => {
+  const workflow = fs.readFileSync(
+    path.join(repositoryRoot, ".github", "workflows", "npm-publish.yml"), "utf8",
+  );
+  const script = workflow.match(
+    /- name: Pack release artifact\n\s+id: pack\n\s+run: \|\n([\s\S]*?)\n\s+env:/,
+  )?.[1].replace(/^ {10}/gm, "");
+  assert.ok(script);
+  const bytes = Buffer.from("approved package bytes\n");
+  const approved = require("node:crypto").createHash("sha256").update(bytes).digest("hex");
+  for (const [name, expected, success] of [
+    ["approved bytes", approved, true],
+    ["changed bytes", "0".repeat(64), false],
+    ["malformed hash", "not-a-sha256", false],
+    ["optional hash omitted", "", true],
+  ]) {
+    await t.test(name, (t) => {
+      const directory = createTemporaryDirectory();
+      t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+      const tools = path.join(directory, "tools");
+      fs.mkdirSync(tools);
+      fs.writeFileSync(path.join(tools, "npm"),
+        "#!/bin/sh\nprintf '%s\\n' '[{\"filename\":\"fixture.tgz\"}]'\n",
+        { mode: 0o755 });
+      fs.writeFileSync(path.join(directory, "fixture.tgz"), bytes);
+      const output = path.join(directory, "outputs");
+      const result = spawnSync("bash", ["-e", "-o", "pipefail", "-c", script], {
+        cwd: directory,
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          PATH: tools + path.delimiter + process.env.PATH,
+          RUNNER_TEMP: directory,
+          GITHUB_OUTPUT: output,
+          EXPECTED_SHA256: expected,
+        },
+      });
+      assert.equal(result.status === 0, success, result.stderr);
+      if (success) {
+        assert.equal(fs.readFileSync(output, "utf8"), "tarball=fixture.tgz\n");
+      } else {
+        assert.equal(fs.existsSync(output), false, "rejected archives must not reach publishing");
+      }
+    });
+  }
 });
 
 function createTemporaryDirectory() {

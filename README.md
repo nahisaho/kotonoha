@@ -14,7 +14,7 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Version: **0.5.6** (updated 2026-11-07), with eleven bundled Skills, including
+Version: **0.5.7** (updated 2026-11-08), with eleven bundled Skills, including
 `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
 Install the npm package or use the
 [source-checkout installation](#install-skills-from-this-source-checkout).
@@ -176,10 +176,12 @@ for requests, command examples, data retention and recovery.
 Saving requires verifiable local regular files; symlinks and multiple hard
 links are refused. Native Linux saves preserve ownership/modes.
 Host direct saves also support native Windows and confirmed local Windows drives
-through WSL (`drvfs`/`9p`/`v9fs`), not network shares. Verified non-redirecting
-OneDrive cloud reparse tags are allowed; folder names/flags alone do not block
-saving. Unknown tags, junctions and scope escapes are still refused; hydration
-requires separate consent. Existing notes must be updated in place,
+through WSL (`drvfs`/`9p`/`v9fs`), not network shares. WSL OneDrive saves use
+WSL-resolved paths, component types and file identity; cloud reparse metadata
+is not a WSL symlink. Windows tag/final-path APIs are not required for otherwise
+normal WSL files. Native Windows retains cloud-tag verification. Detected
+redirections, symlinks, scope escapes and actual access denials remain blocked;
+known hydration requires separate consent. Existing notes must be updated in place,
 preserving Windows ACLs/attributes rather than replacing the file or requiring
 synthetic Linux permissions. Path/identity checks and exact readback remain
 mandatory; an unknown host replacement method is not sufficient.
@@ -189,7 +191,8 @@ CLI saving still requires a verified Linux filesystem and refuses all xattrs,
 including SELinux labels. Never remove attributes to bypass a refusal.
 Direct-edit failure and concurrency limitations are disclosed before saving;
 neither mode eliminates post-check external edits or LLM mistakes.
-The skill is not a host sandbox.
+The skill is not a host sandbox. WSL host-visible checks are not an independent
+Windows reparse audit or a guarantee against undetectable redirections.
 
 Host operations also allow explicitly authorized directory creation and
 regular-file creation, editing and deletion, not just Markdown/PDF outputs.
@@ -255,7 +258,7 @@ for exact-byte preservation, four original templates and failure handling.
 
 ## Obsidian syntax, app commands and data-driven notes
 
-The 0.5.6 Skills cover all six capability families in
+The 0.5.7 Skills cover all six capability families in
 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills), with original
 kotonoha instructions and examples. Reference snapshot:
 [`3ccff5338ea700537839b21900aa5358a0402c98`](https://github.com/kepano/obsidian-skills/tree/3ccff5338ea700537839b21900aa5358a0402c98),
@@ -447,7 +450,7 @@ npx kotonoha install --skill all
 ```
 
 `--skill all` is the default, so `npx kotonoha install` has the same behavior.
-The selected package determines which Skills are available; version 0.5.6
+The selected package determines which Skills are available; version 0.5.7
 includes all eleven. In the destination project, confirm they were installed:
 
 ```bash
