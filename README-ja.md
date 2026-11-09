@@ -10,6 +10,8 @@ Obsidian向けには、Markdown記法、許可されたVault内のノート操�
 
 [English](./README.md) | [日本語](./README-ja.md)
 
+[japanese-proseの使い方：導入・添削の依頼・診断コマンド](#japanese-proseの使い方)
+
 ## kotonoha（言の葉）という名前
 
 `kotonoha`は、「言葉」「言語」「和歌」を表す古典的・詩的な表現「言の葉（ことのは）」に由来します。読み手の意図を、明確で構造化された言葉へ育てるという、このプロジェクトの目的を表しています。
@@ -323,7 +325,33 @@ test -f .github/skills/presentation-planner/SKILL.md
 npx kotonoha install --skill all --force
 ```
 
-### 内蔵された日本語表現最適化
+<a id="内蔵された日本語表現最適化"></a>
+
+### japanese-proseの使い方
+
+`japanese-prose`は、既存の日本語文書の校正や表現改善に単独で使えます。`tech-writer`による文書作成を先に実行する必要はありません。
+
+#### japanese-proseを導入して読み込む
+
+スキルを使うプロジェクトで、インストールを実行します。Node.js 18以上と`npx`が必要です。使用するエージェントに対応したコマンドを選んでください。
+
+```bash
+# GitHub Copilot: .github/skills/japanese-prose/
+npx kotonoha@latest install --agent copilot --skill japanese-prose
+
+# Claude Code: .claude/skills/japanese-prose/
+npx kotonoha@latest install --agent claude --skill japanese-prose
+```
+
+導入済みの場合は、ローカルでの変更を確認またはバックアップしてから置き換えます。次の例は、Copilot用の`japanese-prose`だけを更新します。Claude用を更新する場合は、`--agent claude`に変更してください。
+
+```bash
+npx kotonoha@latest install --agent copilot --skill japanese-prose --force
+```
+
+添削を依頼する前に、エージェントへ`.github/skills/japanese-prose/SKILL.md`を読み込むよう指示してください。Claude Codeでは、`.claude/skills/japanese-prose/SKILL.md`を指定します。独自のインストール先を使った場合は、その場所にある`SKILL.md`を指定してください。
+
+#### 診断内容と編集時の確認
 
 kotonohaには独自開発の`japanese-prose`が同梱されるため、文章最適化スキルを別途インストールする必要はありません。`npx kotonoha install`により`tech-writer`と同じスキルルートへ配置され、GiNZAを使った文章lint、読解負荷検査、用語抽出、アウトライン検査、反復的な文章レビューをローカルで実行できます。この実装はkotonoha向けにゼロから開発しており、`natural-japanese`のソースコードを含みません。GiNZAの依存関係とライセンス情報は`skills/japanese-prose/NOTICE.md`に記録しています。
 
@@ -391,6 +419,28 @@ docs/draft.mdをjapanese-proseのwriteモード、full診断で添削して。
 編集後は、再診断の結果、各指摘を修正したか残したか、不変条件ゲートの結果を確認します。意味レビューが未完了または不承認なら、添削は完了していません。診断やゲートを実行できなかった場合は、制限を報告し、すべての処理が完了したとは説明しません。
 
 新しい日本語文書では、`このリポジトリの日本語READMEを作成して`のように依頼すると、`tech-writer`が下書きと構造レビューを行い、rubber-duck reviewの前にGiNZAベースの文章最適化を実行します。文章最適化を確実に指定する場合は、`<ファイル名>を技術文書として作成または修正し、GiNZAによる日本語表現最適化まで実施して`と指示します。
+
+#### 診断スクリプトを直接実行する
+
+次のコマンドは、ファイルを読み取って結果を報告します。ファイルの書き換えや、エージェントによる文脈に基づく意味レビューは行いません。スキルの導入後に、プロジェクトのルートで実行してください。`docs/draft.md`は、実在する対象ファイルに置き換えます。Claude Codeでは、`.github/skills`を`.claude/skills`に変更してください。独自のインストール先を使った場合は、読み込んだスキルのディレクトリを指定します。
+
+```bash
+# 文章の指摘と診断スコア
+uv run .github/skills/japanese-prose/scripts/lint.py docs/draft.md --genre tech --json
+
+# 読解負荷の指摘
+uv run .github/skills/japanese-prose/scripts/lint.py docs/draft.md --genre tech --reading-load --json
+
+# 見出しと段落の構成
+uv run .github/skills/japanese-prose/scripts/outline.py docs/draft.md
+
+# 用語の候補
+uv run .github/skills/japanese-prose/scripts/terms.py docs/draft.md --json
+```
+
+文章lintのJSONには、`score`、`finding_count`、`findings`が含まれます。指摘の位置や診断カテゴリを確認し、文脈に合うか判断してください。スコアを上げるためだけに置換しないでください。修正と編集前後のレビューまで依頼する場合は、前述のエージェント向けの依頼例を使います。
+
+#### ほかのスキルも導入する場合
 
 既定のインストール先は、現在のプロジェクトの`.github/skills/`です。
 同梱の各スキルを、スキル名と同じサブディレクトリに配置します。

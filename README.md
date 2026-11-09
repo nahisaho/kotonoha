@@ -21,6 +21,8 @@ Install the npm package or use the
 
 [English](./README.md) | [日本語](./README-ja.md)
 
+[japanese-prose usage: installation, proofreading requests, and diagnostic commands](#japanese-prose-usage)
+
 ## Why the name kotonoha
 
 `kotonoha` comes from the Japanese expression 言の葉 (*kotonoha*), a
@@ -475,7 +477,40 @@ review or back up local customizations first, then run:
 npx kotonoha install --skill all --force
 ```
 
-### Built-in Japanese prose optimization
+<a id="built-in-japanese-prose-optimization"></a>
+
+### japanese-prose usage
+
+Use `japanese-prose` directly to proofread or improve existing Japanese
+documents; running the `tech-writer` document-creation workflow is not required.
+
+#### Install and load japanese-prose
+
+Run the installation from the project where you want to use the skill.
+Node.js 18 or newer and `npx` are required. Choose the command for your agent:
+
+```bash
+# GitHub Copilot: .github/skills/japanese-prose/
+npx kotonoha@latest install --agent copilot --skill japanese-prose
+
+# Claude Code: .claude/skills/japanese-prose/
+npx kotonoha@latest install --agent claude --skill japanese-prose
+```
+
+If that skill is already installed, review or back up local changes before
+replacing it. This example updates only the Copilot copy of `japanese-prose`;
+use `--agent claude` for the Claude copy:
+
+```bash
+npx kotonoha@latest install --agent copilot --skill japanese-prose --force
+```
+
+Ask your agent to load `.github/skills/japanese-prose/SKILL.md`, or
+`.claude/skills/japanese-prose/SKILL.md` for Claude Code, before making the
+proofreading requests below. If you used a custom installation root, use
+the `SKILL.md` path under that root.
+
+#### Diagnostics and edit safety
 
 Kotonoha includes its own `japanese-prose` skill, so no separate prose skill
 installation is required. `npx kotonoha install` places it beside
@@ -594,6 +629,35 @@ this repository` lets `tech-writer` create and structurally review the draft,
 then run the GiNZA-based prose pass before rubber-duck review. To require the
 pass unambiguously, ask: `Create or revise <file> as a technical document and
 run GiNZA-based Japanese prose optimization.`
+
+#### Run the diagnostic scripts directly
+
+These commands read a file and report results; they do not rewrite it or
+perform the agent's contextual semantic review. Run them from the project
+root after installing the skill. Replace `docs/draft.md` with an existing
+target file. For Claude Code, replace `.github/skills` with `.claude/skills`;
+for a custom root, use the loaded skill's directory.
+
+```bash
+# Prose findings and the diagnostic score
+uv run .github/skills/japanese-prose/scripts/lint.py docs/draft.md --genre tech --json
+
+# Reading-load findings
+uv run .github/skills/japanese-prose/scripts/lint.py docs/draft.md --genre tech --reading-load --json
+
+# Heading and paragraph outline
+uv run .github/skills/japanese-prose/scripts/outline.py docs/draft.md
+
+# Terminology candidates
+uv run .github/skills/japanese-prose/scripts/terms.py docs/draft.md --json
+```
+
+The lint JSON contains `score`, `finding_count`, and `findings`, including
+locations and diagnostic categories. Review findings in context rather than
+replacing text solely to raise the score. To have corrections and the
+before/after review performed, use the agent requests above.
+
+#### Other skill installation options
 
 The default destinations are `.github/skills/consulting-analyst`,
 `.github/skills/tech-writer`, `.github/skills/japanese-prose`,
