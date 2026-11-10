@@ -815,12 +815,15 @@ test("npm publishing routes prereleases away from latest", () => {
   assert.match(workflow, /npm publish "\.\/\$TARBALL" --access public --tag "\$TAG"/);
   assert.match(workflow, /dry_run:\s+description: [^\n]+\s+type: boolean\s+default: true/);
   assert.match(workflow, /group: npm-publish\s+cancel-in-progress: false/);
+  assert.match(workflow, /publish:\s+permissions:\s+contents: read\s+id-token: write/);
+  assert.match(workflow, /node-version: 24\.22\.1/);
+  assert.match(workflow, /environment: npm-publish/);
+  assert.match(workflow, /does not verify npm authorization/);
   assert.ok(
     workflow.indexOf("run: npm test") < workflow.indexOf("- name: Publish package"),
     "publishing must be gated by package tests",
   );
-  assert.match(workflow, /if \[ -z "\$NODE_AUTH_TOKEN" \]; then[\s\S]*?exit 1/);
-  assert.match(workflow, /npm whoami --registry=https:\/\/registry\.npmjs\.org/);
+  assert.doesNotMatch(workflow, /NODE_AUTH_TOKEN|NPM_TOKEN|npm whoami/);
   assert.match(workflow, /if \[ "\$DRY_RUN" = "true" \]; then\s+npm publish "\.\/\$TARBALL" --dry-run/);
   assert.match(workflow, /EXPECTED_SHA256: \$\{\{ inputs\.expected_sha256 \}\}/);
   assert.match(workflow, /printf '%s  %s\\n' "\$EXPECTED_SHA256" "\$TARBALL" \| sha256sum --check/);
@@ -830,7 +833,51 @@ test("npm publishing routes prereleases away from latest", () => {
     "approved archive verification must precede publishing",
   );
   assert.match(workflow, /DRY_RUN: \$\{\{ inputs\.dry_run \}\}/);
-  assert.match(workflow, /NODE_AUTH_TOKEN: \$\{\{ secrets\.NPM_TOKEN \}\}/);
+});
+
+test("Actions publish script supports OIDC without an npm token", {
+  skip: process.platform !== "linux",
+}, async (t) => {
+  const workflow = fs.readFileSync(
+    path.join(repositoryRoot, ".github", "workflows", "npm-publish.yml"), "utf8",
+  );
+  const script = workflow.match(
+    /- name: Publish package\n\s+run: \|\n([\s\S]*?)\n\s+env:/,
+  )?.[1].replace(/^ {10}/gm, "");
+  assert.ok(script);
+  for (const [dryRun, expected] of [
+    ["true", ["publish", "./fixture.tgz", "--dry-run", "--access", "public", "--tag"]],
+    ["false", ["publish", "./fixture.tgz", "--access", "public", "--tag"]],
+  ]) {
+    await t.test(`dry_run=${dryRun}`, (t) => {
+      const directory = createTemporaryDirectory();
+      t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+      const tools = path.join(directory, "tools");
+      fs.mkdirSync(tools);
+      fs.writeFileSync(path.join(tools, "npm"),
+        "#!/bin/sh\n[ -n \"$ACTIONS_ID_TOKEN_REQUEST_URL\" ] && [ -n \"$ACTIONS_ID_TOKEN_REQUEST_TOKEN\" ] && [ -z \"$NODE_AUTH_TOKEN\" ] || exit 1\nprintf '%s\\n' \"$@\" > \"$NPM_ARGS\"\n",
+        { mode: 0o755 });
+      const argsFile = path.join(directory, "args");
+      const result = spawnSync("bash", ["-e", "-o", "pipefail", "-c", script], {
+        cwd: repositoryRoot,
+        encoding: "utf8",
+        env: {
+          PATH: tools + path.delimiter + process.env.PATH,
+          HOME: directory,
+          ACTIONS_ID_TOKEN_REQUEST_URL: "https://example.invalid/token",
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: "fixture",
+          DRY_RUN: dryRun,
+          TARBALL: "fixture.tgz",
+          NPM_ARGS: argsFile,
+        },
+      });
+      assert.equal(result.status, 0, result.stderr);
+      assert.deepEqual(
+        fs.readFileSync(argsFile, "utf8").trim().split("\n"),
+        [...expected, publishTagForVersion(require("../package.json").version)],
+      );
+    });
+  }
 });
 
 test("Actions packaging stops on an invalid or changed approved archive", {

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Publish npm packages from GitHub Actions with OIDC Trusted Publishing instead
+  of an npm token; dry runs validate the package but not npm authorization.
+
 ## [0.6.1] - 2026-11-11
 
 ### Changed

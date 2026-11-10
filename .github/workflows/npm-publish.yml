@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: Validate authentication and package without publishing
+        description: Validate package without publishing; does not verify npm authorization
         type: boolean
         default: true
       expected_sha256:
@@ -21,6 +21,9 @@ concurrency:
 
 jobs:
   publish:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     environment: npm-publish
 
@@ -31,21 +34,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24.22.1
           registry-url: https://registry.npmjs.org
 
       - name: Test package
         run: npm test
-
-      - name: Verify npm authentication
-        run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "::error::Set NPM_TOKEN in the repository or npm-publish environment secrets."
-            exit 1
-          fi
-          npm whoami --registry=https://registry.npmjs.org
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Pack release artifact
         id: pack
@@ -75,4 +68,3 @@ jobs:
         env:
           DRY_RUN: ${{ inputs.dry_run }}
           TARBALL: ${{ steps.pack.outputs.tarball }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
