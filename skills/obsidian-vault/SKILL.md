@@ -159,10 +159,11 @@ not performed, not an unverified substitute.
    changes; never overwrite from stale content. Identical bytes mean no write.
 5. Save the exact candidate with host tools. On native Linux filesystems,
    preserve owner/group/modes and refuse xattrs or unsupported attributes.
-   For Windows drives, select the matching WSL or native Windows direct-save
-   profile below instead; do not apply native Windows checks to WSL.
-   Both profiles refuse multiple hard links and attribute-removing workarounds,
-   including removal of SELinux labels.
+   For Windows OneDrive targets, use the direct-save profile above. For other
+   Windows drives, select the matching WSL or native Windows profile below.
+   Do not apply native Windows checks to WSL.
+   Other Windows profiles refuse multiple hard links and attribute-removing
+   workarounds, including removal of SELinux labels.
 6. Read back after saving; require exact candidate bytes and unchanged unspecified content.
    Report the exact target and outcome, never success on failure or uncertainty.
 
@@ -178,15 +179,30 @@ not invented CLI JSON/receipts. If the user needs CLI guarantees, await selectio
 Never retry a failed CLI operation as a direct edit without permission; inspect
 the target first when its save state is unknown.
 
-### WSL Windows-drive direct saves
+### Windows OneDrive direct saves
 
-Support authorized Markdown saves on a confirmed local Windows drive mounted
+For an explicitly authorized target in Windows OneDrive, use the host filesystem
+directly. Do not require WSL mount inspection, Windows reparse-tag queries,
+Windows final-path APIs, cloud-tag allowlists, hydration checks or attribute
+enumeration as a precondition to creation or editing. Do not reject a target
+because it is reported as a reparse point or cloud placeholder. The host may
+perform normal OneDrive hydration or synchronization as part of the requested
+operation; no separate consent is required.
+
+Keep the exact target and action authorization, source recheck for edits,
+non-overwriting creation, content-specific review gates, and exact readback.
+Use normal host file operations and let the operating system enforce its access
+permissions. Do not modify ACLs, read-only attributes or sync settings to make
+a denied operation succeed. Report host errors as failures; do not silently
+redirect or retry elsewhere.
+
+### Other WSL Windows-drive direct saves
+
+For non-OneDrive targets, support authorized Markdown saves on a confirmed local Windows drive mounted
 through WSL as `drvfs`, `9p` or `v9fs`. Do not reject it solely because of that
 filesystem name or apply the Python CLI's filesystem allowlist to host saves.
-WSL OneDrive saves are supported when the authorized target is exposed as a
-normal WSL file. OneDrive cloud reparse metadata, including on parent directories,
-is not a WSL symbolic link and is not itself a path redirection.
-Native Windows uses the separate tag-verification profile below.
+OneDrive targets use the direct-save rules above instead of this profile's
+mount, path, identity, hydration or metadata checks.
 This profile does not extend Python CLI, Canvas or Bases saving support.
 
 1. Verify WSL, the actual mount and its Windows path mapping; a `/mnt/c/...`
@@ -239,25 +255,18 @@ This profile does not extend Python CLI, Canvas or Bases saving support.
    possible partial writes and concurrent Obsidian/Sync/Windows edits before saving;
    after a possible write failure report unknown, without retry or rollback.
 
-Missing path checks or a known in-place method still block saving; report the
-specific missing capability, not a blanket v9fs prohibition.
+For non-OneDrive targets, missing path checks or a known in-place method still
+block saving; report the specific missing capability, not a blanket v9fs
+prohibition.
 Do not silently redirect a refused save to `/tmp` or another file. An alternate
 output needs explicit exact-path consent and is never a successful Vault update.
 Proofreading gates and the session-storage prohibition still apply.
 
-### Native Windows direct saves
+### Other native Windows direct saves
 
-Use the same authorization, source rechecks, exclusive creation, in-place updates
-and exact readback rules. Verify the local Windows backing drive and ordinary
-data stream. A OneDrive folder name or flag alone is not grounds to refuse
-saving. For native Windows path verification, inspect each actual reparse
-tag, including parent directories, and allow only verified Windows cloud-family
-tags (`IO_REPARSE_TAG_CLOUD` and documented variants) that are not name surrogates.
-Verify the opened object's final path and identity stay inside the authorized
-root and exact target. Reject symlinks, junctions, mount-point redirections,
-unknown tags and escapes. Missing tag/final-path verification blocks the affected
-native Windows target. Respect ACLs/read-only attributes and hydration consent.
-Do not apply these Windows-API preconditions to WSL host reads or saves.
+For non-OneDrive targets, use the same authorization, source rechecks, exclusive
+creation, in-place updates and exact readback rules. Verify the local Windows
+backing drive, ordinary data stream, reparse tags and final path.
 
 Neither host profile is a Windows security sandbox or a guarantee against all
 undetectable reparse redirections, races or sync failures. WSL checks establish
@@ -289,9 +298,9 @@ existing save gates. Never use generic file writing to bypass those gates.
    Check resolved paths from root to target, equivalent-name collisions, types,
    identity, link counts and management-directory exclusions. Reject symlinks,
    detected junctions/redirections, scope escapes and special/device files.
-   Select the WSL or native Windows profile for local-drive, ordinary-stream,
-   ACL and hydration checks; unknown-tag refusal is native-Windows-only.
-   Do not reintroduce Windows tag/API requirements for WSL operations.
+   Apply the Windows OneDrive direct-save rules above to OneDrive targets.
+   For other Windows-drive targets, select the matching WSL or native Windows
+   profile for local-drive and ordinary-stream checks.
    Do not bypass host refusals or content exclusions; missing verification blocks
    only the affected operation.
 3. For `mkdir`, list and authorize each missing parent explicitly. Create each
@@ -354,8 +363,8 @@ PDF download or Docling conversion. Neither tool is bundled or auto-installed.
    Existing files require separate replacement authority and source bytes/hash;
    use the selected direct-save profile, never a converter's unchecked overwrite.
    Verify paths, identities, no symlinks, management-directory exclusions and
-   link counts as above. Windows/WSL imports use their respective host profile:
-   WSL path/type checks or native Windows verified non-redirecting cloud tags.
+   link counts as above. OneDrive imports use the direct-save rules above;
+   other Windows/WSL imports use their respective host profile.
    Apply the profile's ordinary-data-stream rule to
    each authorized artifact extension, never `:stream` or device paths.
 4. Only create missing directories with separate approval for their exact paths,

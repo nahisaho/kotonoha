@@ -175,18 +175,15 @@ replay protection, and must not be an automatic fallback from CLI failures.
 See the [Japanese workflow guide](skills/obsidian-vault/references/workflow.md)
 for requests, command examples, data retention and recovery.
 
-Saving requires verifiable local regular files; symlinks and multiple hard
-links are refused. Native Linux saves preserve ownership/modes.
+Saving generally requires verifiable local regular files; symlinks and multiple
+hard links are refused. Windows OneDrive targets use the direct-save exception
+below. Native Linux saves preserve ownership/modes.
 Host direct saves also support native Windows and confirmed local Windows drives
-through WSL (`drvfs`/`9p`/`v9fs`), not network shares. WSL OneDrive saves use
-WSL-resolved paths, component types and file identity; cloud reparse metadata
-is not a WSL symlink. Windows tag/final-path APIs are not required for otherwise
-normal WSL files. Native Windows retains cloud-tag verification. Detected
-redirections, symlinks, scope escapes and actual access denials remain blocked;
-known hydration requires separate consent. Existing notes must be updated in place,
-preserving Windows ACLs/attributes rather than replacing the file or requiring
-synthetic Linux permissions. Path/identity checks and exact readback remain
-mandatory; an unknown host replacement method is not sufficient.
+through WSL (`drvfs`/`9p`/`v9fs`), not network shares. Windows OneDrive saves
+use host file operations without requiring WSL mount inspection, Windows
+reparse-tag/final-path APIs, hydration checks or metadata enumeration. Explicit
+target/action authority, edit-source rechecks, content-specific review gates and
+exact readback remain mandatory; the OS enforces its normal access permissions.
 No silent `/tmp` output may substitute for an authorized Vault update.
 This profile, added in 0.5.4, does not extend Python CLI, Canvas or Bases support.
 CLI saving still requires a verified Linux filesystem and refuses all xattrs,

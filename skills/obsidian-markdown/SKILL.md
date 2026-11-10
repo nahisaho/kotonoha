@@ -27,10 +27,8 @@ Coordinate content and review, not a second storage backend. Read the
   Preserve the selected direct-save or optional plan-approved workflow.
   For a WSL local Windows drive, use its host direct-save profile; do not
   reject `v9fs` alone or route a normal content edit through Python CLI planning.
-  WSL OneDrive targets use WSL path/type/identity checks, not native Windows
-  reparse-tag or final-path API requirements. Missing Windows metadata tools
-  alone must not block a normal WSL OneDrive save. Native Windows uses the
-  backend's separate tag-verification profile.
+  Windows OneDrive targets use the backend's direct-save rules without
+  WSL-mount or native Windows reparse-tag/final-path API prerequisites.
   Do not silently substitute `/tmp` output for the authorized Vault target.
   If it is unavailable, report the missing sibling and provide an unsaved draft.
 - Use `tech-writer` for note structure and its existing

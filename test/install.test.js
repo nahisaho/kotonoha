@@ -518,16 +518,16 @@ test("authorized OneDrive reads distinguish cloud metadata from path redirection
   assert.match(reads, /On native Windows/);
 });
 
-test("WSL Windows-drive saving support is limited to verified host direct saves", () => {
+test("non-OneDrive WSL Windows-drive saves retain their verified host profile", () => {
   const vaultRoot = path.join(repositoryRoot, "skills", "obsidian-vault");
   const skill = fs.readFileSync(path.join(vaultRoot, "SKILL.md"), "utf8");
   const profile = skill.match(
-    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
+    /### Other WSL Windows-drive direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
   )?.[1];
   assert.ok(profile, "direct saving must expose the WSL-specific profile");
   assert.match(profile, /`drvfs`, `9p` or `v9fs`/);
   assert.match(profile, /not a mapped network drive or\s+UNC\/SMB share/);
-  assert.match(profile, /a `\/mnt\/c\/\.\.\.`\s+spelling alone is not evidence/);
+  assert.match(profile, /For non-OneDrive targets/);
   assert.match(profile, /Reject WSL symlinks, detected junctions or other path\s+redirections/);
   assert.match(profile, /not `:stream` or device paths/);
   assert.match(profile, /verified in-place write to the same file object/);
@@ -542,7 +542,7 @@ test("WSL Windows-drive saving support is limited to verified host direct saves"
   const workflow = fs.readFileSync(
     path.join(vaultRoot, "references", "workflow.md"), "utf8",
   );
-  assert.match(workflow, /## WSLからWindowsドライブへ直接保存/);
+  assert.match(workflow, /## その他のWSL Windowsドライブへの直接保存/);
   assert.match(workflow, /既存ノートは同じファイル実体へ書き込む/);
   assert.match(workflow, /保存を拒否した場合も、`\/tmp`等の別ファイルへ勝手に出力しない/);
   const markdown = fs.readFileSync(
@@ -551,55 +551,43 @@ test("WSL Windows-drive saving support is limited to verified host direct saves"
   assert.match(markdown, /For a WSL local Windows drive, use its host direct-save profile/);
 });
 
-test("native Windows host saves retain tag verification without imposing it on WSL", () => {
+test("Windows OneDrive saves do not require platform-specific verification", () => {
   const skill = fs.readFileSync(
     path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
   );
   const profile = skill.match(
-    /### Native Windows direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
+    /### Windows OneDrive direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
   )?.[1];
   assert.ok(profile);
-  assert.match(profile, /alone is not grounds to refuse\s+saving/);
-  assert.match(profile, /inspect each actual reparse\s+tag, including parent directories/);
-  assert.match(profile, /`IO_REPARSE_TAG_CLOUD`/);
-  assert.match(profile, /not name surrogates/);
-  assert.match(profile, /final path and identity stay inside the authorized\s+root and exact target/);
-  assert.match(profile, /Reject symlinks, junctions, mount-point redirections,\s+unknown tags and escapes/);
-  assert.match(profile, /Missing tag\/final-path verification blocks the affected\s+native Windows target/);
-  assert.match(profile, /Do not apply these Windows-API preconditions to WSL host reads or saves/);
+  assert.match(profile, /Do not require WSL mount inspection, Windows reparse-tag queries/);
+  assert.match(profile, /hydration checks or attribute\s+enumeration as a precondition/);
+  assert.match(profile, /no separate consent is required/);
+  assert.match(profile, /Keep the exact target and action authorization/);
+  assert.match(profile, /let the operating system enforce its access\s+permissions/);
+  assert.doesNotMatch(profile, /Missing tag\/final-path verification blocks/);
 });
 
-test("WSL OneDrive saves do not require native Windows metadata tools", () => {
+test("Windows OneDrive saves bypass platform-specific write gates", () => {
   const skill = fs.readFileSync(
     path.join(repositoryRoot, "skills", "obsidian-vault", "SKILL.md"), "utf8",
   );
   const profile = skill.match(
-    /### WSL Windows-drive direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
+    /### Windows OneDrive direct saves\n([\s\S]*?)(?=\n#{2,3} )/,
   )?.[1];
   assert.ok(profile);
-  assert.match(profile, /WSL OneDrive saves are supported/);
-  assert.match(profile, /including on parent directories/);
-  assert.match(profile, /is not a WSL symbolic link/);
-  assert.match(profile, /Do not require PowerShell, fsutil or Windows drive APIs/);
-  assert.match(profile, /component metadata \(`lstat` or equivalent\)/);
-  assert.match(profile, /Do not require Windows reparse-tag queries, cloud-tag\s+allowlists or Windows final-path APIs/);
-  assert.match(profile, /Missing Windows\s+metadata capabilities alone must not block a normal WSL OneDrive save/);
-  assert.match(profile, /Verify the resolved WSL path and opened file stay inside the authorized root/);
-  assert.match(profile, /do not ignore\s+positive evidence of a redirection/);
-  assert.match(profile, /Missing WSL path\/type\/identity checks block the affected\s+target/);
-  assert.match(profile, /do not demand a cloud-availability API/);
-  assert.match(profile, /unavailable Windows ACL\/cloud-attribute enumeration is not a refusal reason/);
-  assert.match(profile, /Do not use a host edit tool whose replacement behavior is unknown/);
-  assert.doesNotMatch(profile, /allow only verified Windows cloud-family tags|Missing tag\/final-path verification blocks/);
+  assert.match(profile, /Do not require WSL mount inspection, Windows reparse-tag queries/);
+  assert.match(profile, /Do not reject a target\s+because it is reported as a reparse point or cloud placeholder/);
+  assert.match(profile, /no separate consent is required/);
+  assert.match(profile, /Keep the exact target and action authorization/);
   const markdown = fs.readFileSync(
     path.join(repositoryRoot, "skills", "obsidian-markdown", "SKILL.md"), "utf8",
   );
-  assert.match(markdown, /WSL OneDrive targets use WSL path\/type\/identity checks, not native Windows/);
+  assert.match(markdown, /Windows OneDrive targets use the backend's direct-save rules/);
   const workflow = fs.readFileSync(
     path.join(repositoryRoot, "skills", "obsidian-vault", "references", "workflow.md"), "utf8",
   );
-  assert.match(workflow, /それらの取得機能がないことだけで.*OneDriveへの保存を拒否しない/);
-  assert.match(workflow, /このWindows API要件をWSL保存へ流用しない/);
+  assert.match(workflow, /Windows OneDriveへの直接保存/);
+  assert.match(workflow, /取得可否確認、属性列挙を要求しない/);
 });
 
 test("PDF and Docling imports require scoped host storage, not Markdown-only CLI saving", () => {
@@ -618,12 +606,11 @@ test("PDF and Docling imports require scoped host storage, not Markdown-only CLI
   assert.match(imports, /every output path before writing/);
   assert.match(imports, /non-overwriting creation with exact\/equivalent-name collision checks/);
   assert.match(imports, /never a converter's unchecked overwrite/);
-  assert.match(imports, /WSL path\/type checks or native Windows verified non-redirecting cloud tags/);
+  assert.match(imports, /OneDrive imports use the direct-save rules above/);
   const operations = skill.match(
     /## Authorized file and directory operations\n([\s\S]*?)(?=\n## )/,
   )?.[1];
-  assert.match(operations, /unknown-tag refusal is native-Windows-only/);
-  assert.match(operations, /Do not reintroduce Windows tag\/API requirements for WSL operations/);
+  assert.match(operations, /Apply the Windows OneDrive direct-save rules above to OneDrive targets/);
   assert.match(imports, /create missing directories with separate approval for their exact paths/);
   assert.match(imports, /only the approved outputs/);
   assert.match(imports, /Never use session\s+storage or silently substitute `\/tmp`/);
