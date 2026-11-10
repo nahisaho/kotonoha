@@ -14,7 +14,7 @@ The Obsidian suite covers Markdown syntax, authorized Vault notes, JSON Canvas,
 Bases, official app commands, web/HTML extraction and JSON/CSV template rendering.
 Each workflow keeps its own scope, dependency and save requirements.
 
-Version: **0.6.0** (updated 2026-11-08), with eleven bundled Skills, including
+Version: **0.6.1** (updated 2026-11-11), with eleven bundled Skills, including
 `obsidian-markdown`, `obsidian-cli`, `defuddle` and `knap`.
 Install the npm package or use the
 [source-checkout installation](#install-skills-from-this-source-checkout).

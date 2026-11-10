@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-11
+
+### Changed
+
+- Allow direct Windows OneDrive saves without platform metadata, mount or
+  hydration preconditions; retain explicit target authorization and host access
+  controls.
+
 ## [0.6.0] - 2026-11-08
 
 ### Added
@@ -340,5 +348,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.5]: https://github.com/nahisaho/kotonoha/compare/v0.5.4...v0.5.5
 [0.5.6]: https://github.com/nahisaho/kotonoha/compare/v0.5.5...v0.5.6
 [0.5.7]: https://github.com/nahisaho/kotonoha/compare/v0.5.6...v0.5.7
+[0.6.1]: https://github.com/nahisaho/kotonoha/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/nahisaho/kotonoha/compare/v0.5.7...v0.6.0
-[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/nahisaho/kotonoha/compare/v0.6.1...HEAD

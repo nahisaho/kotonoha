@@ -6,7 +6,7 @@ kotonohaは、GitHub CopilotとClaude Code向けのスキルを提供します�
 
 Obsidian向けには、Markdown記法、許可されたVault内のノート操作、JSON Canvas、Bases、公式アプリCLIを扱います。DefuddleによるWeb・HTML本文の抽出と、KnapによるJSON・CSVからのテンプレート生成にも対応します。操作ごとに、参照範囲・依存関係・保存の許可を確認します。
 
-バージョンは **0.6.0** です（2026-11-08更新）。`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`を含む11のスキルを同梱しています。npmパッケージを使うか、[ソースからスキルを導入する手順](#このチェックアウトからスキルを導入)を参照してください。
+バージョンは **0.6.1** です（2026-11-11更新）。`obsidian-markdown`、`obsidian-cli`、`defuddle`、`knap`を含む11のスキルを同梱しています。npmパッケージを使うか、[ソースからスキルを導入する手順](#このチェックアウトからスキルを導入)を参照してください。
 
 [English](./README.md) | [日本語](./README-ja.md)
 
